@@ -13,7 +13,7 @@ class UploadForm extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
   }
 
-  async handleSave() {
+  handleSave() {
     this.fileInput.value = '';
     this.props.handleSave();
     this.props.history.push('/chart')
