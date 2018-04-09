@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as actions from '../actions';
 
@@ -15,11 +16,13 @@ class UploadForm extends React.Component {
   handleSave() {
     this.fileInput.value = '';
     this.props.handleSave();
+    this.props.history.push('/chart')
   }
 
   handleCancel() {
     this.fileInput.value = '';
     this.props.handleCancel();
+    this.props.history.push('/chart')
   }
 
   render() {
@@ -138,6 +141,7 @@ const TransactionUpload = props => {
         handleSkipRowsChange={props.handleSkipRowsChange}
         handleSave={props.handleSave}
         handleCancel={props.handleCancel}
+        history={props.history}
       />
       <TransactionTable
         transactions={props.transactions}
@@ -193,4 +197,6 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TransactionUpload);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(TransactionUpload)
+);
