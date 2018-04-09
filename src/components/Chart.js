@@ -1,29 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ResponsiveContainer, LineChart, Line, Tooltip, XAxis, YAxis } from 'recharts';
+import { nest } from 'd3-collection';
+import { sum } from 'd3-array';
 
 const Chart = props => {
   if (props.transactions.data.length === 0) return null;
 
-  const data = props.transactions.data
-    .slice(props.transactions.skipRows)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(transaction => {
-      return {
-        date: transaction[0], // TODO
-        total: transaction[3] // TODO
-      }
-    });
+  let data = props.transactions.data
+    .sort((a, b) => a.date.localeCompare(b.date));
+  data = nest()
+    .key(d => d.date)
+    .rollup(a => sum(a, d => d.amount))
+    .entries(data);
 
   return (
     <div className="row justify-content-center">
       <div className="col-6 chart">
         <ResponsiveContainer>
           <LineChart data={data}>
-            <XAxis dataKey="date" />
+            <XAxis dataKey="key" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="total" />
+            <Line type="monotone" dataKey="value" />
           </LineChart>
         </ResponsiveContainer>
       </div>
