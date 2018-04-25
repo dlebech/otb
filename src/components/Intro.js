@@ -8,7 +8,7 @@ const Intro = props => {
       <p className="lead">Privacy-First Bank Transaction Analysis</p>
       <hr />
       <p>
-        Catchy headline eh? But seriously, if you bave a list of bank transactions, and you want to see some pretty graphs, go ahead and upload the file here. It will never be stored anywhere.
+        Catchy headline eh? But seriously, if you have a list of bank transactions, and you want to see some pretty graphs, go ahead and upload the file here. It will never be stored anywhere.
       </p>
       <Link className="btn btn-dark btn-lg" to="/upload">Get Started</Link>
     </div>
