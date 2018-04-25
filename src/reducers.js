@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
-import * as actions from './actions';
 import update from 'immutability-helper';
-import moment from 'moment';
+import bayes from 'bayes';
+import uuidv4 from 'uuid/v4';
+import * as actions from './actions';
+import * as util from './util';
 
 const appReducer = (state = { isParsing: false }, action) => {
   switch (action.type) {
@@ -24,37 +26,15 @@ const initialTransactions = {
     skipRows: 0,
     columnSpec: []
   },
-  data: []
-}
-
-/**
- * Given a list of transactions (an array of arrays), guess which column
- * correspond to date, descriptions, etc.
- * @param {Array} transactions - A list of transactions
- */
-const guessColumnSpec = transactions => {
-  // Take the last transaction for now since there might be headers at the top.
-  const transaction = transactions[transactions.length - 1];
-  const columnSpec = transaction.map(t => ({ type: '' }));
-
-  const hasColumnType = columnType => columnSpec.some(c => c.type === columnType);
-
-  for (let i = 0; i < transaction.length; i++) {
-    const val = transaction[i];
-    // If the type is a string, use it as date or description.
-    // If the type is a number, use as amount or total, depending on whether we
-    // found one of these already.
-    if (typeof val === 'string') {
-      if (!hasColumnType('date') && moment(val).isValid()) columnSpec[i].type = 'date';
-      else if (!hasColumnType('description')) columnSpec[i].type = 'description';
-    } else if (typeof val === 'number') {
-      if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
-      else columnSpec[i].type = 'total';
-    }
+  data: [],
+  categorizer: {
+    // XXX: We're using the string representation of the bayes classifier here in
+    // order to avoid introducing another state system (the classifer). However,
+    // this might not perform very well in the long run, so it's probably a
+    // decision that should be re-considered.
+    bayes: ''
   }
-
-  return columnSpec;
-};
+}
 
 const mapImportToTransactions = transactionsImport => {
   const dateIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'date');
@@ -66,10 +46,15 @@ const mapImportToTransactions = transactionsImport => {
     .slice(transactionsImport.skipRows)
     .map(transaction => {
       return {
+        id: uuidv4(),
         date: transaction[dateIndex],
         description: transaction[descIndex],
         amount: transaction[amountIndex],
-        total: transaction[totalIndex]
+        total: transaction[totalIndex],
+        category: {
+          guess: '',
+          confirmed: ''
+        }
       };
     });
 };
@@ -80,7 +65,7 @@ const transactionReducer = (state = initialTransactions, action) => {
       return update(state, {
         import: {
           data: { $set: action.transactions },
-          columnSpec: { $set: guessColumnSpec(action.transactions) }
+          columnSpec: { $set: util.guessColumnSpec(action.transactions) }
         }
       });
     case actions.UPDATE_SKIP_ROWS:
@@ -116,6 +101,47 @@ const transactionReducer = (state = initialTransactions, action) => {
           $set: mapImportToTransactions(state.import)
         }
       });
+    case actions.GUESS_CATEGORY_FOR_ROW:
+      const rowIndexGuess = state.data.findIndex(row => row.id === action.rowId);
+      if (rowIndexGuess < 0) return state;
+      if (!state.categorizer.bayes) return state;
+      const guess = bayes.fromJson(state.categorizer.bayes)
+        .categorize(state.data[rowIndexGuess].description);
+      return update(state, {
+        data: {
+          [rowIndexGuess]: {
+            category: {
+              guess: {
+                $set: guess
+              }
+            }
+          }
+        }
+      });
+    case actions.CATEGORIZE_ROW:
+      const rowIndexCategorize = state.data.findIndex(row => row.id === action.rowId);
+      if (rowIndexCategorize < 0) return state;
+      // If there's currently no bayes classifier, create a new one.
+      const classifier = state.categorizer.bayes ?
+        bayes.fromJson(state.categorizer.bayes) :
+        bayes();
+      classifier.learn(state.data[rowIndexCategorize].description, action.category);
+      return update(state, {
+        categorizer: {
+          bayes: {
+            $set: classifier.toJson()
+          }
+        },
+        data: {
+          [rowIndexCategorize]: {
+            category: {
+              confirmed: {
+                $set: action.category
+              }
+            }
+          }
+        }
+      })
     default:
       return state;
   }

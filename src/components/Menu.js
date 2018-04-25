@@ -21,6 +21,9 @@ const Menu = props => {
             <li className={`nav-item${active('/chart')}`}>
               <Link className="nav-link" to="/chart">Charts</Link>
             </li>
+            <li className={`nav-item${active('/transaction')}`}>
+              <Link className="nav-link" to="/transaction">Transactions</Link>
+            </li>
           </ul>
         </div>
       </div>

@@ -1,5 +1,10 @@
+import bayes from 'bayes';
 import reducers from './reducers';
 import * as actions from './actions';
+
+jest.mock('uuid/v4', () => {
+  return jest.fn(() => 'abcd');
+});
 
 it('should set default data', () => {
   const state = reducers({}, { type: 'NOOP' });
@@ -13,6 +18,9 @@ it('should set default data', () => {
       data: [],
       skipRows: 0,
       columnSpec: []
+    },
+    categorizer: {
+      bayes: ''
     }
   });
 });
@@ -117,11 +125,16 @@ describe('import', () => {
 
     // Sets the data
     expect(state.transactions.data).toEqual([
-      { 
+      {
+        id: 'abcd',
         date: '2018-04-06',
         description: 'test row',
         amount: 123,
-        total: 456
+        total: 456,
+        category: {
+          guess: '',
+          confirmed: ''
+        }
       }
     ]);
 
@@ -130,6 +143,72 @@ describe('import', () => {
       data: [],
       skipRows: 0,
       columnSpec: []
+    });
+  });
+});
+
+describe('guess category', () => {
+  it('should guess the category of a single row', () => {
+    const state = reducers({
+      transactions: {
+        categorizer: {
+          // A bayes classifier, trained on apple and origami
+          bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
+        },
+        data: [
+          {
+            id: 'abcd',
+            date: '2018-04-06',
+            description: 'more origami',
+            amount: 123,
+            total: 456,
+            category: {
+              guess: '',
+              confirmed: ''
+            }
+          }
+        ]
+      }
+    }, actions.guessCategoryForRow('abcd'));
+
+    // Sets the data
+    expect(state.transactions.data[0].category).toEqual({
+      guess: 'hobby',
+      confirmed: ''
+    });
+  });
+
+  it('should add a confirmed category to the classifier', () => {
+    const state = reducers({
+      transactions: {
+        categorizer: {
+          bayes: ''
+        },
+        data: [
+          {
+            id: 'abcd',
+            date: '2018-04-06',
+            description: 'origami',
+            amount: 123,
+            total: 456,
+            category: {
+              guess: '',
+              confirmed: ''
+            }
+          }
+        ]
+      }
+    }, actions.categorizeRow('abcd', 'hobby'));
+
+    expect(state.transactions.categorizer.bayes).toEqual(
+      // Expecting it to be trained on one row now :-)
+      '{"categories":{"hobby":true},"docCount":{"hobby":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"hobby":1},"wordFrequencyCount":{"hobby":{"origami":1}},"options":{}}'
+    )
+
+    // Sets the data
+    expect(state.transactions.data[0].category).toEqual({
+      guess: '',
+      confirmed: 'hobby'
     });
   });
 });

@@ -4,6 +4,7 @@ import Intro from './Intro';
 import Menu from './Menu';
 import TransactionUpload from './TransactionUpload';
 import Chart from './Chart';
+import Transactions from './Transactions';
 
 const App = props => {
   return (
@@ -14,6 +15,7 @@ const App = props => {
           <Route exact path="/" component={Intro} />
           <Route exact path="/upload" component={TransactionUpload} />
           <Route exact path="/chart" component={Chart} />
+          <Route exact path="/transaction" component={Transactions} />
         </div>
       </React.Fragment>
     </Router>
