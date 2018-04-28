@@ -10,7 +10,7 @@ const App = props => {
   return (
     <Router>
       <React.Fragment>
-        <Route path="/*" component={Menu} />
+        <Route path="/*" render={routeProps => <Menu persistor={props.persistor} {...routeProps} />} />
         <div className="container mt-4">
           <Route exact path="/" component={Intro} />
           <Route exact path="/upload" component={TransactionUpload} />
