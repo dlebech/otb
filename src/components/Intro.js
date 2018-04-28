@@ -6,7 +6,7 @@ const IntroWithData = () => {
   return (
     <div className="jumbotron">
       <h1 className="display-4">Welcome back</h1>
-      <p className="lead">Looks like you've been here before :-)</p>
+      <p className="lead">Looks like you have been here before :-)</p>
       <hr />
       <Link className="btn btn-primary" to="/upload">
         Upload more transactions
