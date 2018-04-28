@@ -5,7 +5,14 @@ import uuidv4 from 'uuid/v4';
 import * as actions from './actions';
 import * as util from './util';
 
-const appReducer = (state = { isParsing: false }, action) => {
+const initialApp = {
+  isParsing: false,
+  storage: {
+    localStorage: false
+  }
+};
+
+const appReducer = (state = initialApp, action) => {
   switch (action.type) {
     case actions.PARSE_TRANSACTIONS_START:
       return update(state, {
@@ -14,6 +21,14 @@ const appReducer = (state = { isParsing: false }, action) => {
     case actions.PARSE_TRANSACTIONS_END:
       return update(state, {
         isParsing: { $set: false }
+      });
+    case actions.TOGGLE_LOCAL_STORAGE:
+      return update(state, {
+        storage: {
+          localStorage: {
+            $set: action.enabled
+          }
+        }
       });
     default:
       return state;

@@ -9,7 +9,10 @@ jest.mock('uuid/v4', () => {
 it('should set default data', () => {
   const state = reducers({}, { type: 'NOOP' });
   expect(state.app).toEqual({
-    isParsing: false
+    isParsing: false,
+    storage: {
+      localStorage: false 
+    },
   });
 
   expect(state.transactions).toEqual({
@@ -26,8 +29,16 @@ it('should set default data', () => {
 });
 
 it('should handle the parsing start action', () => {
-  expect(reducers({}, actions.parseTransactionsStart()).app).toEqual({
-    isParsing: true
+  expect(reducers({}, actions.parseTransactionsStart()).app.isParsing).toEqual(true);
+});
+
+it('should handle the toggle persist action', () => {
+  expect(reducers({}, actions.toggleLocalStorage(true)).app.storage).toEqual({
+    localStorage: true
+  });
+
+  expect(reducers({}, actions.toggleLocalStorage(false)).app.storage).toEqual({
+    localStorage: false
   });
 });
 

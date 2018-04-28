@@ -1,7 +1,27 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-const Intro = props => {
+const IntroWithData = () => {
+  return (
+    <div className="jumbotron">
+      <h1 className="display-4">Welcome back</h1>
+      <p className="lead">Looks like you've been here before :-)</p>
+      <hr />
+      <Link className="btn btn-primary" to="/upload">
+        Upload more transactions
+      </Link>
+      <Link className="btn btn-secondary mx-2" to="/chart">
+        Charts
+      </Link>
+      <Link className="btn btn-secondary" to="/transaction">
+        All transactions
+      </Link>
+    </div>
+  );
+};
+
+const IntroWithoutData = () => {
   return (
     <div className="jumbotron">
       <h1 className="display-4">Off The Books</h1>
@@ -15,4 +35,15 @@ const Intro = props => {
   );
 };
 
-export default Intro;
+const Intro = props => {
+  if (props.hasData) return <IntroWithData />;
+  return <IntroWithoutData />;
+};
+
+const mapStateToProps = state => {
+  return {
+    hasData: state.transactions.data.length > 0
+  }
+};
+
+export default connect(mapStateToProps)(Intro);

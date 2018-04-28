@@ -1,5 +1,6 @@
 export const PARSE_TRANSACTIONS_START = 'PARSE_TRANSACTIONS_START';
 export const PARSE_TRANSACTIONS_END = 'PARSE_TRANSACTIONS_END';
+export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
 export const SAVE_TRANSACTIONS = 'SAVE_TRANSACTIONS';
 export const CANCEL_TRANSACTIONS = 'CANCEL_TRANSACTIONS';
 export const UPDATE_SKIP_ROWS = 'UPDATE_SKIP_ROWS';
@@ -10,6 +11,13 @@ export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
 export const parseTransactionsStart = () => {
   return {
     type: PARSE_TRANSACTIONS_START
+  };
+};
+
+export const toggleLocalStorage = enabled => {
+  return {
+    type: TOGGLE_LOCAL_STORAGE,
+    enabled
   };
 };
 
