@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { reducer as modalReducer } from 'redux-modal';
 import update from 'immutability-helper';
 import bayes from 'bayes';
 import uuidv4 from 'uuid/v4';
@@ -29,6 +30,11 @@ const appReducer = (state = initialApp, action) => {
             $set: action.enabled
           }
         }
+      });
+    case actions.RESTORE_STATE_FROM_FILE:
+      if (!action.newState.app) return state;
+      return update(state, {
+        $set: action.newState.app
       });
     default:
       return state;
@@ -156,7 +162,12 @@ const transactionReducer = (state = initialTransactions, action) => {
             }
           }
         }
-      })
+      });
+    case actions.RESTORE_STATE_FROM_FILE:
+      if (!action.newState.transactions) return state;
+      return update(state, {
+        $set: action.newState.transactions
+      });
     default:
       return state;
   }
@@ -164,5 +175,6 @@ const transactionReducer = (state = initialTransactions, action) => {
 
 export default combineReducers({
   app: appReducer,
-  transactions: transactionReducer
+  transactions: transactionReducer,
+  modal: modalReducer
 });

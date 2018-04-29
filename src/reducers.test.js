@@ -223,3 +223,17 @@ describe('guess category', () => {
     });
   });
 });
+
+describe('restore from file', () => {
+  it('should restore from file', () => {
+    const state = reducers({}, actions.restoreStateFromFile({
+      transactions: {
+        data: [{ id: 'abcd' }]
+      }
+    }));
+
+    expect(state.transactions.data).toEqual([
+      { id: 'abcd' }
+    ])
+  });
+})

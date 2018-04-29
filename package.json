@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.5",
+    "@fortawesome/fontawesome-free-solid": "^5.0.10",
+    "@fortawesome/react-fontawesome": "^0.0.18",
     "bayes": "^0.0.7",
     "bootstrap": "^4.0.0",
     "d3-array": "^1.2.1",
     "d3-collection": "^1.0.4",
+    "downloadjs": "^1.4.7",
     "immutability-helper": "^2.6.6",
     "moment": "^2.22.0",
     "papaparse": "^4.3.7",
@@ -18,6 +22,7 @@
     "recharts": "^1.0.0-beta.10",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
+    "redux-modal": "^1.7.3",
     "redux-persist": "^5.9.1",
     "redux-thunk": "^2.2.0",
     "uuid": "^3.2.1"
