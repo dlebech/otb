@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import * as actions from '../actions';
+import NoData from './NoData';
 
 // XXX: This is not nice :-)
 const categories = [
@@ -89,7 +91,7 @@ const TransactionTable = props => {
   return (
     <div className="row justify-content-center">
       <div className="col">
-        <table className="table table-striped">
+        <table className="table table-striped mt-3">
           <thead>
             <tr>
               <th>Date</th>
@@ -116,12 +118,21 @@ const TransactionTable = props => {
 }
 
 const Transactions = props => {
+  if (props.transactions.length === 0) return <NoData />;
+
   return (
-    <TransactionTable
-      transactions={props.transactions}
-      handleRowCategory={props.handleRowCategory}
-      handleGuessCategoryForRow={props.handleGuessCategoryForRow}
-    />
+    <React.Fragment>
+      <div className="row">
+        <div className="col">
+          <Link to="/transaction/upload" className="btn btn-outline-primary">Add More Transactions</Link>
+        </div>
+      </div>
+      <TransactionTable
+        transactions={props.transactions}
+        handleRowCategory={props.handleRowCategory}
+        handleGuessCategoryForRow={props.handleGuessCategoryForRow}
+      />
+    </React.Fragment>
   );
 };
 

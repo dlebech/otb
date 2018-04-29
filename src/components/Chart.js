@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
+import NoData from './NoData';
 
 // Bootstrap colors
 // TODO: Should probably find a better way to store these.
@@ -65,7 +66,7 @@ const AmountPerCategory = props => {
 };
 
 const Chart = props => {
-  if (props.transactions.data.length === 0) return null;
+  if (props.transactions.data.length === 0) return <NoData />;
 
   return (
     <div className="row justify-content-center">

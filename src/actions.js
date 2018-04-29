@@ -7,6 +7,7 @@ export const UPDATE_SKIP_ROWS = 'UPDATE_SKIP_ROWS';
 export const UPDATE_COLUMN_TYPE = 'UPDATE_COLUMN_TYPE';
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
+export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 
 export const parseTransactionsStart = () => {
   return {
@@ -67,5 +68,12 @@ export const categorizeRow = (rowId, category) => {
     type: CATEGORIZE_ROW,
     rowId,
     category
+  };
+};
+
+export const restoreStateFromFile = newState => {
+  return {
+    type: RESTORE_STATE_FROM_FILE,
+    newState
   };
 };

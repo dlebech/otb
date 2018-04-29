@@ -1,5 +1,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router-dom';
 import { shallow, mount } from 'enzyme';
 import Chart from './Chart';
 
@@ -13,8 +14,12 @@ describe('Chart', () => {
       }
     });
 
-    const container = shallow(<Chart store={store} />);
-    expect(container.render().html()).toEqual(null);
+    const container = shallow(
+      <MemoryRouter>
+        <Chart store={store} />
+      </MemoryRouter>
+    );
+    expect(container.render().text()).toEqual('No data yet. Add some.');
   });
 
   it('should render transactions graph when there are transactions', () => {

@@ -9,6 +9,15 @@ import registerServiceWorker from './registerServiceWorker';
 
 import 'bootstrap/dist/css/bootstrap.css'; // Makes sure bootstrap is always available.
 
+// Build the fontawesome library
+import fontawesome from '@fortawesome/fontawesome';
+import faUpload from '@fortawesome/fontawesome-free-solid/faUpload';
+import faChartBar from '@fortawesome/fontawesome-free-solid/faChartBar';
+import faTable from '@fortawesome/fontawesome-free-solid/faTable';
+import faDatabase from '@fortawesome/fontawesome-free-solid/faDatabase';
+import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
+fontawesome.library.add(faUpload, faChartBar, faTable, faDatabase, faQuestionCircle);
+
 const { store, persistor } = configureStore({});
 
 ReactDOM.render(

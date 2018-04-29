@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as actions from '../actions';
 
@@ -16,13 +16,13 @@ class UploadForm extends React.Component {
   handleSave() {
     this.fileInput.value = '';
     this.props.handleSave();
-    this.props.history.push('/chart')
+    this.props.history.push('/transaction')
   }
 
   handleCancel() {
     this.fileInput.value = '';
     this.props.handleCancel();
-    this.props.history.push('/chart')
+    this.props.history.push('/transaction')
   }
 
   render() {
@@ -136,6 +136,12 @@ const TransactionTable = props => {
 const TransactionUpload = props => {
   return (
     <React.Fragment>
+      <nav aria-label="breadcrumb">
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item"><Link to="/transaction">Transactions</Link></li>
+          <li className="breadcrumb-item active" aria-current="page">Upload</li>
+        </ol>
+      </nav>
       <UploadForm
         handleFileChange={props.handleFileChange}
         handleSkipRowsChange={props.handleSkipRowsChange}

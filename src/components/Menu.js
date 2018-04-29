@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { show } from 'redux-modal';
 import { toggleLocalStorage } from '../actions';
+import SaveData from './modals/SaveData';
 
 class Menu extends React.Component {
   constructor(props) {
@@ -42,23 +45,33 @@ class Menu extends React.Component {
     if (this.props.match.url === '/') return null;
 
     const active = url => {
-      return this.props.match.url === url ? ' active' : '';
+      return this.props.match.url.startsWith(url) ? ' active' : '';
     }
 
     return (
+      <React.Fragment>
       <nav className="navbar navbar-expand-md navbar-dark bg-dark">
         <div className="container">
           <Link className="navbar-brand" to="/">Off The Books</Link>
           <div className="navbar-collapse">
             <ul className="navbar-nav mr-auto">
-              <li className={`nav-item${active('/upload')}`}>
-                <Link className="nav-link" to="/upload">Upload</Link>
+              <li className={`nav-item${active('/transaction')}`}>
+                <Link className="nav-link" to="/transaction">
+                  <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
+                  Transactions
+                </Link>
               </li>
               <li className={`nav-item${active('/chart')}`}>
-                <Link className="nav-link" to="/chart">Charts</Link>
+                <Link className="nav-link" to="/chart">
+                  <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
+                  Charts
+                </Link>
               </li>
-              <li className={`nav-item${active('/transaction')}`}>
-                <Link className="nav-link" to="/transaction">Transactions</Link>
+              <li className={`nav-item${active('/data')}`}>
+                <Link className="nav-link" to="/data">
+                  <FontAwesomeIcon icon="database" className="mr-1" fixedWidth />
+                  Manage Data
+                </Link>
               </li>
             </ul>
             <form className="form-inline">
@@ -75,9 +88,19 @@ class Menu extends React.Component {
                 </label>
               </div>
             </form>
+            <div className="navbar-text text-info">
+              <FontAwesomeIcon
+                icon="question-circle"
+                className="ml-1"
+                fixedWidth
+                onClick={() => this.props.showModal(SaveData.modalName)}
+              />
+            </div>
           </div>
         </div>
       </nav>
+      <SaveData />
+      </React.Fragment>
     );
   }
 };
@@ -92,6 +115,9 @@ const mapDispatchToProps = dispatch => {
   return {
     toggleLocalStorage: enabled => {
       dispatch(toggleLocalStorage(enabled));
+    },
+    showModal: (...args) => {
+      dispatch(show(...args));
     }
   };
 };
