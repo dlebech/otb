@@ -20,16 +20,14 @@ class UploadForm extends React.Component {
   }
 
   handleCancel() {
-    this.fileInput.value = '';
     this.props.handleCancel();
-    this.props.history.push('/transaction')
   }
 
   render() {
     return (
       <form>
-        <div className="form-row justify-content-md-center">
-          <div className="col-sm-6">
+        {!this.props.hasTransactions && <div className="form-row">
+          <div className="col-auto">
             <label htmlFor="transactions-input">Transactions file:</label>
             <input
               ref={ref => this.fileInput = ref}
@@ -39,8 +37,11 @@ class UploadForm extends React.Component {
               onChange={this.props.handleFileChange}
             />
           </div>
-          <div className="col-sm-6">
-            <label htmlFor="skip-rows">Rows To Skip:</label>
+        </div>}
+        {this.props.hasTransactions &&
+        <div className="form-row my-2">
+          <label htmlFor="skip-rows" className="col-form-label">Rows To Skip:</label>
+          <div className="col-auto">
             <input
               type="number" 
               id="skip-rows"
@@ -49,17 +50,15 @@ class UploadForm extends React.Component {
               min="0"
             />
           </div>
-        </div>
-        <div className="form-row mt-2">
           <div className="col-auto">
-            <button type="button" className="mr-1 btn btn-primary" onClick={this.handleSave}>
+            <button type="button" className="btn btn-primary" onClick={this.handleSave}>
               Save
             </button>
-            <button type="button" className="ml-1 btn btn-secondary" onClick={this.handleCancel}>
+            <button type="button" className="btn btn-secondary ml-2" onClick={this.handleCancel}>
               Cancel
             </button>
           </div>
-        </div>
+        </div>}
       </form>
     )
   }
@@ -93,7 +92,7 @@ const ColumnHeader = props => {
   )
 };
 
-const TransactionTable = props => {
+const TransactionsPreviewTable = props => {
   if (props.transactions.length === 0) return null;
 
   const data = props.transactions.slice(props.skipRows);
@@ -148,8 +147,9 @@ const TransactionUpload = props => {
         handleSave={props.handleSave}
         handleCancel={props.handleCancel}
         history={props.history}
+        hasTransactions={!!props.transactions && props.transactions.length > 0}
       />
-      <TransactionTable
+      <TransactionsPreviewTable
         transactions={props.transactions}
         skipRows={props.skipRows}
         columnSpec={props.columnSpec}
