@@ -16,7 +16,13 @@ import faChartBar from '@fortawesome/fontawesome-free-solid/faChartBar';
 import faTable from '@fortawesome/fontawesome-free-solid/faTable';
 import faDatabase from '@fortawesome/fontawesome-free-solid/faDatabase';
 import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle';
-fontawesome.library.add(faUpload, faChartBar, faTable, faDatabase, faQuestionCircle);
+fontawesome.library.add(
+  faUpload,
+  faChartBar,
+  faTable,
+  faDatabase,
+  faQuestionCircle
+);
 
 const { store, persistor } = configureStore({});
 
