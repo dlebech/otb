@@ -6,6 +6,7 @@ export const CANCEL_TRANSACTIONS = 'CANCEL_TRANSACTIONS';
 export const UPDATE_SKIP_ROWS = 'UPDATE_SKIP_ROWS';
 export const UPDATE_COLUMN_TYPE = 'UPDATE_COLUMN_TYPE';
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
+export const EDIT_CATEGORY_FOR_ROW = 'EDIT_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 
@@ -59,6 +60,13 @@ export const cancelTransactions = () => {
 export const guessCategoryForRow = rowId => {
   return {
     type: GUESS_CATEGORY_FOR_ROW,
+    rowId
+  };
+};
+
+export const editCategoryForRow = rowId => {
+  return {
+    type: EDIT_CATEGORY_FOR_ROW,
     rowId
   };
 };

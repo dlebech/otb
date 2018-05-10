@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import download from 'downloadjs';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import RestoreData from './RestoreData';
 
 class Data extends React.Component {
@@ -35,6 +36,7 @@ class Data extends React.Component {
               className="btn btn-outline-primary"
               onClick={this.handleDownload}
             >
+              <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
               Download All Data
             </button>
             <RestoreData>

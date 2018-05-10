@@ -24,6 +24,9 @@ describe('Transactions', () => {
 
   it('should render a table of transactions', () => {
     const store = mockStore({
+      edit: {
+        transactionCategories: new Set()
+      },
       transactions: {
         data: [
           {
@@ -54,5 +57,39 @@ describe('Transactions', () => {
     expect(row.find('td').eq(2).text()).toEqual('1');
     expect(row.find('td').eq(3).text()).toEqual('2');
     expect(row.find('td').eq(4).text()).toEqual('food');
+    expect(row.find('td').eq(4).find('button').length).toEqual(1);
+  });
+
+  it('should show guess confirm and edit buttons', () => {
+    const store = mockStore({
+      edit: {
+        transactionCategories: new Set()
+      },
+      transactions: {
+        data: [
+          {
+            id: 'abcd',
+            date: '2018-01-01',
+            amount: 1,
+            description: 'test',
+            total: 2,
+            category: {
+              guess: 'travel',
+              confirmed: ''
+            }
+          }
+        ]
+      }
+    });
+
+    const container = shallow(
+      <MemoryRouter>
+        <Transactions store={store} />
+      </MemoryRouter>
+    ).render();
+
+    const categoryCol = container.find('tr').eq(1).find('td').eq(4);
+    expect(categoryCol.find('button').length).toEqual(2);
+    expect(categoryCol.text()).toEqual('travel');
   });
 });
