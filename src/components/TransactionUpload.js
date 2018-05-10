@@ -5,64 +5,52 @@ import { withRouter, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as actions from '../actions';
 
-class UploadForm extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.handleSave = this.handleSave.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-  }
-
-  handleSave() {
-    this.fileInput.value = '';
-    this.props.handleSave();
-    this.props.history.push('/transaction')
-  }
-
-  handleCancel() {
-    this.props.handleCancel();
-  }
-
-  render() {
-    return (
-      <form>
-        {!this.props.hasTransactions && <div className="form-row">
-          <div className="col-auto">
-            <label htmlFor="transactions-input">Transactions file:</label>
-            <input
-              ref={ref => this.fileInput = ref}
-              type="file" 
-              id="transactions-input"
-              className="form-control-file"
-              onChange={this.props.handleFileChange}
-            />
-          </div>
-        </div>}
-        {this.props.hasTransactions &&
-        <div className="form-row my-2">
-          <label htmlFor="skip-rows" className="col-form-label">Rows To Skip:</label>
-          <div className="col-auto">
-            <input
-              type="number" 
-              id="skip-rows"
-              className="form-control"
-              onChange={this.props.handleSkipRowsChange}
-              min="0"
-            />
-          </div>
-          <div className="col-auto">
-            <button type="button" className="btn btn-primary" onClick={this.handleSave}>
-              Save
-            </button>
-            <button type="button" className="btn btn-secondary ml-2" onClick={this.handleCancel}>
-              Cancel
-            </button>
-          </div>
-        </div>}
-      </form>
-    )
-  }
-}
+const UploadForm = props => {
+  return (
+    <form>
+      {!props.hasTransactions && <div className="form-row">
+        <div className="col-auto">
+          <label htmlFor="transactions-input">Transactions file:</label>
+          <input
+            type="file"
+            id="transactions-input"
+            className="form-control-file"
+            onChange={props.handleFileChange}
+          />
+        </div>
+      </div>}
+      {props.hasTransactions &&
+      <div className="form-row my-2">
+        <label htmlFor="skip-rows" className="col-form-label">Rows To Skip:</label>
+        <div className="col-auto">
+          <input
+            type="number"
+            id="skip-rows"
+            className="form-control"
+            onChange={props.handleSkipRowsChange}
+            min="0"
+            value={props.skipRows}
+          />
+        </div>
+        <div className="col-auto">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              props.handleSave();
+              props.history.push('/transaction')
+            }}
+          >
+            Save
+          </button>
+          <button type="button" className="btn btn-secondary ml-2" onClick={props.handleCancel}>
+            Cancel
+          </button>
+        </div>
+      </div>}
+    </form>
+  );
+};
 
 const ColumnType = props => {
   return (
@@ -148,6 +136,7 @@ const TransactionUpload = props => {
         handleCancel={props.handleCancel}
         history={props.history}
         hasTransactions={!!props.transactions && props.transactions.length > 0}
+        skipRows={props.skipRows}
       />
       <TransactionsPreviewTable
         transactions={props.transactions}

@@ -39,7 +39,36 @@ const appReducer = (state = initialApp, action) => {
     default:
       return state;
   }
-}
+};
+
+const initialEditor = {
+  transactionCategories: new Set()
+};
+
+const editReducer = (state = initialEditor, action) => {
+  switch (action.type) {
+    case actions.EDIT_CATEGORY_FOR_ROW:
+      let rowsToAdd = action.rowId;
+      if (!Array.isArray(rowsToAdd)) {
+        rowsToAdd = [rowsToAdd];
+      }
+      return update(state, {
+        transactionCategories: {
+          $add: rowsToAdd
+        }
+      });
+    case actions.GUESS_CATEGORY_FOR_ROW:
+    case actions.CATEGORIZE_ROW:
+      // Remove all editing categories when guessing and categorizing.
+      return update(state, {
+        transactionCategories: {
+          $remove: Array.from(state.transactionCategories)
+        }
+      });
+    default:
+      return state;
+  }
+};
 
 const initialTransactions = {
   import: {
@@ -123,22 +152,35 @@ const transactionReducer = (state = initialTransactions, action) => {
         }
       });
     case actions.GUESS_CATEGORY_FOR_ROW:
-      const rowIndexGuess = state.data.findIndex(row => row.id === action.rowId);
-      if (rowIndexGuess < 0) return state;
+      let rowsToGuess = action.rowId;
+      if (!Array.isArray(rowsToGuess)) {
+        rowsToGuess = [rowsToGuess];
+      }
+      const rowIndexes = rowsToGuess
+        .map(rowId => state.data.findIndex(row => row.id === rowId))
+        .filter(rowIndex => rowIndex >= 0);
+      if (rowIndexes.length === 0) return state;
       if (!state.categorizer.bayes) return state;
-      const guess = bayes.fromJson(state.categorizer.bayes)
-        .categorize(state.data[rowIndexGuess].description);
-      return update(state, {
-        data: {
-          [rowIndexGuess]: {
-            category: {
-              guess: {
-                $set: guess
+
+      const guesstimator = bayes.fromJson(state.categorizer.bayes);
+
+      let newState = state;
+      rowIndexes.forEach(i => {
+        const guess = guesstimator.categorize(newState.data[i].description);
+        console.log(i, guess);
+        newState = update(newState, {
+          data: {
+            [i]: {
+              category: {
+                guess: {
+                  $set: guess
+                }
               }
             }
           }
-        }
+        });
       });
+      return newState;
     case actions.CATEGORIZE_ROW:
       const rowIndexCategorize = state.data.findIndex(row => row.id === action.rowId);
       if (rowIndexCategorize < 0) return state;
@@ -146,7 +188,9 @@ const transactionReducer = (state = initialTransactions, action) => {
       const classifier = state.categorizer.bayes ?
         bayes.fromJson(state.categorizer.bayes) :
         bayes();
-      classifier.learn(state.data[rowIndexCategorize].description, action.category);
+      if (action.category && state.data[rowIndexCategorize].description) {
+        classifier.learn(state.data[rowIndexCategorize].description, action.category);
+      }
       return update(state, {
         categorizer: {
           bayes: {
@@ -158,7 +202,8 @@ const transactionReducer = (state = initialTransactions, action) => {
             category: {
               confirmed: {
                 $set: action.category
-              }
+              },
+              $unset: ['guess']
             }
           }
         }
@@ -176,5 +221,6 @@ const transactionReducer = (state = initialTransactions, action) => {
 export default combineReducers({
   app: appReducer,
   transactions: transactionReducer,
-  modal: modalReducer
+  modal: modalReducer,
+  edit: editReducer
 });

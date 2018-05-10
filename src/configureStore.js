@@ -12,7 +12,8 @@ if (process.env.NODE_ENV === 'development') {
 
 const persistConfig = {
   key: 'otb',
-  storage
+  storage: storage,
+  blacklist: ['edit']
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

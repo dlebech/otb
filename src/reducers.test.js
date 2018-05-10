@@ -189,6 +189,43 @@ describe('guess category', () => {
     });
   });
 
+  it('should guess the category of a multiple rows', () => {
+    const state = reducers({
+      transactions: {
+        categorizer: {
+          // A bayes classifier, trained on apple and origami
+          bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
+        },
+        data: [
+          {
+            id: 'a',
+            description: 'more origami',
+            category: {}
+          },
+          {
+            id: 'b',
+            description: 'more origami yet',
+            category: {}
+          },
+          {
+            id: 'c',
+            description: 'so much origami',
+            category: {}
+          }
+        ]
+      }
+    }, actions.guessCategoryForRow(['a', 'b', 'ok']));
+
+    // Sets the data
+    expect(state.transactions.data[0].category).toEqual({
+      guess: 'hobby'
+    });
+    expect(state.transactions.data[1].category).toEqual({
+      guess: 'hobby'
+    });
+    expect(state.transactions.data[2].category).toEqual({});
+  });
+
   it('should add a confirmed category to the classifier', () => {
     const state = reducers({
       transactions: {
@@ -203,7 +240,7 @@ describe('guess category', () => {
             amount: 123,
             total: 456,
             category: {
-              guess: '',
+              guess: 'travel',
               confirmed: ''
             }
           }
@@ -214,13 +251,62 @@ describe('guess category', () => {
     expect(state.transactions.categorizer.bayes).toEqual(
       // Expecting it to be trained on one row now :-)
       '{"categories":{"hobby":true},"docCount":{"hobby":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"hobby":1},"wordFrequencyCount":{"hobby":{"origami":1}},"options":{}}'
-    )
+    );
 
     // Sets the data
     expect(state.transactions.data[0].category).toEqual({
-      guess: '',
       confirmed: 'hobby'
     });
+  });
+
+  it('should not add empty categories to classifier', () => {
+    const state = reducers({
+      transactions: {
+        categorizer: {
+          bayes: ''
+        },
+        data: [
+          {
+            id: 'abcd',
+            description: 'origami',
+            category: {
+              guess: 'travel',
+              confirmed: ''
+            }
+          }
+        ]
+      }
+    }, actions.categorizeRow('abcd', ''));
+
+    // Expect and empty classifier because the category is empty.
+    expect(state.transactions.categorizer.bayes).toEqual(
+      '{"categories":{},"docCount":{},"totalDocuments":0,"vocabulary":{},"vocabularySize":0,"wordCount":{},"wordFrequencyCount":{},"options":{}}'
+    );
+  });
+
+  it('should not add empty descriptions to classifier', () => {
+    const state = reducers({
+      transactions: {
+        categorizer: {
+          bayes: ''
+        },
+        data: [
+          {
+            id: 'abcd',
+            description: '',
+            category: {
+              guess: 'travel',
+              confirmed: ''
+            }
+          }
+        ]
+      }
+    }, actions.categorizeRow('abcd', 'hobby'));
+
+    // Expect and empty classifier because the category is empty.
+    expect(state.transactions.categorizer.bayes).toEqual(
+      '{"categories":{},"docCount":{},"totalDocuments":0,"vocabulary":{},"vocabularySize":0,"wordCount":{},"wordFrequencyCount":{},"options":{}}'
+    );
   });
 });
 
@@ -236,4 +322,21 @@ describe('restore from file', () => {
       { id: 'abcd' }
     ])
   });
-})
+});
+
+
+it('should add categories being edited', () => {
+  const state = reducers({}, actions.editCategoryForRow('a'));
+  expect(state.edit.transactionCategories.has('a')).toBeTruthy();
+  expect(state.edit.transactionCategories.has('b')).toBeFalsy();
+});
+
+it('should clear categories being edited', () => {
+  const state = reducers({
+    edit: {
+      transactionCategories: new Set(['a', 'b'])
+    }
+  }, actions.guessCategoryForRow('b'));
+
+  expect(state.edit.transactionCategories.size).toEqual(0);
+});

@@ -53,7 +53,7 @@ RestoreData.propTypes = {
 };
 
 RestoreData.defaultProps = {
-  className: 'btn btn-outline-secondary ml-3'
+  className: 'btn btn-outline-secondary ml-2'
 };
 
 const mapDispatchToProps = dispatch => {
