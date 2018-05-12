@@ -49,11 +49,7 @@ class RestoreData extends React.Component {
 
 RestoreData.propTypes = {
   children: PropTypes.any.isRequired,
-  className: PropTypes.string
-};
-
-RestoreData.defaultProps = {
-  className: 'btn btn-outline-secondary ml-2'
+  className: PropTypes.string.isRequired
 };
 
 const mapDispatchToProps = dispatch => {

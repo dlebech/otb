@@ -5,3 +5,7 @@
 .small-tip {
   max-width: 200px;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

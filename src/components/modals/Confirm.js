@@ -1,9 +1,9 @@
 import React from 'react';
 import { connectModal } from 'redux-modal';
 
-const SAVE_DATA_MODAL = 'save-data';
+const CONFIRM_MODAL = 'confirm';
 
-const SaveData = connectModal({ name: SAVE_DATA_MODAL })(props => {
+const Confirm = connectModal({ name: CONFIRM_MODAL })(props => {
   if (!props.show) return null;
 
   return (
@@ -11,22 +11,12 @@ const SaveData = connectModal({ name: SAVE_DATA_MODAL })(props => {
       <div className="modal" style={{display: 'block'}}>
         <div className="modal-dialog">
           <div className="modal-content">
-            <div className="modal-header">
-              <h6 className="modal-title">
-                Saving data in the browser?
-              </h6>
-            </div>
             <div className="modal-body">
-              <p>
-                If enabled, the data will be saved in the browser&#39;s local storage.
-                The data will be available if you close and re-open the
-                browser, but it will <em>not</em> be accessible by other
-                websites.
-              </p>
-              <p>
-                On a shared machine, this feature is not recommended. Download
-                the data instead, and restore it later with the restore function.
-              </p>
+              <div className="row">
+                <div className="col text-center">
+                  {props.body || 'Are you sure?'}
+                </div>
+              </div>
             </div>
             <div className="modal-footer">
               <div className="container-fluid">
@@ -34,10 +24,17 @@ const SaveData = connectModal({ name: SAVE_DATA_MODAL })(props => {
                   <div className="col-auto">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-primary m-1"
+                      onClick={props.handleYes}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary m-1"
                       onClick={props.handleHide}
                     >
-                      Cool
+                      No
                     </button>
                   </div>
                 </div>
@@ -51,6 +48,6 @@ const SaveData = connectModal({ name: SAVE_DATA_MODAL })(props => {
   );
 });
 
-SaveData.modalName = SAVE_DATA_MODAL;
+Confirm.modalName = CONFIRM_MODAL;
 
-export default SaveData;
+export default Confirm;

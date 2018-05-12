@@ -7,19 +7,13 @@ import ReactTooltip from 'react-tooltip';
 import * as actions from '../actions';
 import NoData from './NoData';
 
-// XXX: This is not nice :-)
-const categories = [
-  { key: 'food', name: 'Food' },
-  { key: 'travel', name: 'Travel' }
-];
-
 /**
  * Controls for confirming or rejecting a category guess.
  */
 const CategoryGuessConfirm = props => {
   return (
     <React.Fragment>
-      {props.transaction.category.guess}
+      {props.categoryGuessName}
       <FontAwesomeIcon
         icon="question-circle"
         className="text-info ml-1" 
@@ -27,23 +21,23 @@ const CategoryGuessConfirm = props => {
       />
       <button
         type="button"
-        className="btn btn-outline-dark btn-sm ml-1 border-0"
-        onClick={() => props.handleRowCategory(props.transaction.id, props.transaction.category.guess)}
+        className="btn btn-outline-success btn-sm ml-1 border-0"
+        onClick={() => props.handleRowCategory(props.transactionId, props.categoryGuess)}
         title="Confirm Guess"
       >
         <FontAwesomeIcon icon="thumbs-up" />
       </button>
       <button
         type="button"
-        className="btn btn-outline-secondary btn-sm border-0"
-        onClick={() => props.handleRowCategory(props.transaction.id, '')}
+        className="btn btn-outline-danger btn-sm border-0"
+        onClick={() => props.handleRowCategory(props.transactionId, '')}
         title="Reject guess"
       >
         <FontAwesomeIcon icon="thumbs-down" />
       </button>
       <ReactTooltip />
     </React.Fragment>
-  )
+  );
 };
 
 /**
@@ -55,19 +49,29 @@ const Category = props => {
   // 2. If the category is confirmed, show an edit button
   // 3. Otherwise show nothing.
   if (props.transaction.category.guess) {
-    return <CategoryGuessConfirm {...props} />;
+    const categoryName = props.categories
+      .find(c => c.id === props.transaction.category.guess)
+      .name;
+    return <CategoryGuessConfirm
+      transactionId={props.transaction.id}
+      categoryGuess={props.transaction.category.guess}
+      categoryGuessName={categoryName}
+      handleRowCategory={props.handleRowCategory}
+    />;
   }
 
   if (props.transaction.category.confirmed) {
+    const categoryName = props.categories
+      .find(c => c.id === props.transaction.category.confirmed)
+      .name;
     return (
-      <button
-        type="button"
-        className="btn btn-outline-secondary btn-sm border-0"
+      <span
+        className="cursor-pointer"
         onClick={() => props.handleEditCategoryForRow(props.transaction.id)}
       >
-        {props.transaction.category.confirmed}
+        {categoryName}
         <FontAwesomeIcon icon="edit" className="ml-1" fixedWidth />
-      </button>
+      </span>
     );
   }
 
@@ -95,11 +99,11 @@ const CategorySelect = props => {
       onChange={e => props.handleRowCategory(props.transaction.id, e.target.value)}
     >
       <option value=""></option>
-      {categories.map(category => {
+      {props.categories.map(category => {
         return <option
-          key={`cat-${props.transaction.id}-${category.key}`}
-          value={category.key}
-          selected={category.key === props.transaction.category.confirmed}
+          key={`cat-${props.transaction.id}-${category.id}`}
+          value={category.id}
+          selected={category.id === props.transaction.category.confirmed}
         >
           {category.name}
         </option>
@@ -112,7 +116,11 @@ CategorySelect.propTypes = {
   handleRowCategory: PropTypes.func.isRequired,
   transaction: PropTypes.shape({
     id: PropTypes.string.isRequired
-  }).isRequired
+  }).isRequired,
+  categories: PropTypes.arrayOf({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  })
 };
 
 const RowCategorizer = props => {
@@ -123,11 +131,13 @@ const RowCategorizer = props => {
     <React.Fragment>
       {!showSelect && <Category
         transaction={props.transaction}
+        categories={props.categories}
         handleRowCategory={props.handleRowCategory}
         handleEditCategoryForRow={props.handleEditCategoryForRow}
       />}
       {showSelect && <CategorySelect
         transaction={props.transaction}
+        categories={props.categories}
         handleRowCategory={props.handleRowCategory}
       />}
     </React.Fragment>
@@ -183,6 +193,7 @@ const TransactionTable = props => {
               return <TransactionRow
                 key={`row-${transaction.id}`}
                 transaction={transaction}
+                categories={props.categories}
                 handleRowCategory={props.handleRowCategory}
                 handleEditCategoryForRow={props.handleEditCategoryForRow}
               />
@@ -221,6 +232,7 @@ const Transactions = props => {
       </div>
       <TransactionTable
         transactions={props.transactions}
+        categories={props.categories}
         handleRowCategory={props.handleRowCategory}
         handleEditCategoryForRow={props.handleEditCategoryForRow}
       />
@@ -229,7 +241,8 @@ const Transactions = props => {
 };
 
 Transactions.propTypes = {
-  transactions: PropTypes.arrayOf(PropTypes.object).isRequired
+  transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  categories: PropTypes.arrayOf(PropTypes.object).isRequired
 }
 
 const mapStateToProps = state => {
@@ -238,7 +251,10 @@ const mapStateToProps = state => {
       editingCategory: state.edit.transactionCategories.has(t.id)
     }, t);
   })
-  return { transactions };
+  return {
+    transactions,
+    categories: state.categories.data
+  };
 };
 
 const mapDispatchToProps = dispatch => {
