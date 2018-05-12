@@ -11,6 +11,9 @@ describe('Transactions', () => {
     const store = mockStore({
       transactions: {
         data: []
+      },
+      categories: {
+        data: []
       }
     });
 
@@ -41,6 +44,9 @@ describe('Transactions', () => {
             }
           }
         ]
+      },
+      categories: {
+        data: [{ id: 'food', name: 'Food' }]
       }
     });
 
@@ -56,8 +62,7 @@ describe('Transactions', () => {
     expect(row.find('td').eq(1).text()).toEqual('test');
     expect(row.find('td').eq(2).text()).toEqual('1');
     expect(row.find('td').eq(3).text()).toEqual('2');
-    expect(row.find('td').eq(4).text()).toEqual('food');
-    expect(row.find('td').eq(4).find('button').length).toEqual(1);
+    expect(row.find('td').eq(4).text()).toEqual('Food');
   });
 
   it('should show guess confirm and edit buttons', () => {
@@ -79,6 +84,9 @@ describe('Transactions', () => {
             }
           }
         ]
+      },
+      categories: {
+        data: [{ id: 'travel', name: 'Travel' }]
       }
     });
 
@@ -90,6 +98,6 @@ describe('Transactions', () => {
 
     const categoryCol = container.find('tr').eq(1).find('td').eq(4);
     expect(categoryCol.find('button').length).toEqual(2);
-    expect(categoryCol.text()).toEqual('travel');
+    expect(categoryCol.text()).toEqual('Travel');
   });
 });

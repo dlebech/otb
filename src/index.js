@@ -21,6 +21,8 @@ import faLightbulb from '@fortawesome/fontawesome-free-solid/faLightbulb';
 import faDownload from '@fortawesome/fontawesome-free-solid/faDownload';
 import faThumbsDown from '@fortawesome/fontawesome-free-solid/faThumbsDown';
 import faThumbsUp from '@fortawesome/fontawesome-free-solid/faThumbsUp';
+import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt'
+import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 fontawesome.library.add(
   faUpload,
   faChartBar,
@@ -31,7 +33,9 @@ fontawesome.library.add(
   faLightbulb,
   faDownload,
   faThumbsUp,
-  faThumbsDown
+  faThumbsDown,
+  faTrashAlt,
+  faPlus
 );
 
 const { store, persistor } = configureStore({});
