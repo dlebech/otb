@@ -11,6 +11,9 @@ describe('Chart', () => {
     const store = mockStore({
       transactions: {
         data: []
+      },
+      categories: {
+        data: []
       }
     });
 
@@ -39,6 +42,9 @@ describe('Chart', () => {
             amount: 3,
           }
         ]
+      },
+      categories: {
+        data: []
       }
     });
 
