@@ -11,7 +11,6 @@ import {
 } from 'recharts';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
-import moment from 'moment';
 import NoData from './NoData';
 import color from '../data/color'
 
