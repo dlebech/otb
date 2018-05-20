@@ -366,4 +366,21 @@ it('should reset categories and retrain categorizer when a category is removed',
   );
 });
 
-it('should retrain')
+it('should set a transaction to ignored', () => {
+  let state = reducers({
+    transactions: {
+      data: [
+        { id: 'abcd' }
+      ]
+    }
+  }, actions.ignoreRow('abcd', true));
+  expect(state.transactions.data).toContainEqual({
+    id: 'abcd',
+    ignore: true
+  });
+
+  state = reducers(state, actions.ignoreRow('abcd', false));
+  expect(state.transactions.data).toContainEqual({
+    id: 'abcd'
+  });
+});

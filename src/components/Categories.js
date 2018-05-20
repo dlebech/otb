@@ -67,7 +67,6 @@ class Category extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
-    this.handleIgnore = this.handleIgnore.bind(this);
   }
 
   componentDidMount() {
@@ -114,10 +113,6 @@ class Category extends React.Component {
     });
   }
 
-  handleIgnore(e) {
-    this.props.handleSetIgnoreCategory(this.props.category.id, e.target.checked);
-  }
-
   render() {
     if (this.state.editing) {
       return <CategoryEdit
@@ -146,21 +141,6 @@ class Category extends React.Component {
           className="ml-2 cursor-pointer"
           onClick={this.handleDeleteConfirm}
         />
-        <div className="form-check form-check-inline ml-2">
-          <input
-            id={`ignore-${this.props.category.id}`}
-            className="form-check-input"
-            type="checkbox"
-            onChange={this.handleIgnore}
-            checked={!!this.props.category.ignore}
-          />
-          <label
-            htmlFor={`ignore-${this.props.category.id}`}
-            className="form-check-label"
-          >
-            Ignore in stats
-          </label>
-        </div>
       </li>
     );
   }
@@ -188,7 +168,6 @@ const Categories = props => {
                 transactions={props.transactions}
                 handleUpdateCategory={props.handleUpdateCategory}
                 handleDeleteCategory={props.handleDeleteCategory}
-                handleSetIgnoreCategory={props.handleSetIgnoreCategory}
                 showModal={props.showModal}
                 hideModal={props.hideModal}
               />
@@ -234,9 +213,6 @@ const mapDispatchToProps = dispatch => {
     },
     handleDeleteCategory: categoryId => {
       dispatch(actions.deleteCategory(categoryId));
-    },
-    handleSetIgnoreCategory: (categoryId, ignore) =>  {
-      dispatch(actions.setIgnoreCategory(categoryId, ignore));
     },
     showModal: (...args) => {
       dispatch(show(...args));

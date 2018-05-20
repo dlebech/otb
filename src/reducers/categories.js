@@ -56,22 +56,6 @@ const categoriesReducer = (state = initialCategories, action) => {
           $splice: [[indexToDelete, 1]]
         }
       });
-    case actions.SET_IGNORE_CATEGORY:
-      const indexToIgnore = state.data.findIndex(c => c.id === action.categoryId);
-      if (indexToIgnore < 0) return state;
-      const op = action.ignore ? {
-        ignore: {
-          $set: true
-        }
-      } : {
-        $unset: ['ignore']
-      }
-      return update(state, {
-        data: {
-          [indexToIgnore]: op
-        }
-      });
-
     default:
       return state;
   }

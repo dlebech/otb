@@ -55,18 +55,3 @@ it('should delete a category', () => {
     name: 'Travel',
   });
 });
-
-it('should set a category to ignore', () => {
-  let state = reducers({}, actions.setIgnoreCategory('abcd', true));
-  expect(state.categories.data).toContainEqual({
-    id: 'abcd',
-    name: 'Food',
-    ignore: true
-  });
-
-  state = reducers({}, actions.setIgnoreCategory('abcd', false));
-  expect(state.categories.data).toContainEqual({
-    id: 'abcd',
-    name: 'Food'
-  });
-});
