@@ -193,6 +193,21 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         },
       });
+    case actions.IGNORE_ROW:
+      const indexToIgnore = state.data.findIndex(c => c.id === action.rowId);
+      if (indexToIgnore < 0) return state;
+      const op = action.ignore ? {
+        ignore: {
+          $set: true
+        }
+      } : {
+        $unset: ['ignore']
+      }
+      return update(state, {
+        data: {
+          [indexToIgnore]: op
+        }
+      });
     default:
       return state;
   }

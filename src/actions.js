@@ -8,12 +8,11 @@ export const UPDATE_COLUMN_TYPE = 'UPDATE_COLUMN_TYPE';
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const EDIT_CATEGORY_FOR_ROW = 'EDIT_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
+export const IGNORE_ROW = 'IGNORE_ROW';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
-export const SET_PARENT_CATEGORY = 'SET_PARENT_CATEGORY';
-export const SET_IGNORE_CATEGORY = 'SET_IGNORE_CATEGORY';
 
 export const parseTransactionsStart = () => {
   return {
@@ -84,6 +83,14 @@ export const categorizeRow = (rowId, category) => {
   };
 };
 
+export const ignoreRow = (rowId, ignore) => {
+  return {
+    type: IGNORE_ROW,
+    rowId,
+    ignore
+  };
+};
+
 export const restoreStateFromFile = newState => {
   return {
     type: RESTORE_STATE_FROM_FILE,
@@ -108,25 +115,9 @@ export const updateCategory = (categoryId, name, parentId) => {
   };
 };
 
-export const setParentCategory = (categoryId, parentId) => {
-  return {
-    type: SET_PARENT_CATEGORY,
-    categoryId,
-    parentId
-  };
-};
-
 export const deleteCategory = categoryId => {
   return {
     type: DELETE_CATEGORY,
     categoryId
-  };
-};
-
-export const setIgnoreCategory = (categoryId, ignore) => {
-  return {
-    type: SET_IGNORE_CATEGORY,
-    categoryId,
-    ignore
   };
 };
