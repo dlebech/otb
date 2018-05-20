@@ -33,15 +33,6 @@ it('should not update the name for an unknon a category ID', () => {
   });
 });
 
-it('should update the parent of a category', () => {
-  const state = reducers({}, actions.setParentCategory('abcd', 'efgh'));
-  expect(state.categories.data).toContainEqual({
-    id: 'abcd',
-    name: 'Food',
-    parent: 'efgh'
-  });
-});
-
 it('should delete a category', () => {
   const state = reducers({}, actions.deleteCategory('abcd'));
   // They all have the same ID in these tests, but it will delete the first one,

@@ -13,7 +13,6 @@ export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
-export const SET_PARENT_CATEGORY = 'SET_PARENT_CATEGORY';
 
 export const parseTransactionsStart = () => {
   return {
@@ -112,14 +111,6 @@ export const updateCategory = (categoryId, name, parentId) => {
     type: UPDATE_CATEGORY,
     categoryId,
     name,
-    parentId
-  };
-};
-
-export const setParentCategory = (categoryId, parentId) => {
-  return {
-    type: SET_PARENT_CATEGORY,
-    categoryId,
     parentId
   };
 };

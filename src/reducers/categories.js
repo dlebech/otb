@@ -36,18 +36,6 @@ const categoriesReducer = (state = initialCategories, action) => {
           }
         }
       });
-    case actions.SET_PARENT_CATEGORY:
-      const indexToSet = state.data.findIndex(c => c.id === action.categoryId);
-      if (indexToSet < 0) return state;
-      return update(state, {
-        data: {
-          [indexToSet]: {
-            parent: {
-              $set: action.parentId || ''
-            }
-          }
-        }
-      });
     case actions.DELETE_CATEGORY:
       const indexToDelete = state.data.findIndex(c => c.id === action.categoryId);
       if (indexToDelete < 0) return state;
