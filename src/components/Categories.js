@@ -30,11 +30,24 @@ const CategoryEdit = props => {
           ref={props.textRef}
           type="text"
           className="form-control form-control-sm"
+          placeholder="Name of category"
           value={props.categoryName}
-          onChange={props.handleChange}
+          onChange={props.handleNameChange}
           onKeyDown={e => e.keyCode === 27 && props.handleCancel()}
         />
       </div>
+      {!props.hasChildren && <div className="form-group ml-2">
+        <select
+          className="form-control form-control-sm"
+          value={props.categoryParent}
+          onChange={props.handleParentChange}
+        >
+          <option value="">Parent Category</option>
+          {props.parentCategories.map(c => {
+            return <option value={c.id}>{c.name}</option>
+          })}
+        </select>
+      </div>}
       <button type="submit" className="btn btn-success btn-sm mx-2">
         Save
       </button>
@@ -51,6 +64,12 @@ const CategoryEdit = props => {
 
 CategoryEdit.propTypes = {
   categoryName: PropTypes.string.isRequired,
+  categoryParent: PropTypes.string.isRequired,
+  parentCategories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  })).isRequired,
+  hasChildren: PropTypes.bool.isRequired
 };
 
 class Category extends React.Component {
@@ -64,7 +83,8 @@ class Category extends React.Component {
     this.handleEditCategory = this.handleEditCategory.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleParentChange = this.handleParentChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteConfirm = this.handleDeleteConfirm.bind(this);
   }
@@ -78,12 +98,17 @@ class Category extends React.Component {
   handleEditCategory() {
     this.setState({
       editing: true,
-      value: this.props.category.name
+      name: this.props.category.name,
+      parent: this.props.category.parent
     }, () => this.textRef.current.focus());
   }
 
   handleSave() {
-    this.props.handleUpdateCategory(this.props.category.id, this.state.value);
+    this.props.handleUpdateCategory(
+      this.props.category.id,
+      this.state.name,
+      this.state.parent
+    );
     this.setState({ editing: false });
   }
 
@@ -91,8 +116,12 @@ class Category extends React.Component {
     this.setState({ editing: false });
   }
 
-  handleChange(e) {
-    this.setState({ value: e.target.value });
+  handleNameChange(e) {
+    this.setState({ name: e.target.value });
+  }
+
+  handleParentChange(e) {
+    this.setState({ parent: e.target.value });
   }
 
   async handleDelete() {
@@ -115,17 +144,23 @@ class Category extends React.Component {
 
   render() {
     if (this.state.editing) {
+      const validParents = this.props.parentCategories
+        .filter(c => c.id !== this.props.category.id)
       return <CategoryEdit
         textRef={this.textRef}
-        categoryName={this.state.value}
+        categoryName={this.state.name}
+        categoryParent={this.state.parent}
+        parentCategories={validParents}
+        hasChildren={!!this.props.hasChildren}
         handleSave={this.handleSave}
         handleCancel={this.handleCancel}
-        handleChange={this.handleChange}
+        handleNameChange={this.handleNameChange}
+        handleParentChange={this.handleParentChange}
       />
     }
 
     return (
-      <li>
+      <section>
         <span
           className="cursor-pointer"
           onClick={this.handleEditCategory}
@@ -141,7 +176,7 @@ class Category extends React.Component {
           className="ml-2 cursor-pointer"
           onClick={this.handleDeleteConfirm}
         />
-      </li>
+      </section>
     );
   }
 }
@@ -152,25 +187,70 @@ Category.propTypes = {
   category: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
-  }).isRequired
+  }).isRequired,
+  parentCategories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  })).isRequired,
+  hasChildren: PropTypes.bool
+};
+
+Category.defaultProps = {
+  hasChildren: false
 };
 
 const Categories = props => {
+  const parentCategories = [];
+  const childCategories = {};
+  props.categories.forEach(category => {
+    if (category.parent) {
+      childCategories[category.parent] =
+        (childCategories[category.parent] || []).concat([category]);
+    } else {
+      parentCategories.push(category);
+      childCategories[category.id] = childCategories[category.id] || [];
+    }
+  });
+
   return (
     <React.Fragment>
       <div className="row">
         <div className="col">
           <ul>
-            {props.categories.map(c => {
-              return <Category
-                key={`cat-${c.id}`}
-                category={c}
-                transactions={props.transactions}
-                handleUpdateCategory={props.handleUpdateCategory}
-                handleDeleteCategory={props.handleDeleteCategory}
-                showModal={props.showModal}
-                hideModal={props.hideModal}
-              />
+            {parentCategories.map(c => {
+              const hasChildren = 
+                Array.isArray(childCategories[c.id]) && !!childCategories[c.id].length;
+              return (
+                <li key={`cat-${c.id}`}>
+                  <Category
+                    category={c}
+                    transactions={props.transactions}
+                    parentCategories={parentCategories}
+                    handleUpdateCategory={props.handleUpdateCategory}
+                    handleDeleteCategory={props.handleDeleteCategory}
+                    showModal={props.showModal}
+                    hideModal={props.hideModal}
+                    hasChildren={hasChildren}
+                  />
+                  {hasChildren &&
+                  <ul>
+                    {childCategories[c.id].map(childC => {
+                      return (
+                        <li key={`child-cat-${childC.id}`}>
+                          <Category
+                            category={childC}
+                            transactions={props.transactions}
+                            parentCategories={parentCategories}
+                            handleUpdateCategory={props.handleUpdateCategory}
+                            handleDeleteCategory={props.handleDeleteCategory}
+                            showModal={props.showModal}
+                            hideModal={props.hideModal}
+                          />
+                        </li>
+                    )})}
+                  </ul>}
+                </li>
+              );
             })}
           </ul>
         </div>
@@ -205,8 +285,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleUpdateCategory: (categoryId, name) => {
-      dispatch(actions.updateCategory(categoryId, name));
+    handleUpdateCategory: (categoryId, name, parentId) => {
+      dispatch(actions.updateCategory(categoryId, name, parentId));
     },
     handleAddCategory: name => {
       dispatch(actions.addCategory(name));
