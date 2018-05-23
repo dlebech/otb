@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { shallow, mount } from 'enzyme';
@@ -14,6 +15,9 @@ describe('Chart', () => {
       },
       categories: {
         data: []
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 
@@ -31,20 +35,31 @@ describe('Chart', () => {
         data: [
           {
             date: '2018-01-01',
-            amount: 1,
+            amount: -1,
+            category: {}
           },
           {
             date: '2018-01-01',
-            amount: 1,
+            amount: -1,
+            category: {}
           },
           {
             date: '2018-01-02',
             amount: 3,
+            category: {}
           }
         ]
       },
       categories: {
         data: []
+      },
+      edit: {
+        dateSelect: {
+          'chart-dates': {
+            startDate: moment('2017-12-01'),
+            endDate: moment('2018-02-01'),
+          }
+        }
       }
     });
 
@@ -54,12 +69,50 @@ describe('Chart', () => {
     expect(lineChart.props().data).toEqual([
       {
         key: '2018-01-01',
-        value: 2,
+        value: -2,
       },
       {
         key: '2018-01-02',
         value: 3,
       }
     ]);
+
+    const summary = wrapper.find('Summary');
+    expect(summary.length).toEqual(1);
+    const rendered = summary.render();
+    expect(rendered.find('.card').eq(0).text()).toEqual('2Expenses');
+    expect(rendered.find('.card').eq(1).text()).toEqual('3Income')
+  });
+
+  it('should render nothing when outside daterange', () => {
+    const store = mockStore({
+      transactions: {
+        data: [
+          {
+            date: '2018-01-01',
+            amount: -1,
+            category: {}
+          }
+        ]
+      },
+      categories: {
+        data: []
+      },
+      edit: {
+        dateSelect: {
+          'chart-dates': {
+            startDate: moment('2017-12-01'),
+            endDate: moment('2017-12-24'),
+          }
+        }
+      }
+    });
+
+    const wrapper = mount(<Chart store={store} />);
+    const summary = wrapper.find('Summary');
+    expect(summary.length).toEqual(1);
+    const rendered = summary.render();
+    expect(rendered.find('.card').eq(0).text()).toEqual('0Expenses');
+    expect(rendered.find('.card').eq(1).text()).toEqual('0Income')
   });
 });

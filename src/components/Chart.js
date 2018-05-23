@@ -11,8 +11,11 @@ import {
 } from 'recharts';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
+import moment from 'moment';
 import NoData from './NoData';
 import color from '../data/color'
+import Dates from './Dates';
+import * as actions from '../actions';
 
 const AmountCard = props => {
   return (
@@ -57,19 +60,17 @@ const Summary = props => {
   }
 
   return (
-    <React.Fragment>
-      <div className="row mb-3">
-        <div className="col">
-          <AmountCard title="Expenses" value={expenseTotal} />
-        </div>
-        <div className="col">
-          <AmountCard title="Income" value={incomeTotal} />
-        </div>
-        {categorySpend && <div className="col">
-          <AmountCard {...categorySpend} />
-        </div>}
+    <div className="row my-3">
+      <div className="col">
+        <AmountCard title="Expenses" value={expenseTotal} />
       </div>
-    </React.Fragment>
+      <div className="col">
+        <AmountCard title="Income" value={incomeTotal} />
+      </div>
+      {categorySpend && <div className="col">
+        <AmountCard {...categorySpend} />
+      </div>}
+    </div>
   );
 };
 
@@ -135,25 +136,38 @@ const AmountPerCategory = props => {
 const Chart = props => {
   if (props.transactions.length === 0) return <NoData />;
 
+  const filteredTransactions = props.transactions.filter(t => {
+    return moment(t.date)
+      .isBetween(props.startDate, props.endDate, 'day', '[]');
+  });
+
   return (
     <React.Fragment>
-      <Summary
-        transactions={props.transactions}
-        categories={props.categories}
-      />
       <div className="row">
         <div className="col">
+          <Dates
+            id={props.dateSelectId}
+            startDate={props.startDate}
+            endDate={props.endDate}
+            handleDatesChange={({startDate, endDate}) => {
+              props.handleDatesChange(props.dateSelectId, startDate, endDate);
+            }}
+          />
         </div>
       </div>
+      <Summary
+        transactions={filteredTransactions}
+        categories={props.categories}
+      />
       <div className="row justify-content-center">
         <div className="col-6">
           <h3 className="text-center">Sum of Transactions over time</h3>
-          <AmountPerDay transactions={props.transactions} />
+          <AmountPerDay transactions={filteredTransactions} />
         </div>
         <div className="col-6">
           <h3 className="text-center">Categories where money is spent</h3>
           <AmountPerCategory
-            transactions={props.transactions}
+            transactions={filteredTransactions}
             categories={props.categories}
           />
         </div>
@@ -163,10 +177,27 @@ const Chart = props => {
 };
 
 const mapStateToProps = state => {
+  const dateSelectId = 'chart-dates';
+  const dateSelect = state.edit.dateSelect[dateSelectId] || {
+    startDate: moment().startOf('month'),
+    endDate: moment()
+  };
+
   return {
+    dateSelectId,
     transactions: state.transactions.data,
-    categories: state.categories.data
+    categories: state.categories.data,
+    startDate: dateSelect.startDate,
+    endDate: dateSelect.endDate
   };
 };
 
-export default connect(mapStateToProps)(Chart);
+const mapDispatchToProps = dispatch => {
+  return {
+    handleDatesChange: (dateSelectId, startDate, endDate) => {
+      return dispatch(actions.editDates(dateSelectId, startDate, endDate));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chart);
