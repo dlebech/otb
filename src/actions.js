@@ -13,6 +13,7 @@ export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
+export const EDIT_DATES = 'EDIT_DATES';
 
 export const parseTransactionsStart = () => {
   return {
@@ -119,5 +120,14 @@ export const deleteCategory = categoryId => {
   return {
     type: DELETE_CATEGORY,
     categoryId
+  };
+};
+
+export const editDates = (dateSelectId, startDate, endDate) => {
+  return {
+    type: EDIT_DATES,
+    dateSelectId,
+    startDate,
+    endDate
   };
 };

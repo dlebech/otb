@@ -2,7 +2,8 @@ import update from 'immutability-helper';
 import * as actions from '../actions';
 
 const initialEditor = {
-  transactionCategories: new Set()
+  transactionCategories: new Set(),
+  dateSelect: {}
 };
 
 const editReducer = (state = initialEditor, action) => {
@@ -23,6 +24,17 @@ const editReducer = (state = initialEditor, action) => {
       return update(state, {
         transactionCategories: {
           $remove: Array.from(state.transactionCategories)
+        }
+      });
+    case actions.EDIT_DATES:
+      return update(state, {
+        dateSelect: {
+          [action.dateSelectId]: {
+            $set: {
+              startDate: action.startDate,
+              endDate: action.endDate
+            }
+          }
         }
       });
     default:
