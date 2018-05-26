@@ -1,12 +1,10 @@
 import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 import * as actions from '../actions';
+import defaultCategories from '../data/categories';
 
 const initialCategories = {
-  data: [
-    { id: uuidv4(), name: 'Food' },
-    { id: uuidv4(), name: 'Travel' }
-  ]
+  data: [].concat(defaultCategories).sort((a, b) => a.name.localeCompare(b.name))
 };
 
 const categoriesReducer = (state = initialCategories, action) => {

@@ -117,10 +117,10 @@ CategorySelect.propTypes = {
   transaction: PropTypes.shape({
     id: PropTypes.string.isRequired
   }).isRequired,
-  categories: PropTypes.arrayOf({
+  categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
-  })
+  }))
 };
 
 const RowCategorizer = props => {
