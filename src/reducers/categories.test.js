@@ -36,10 +36,10 @@ it('should not update the name for an unknon a category ID', () => {
 it('should delete a category', () => {
   const state = reducers({}, actions.deleteCategory('abcd'));
   // They all have the same ID in these tests, but it will delete the first one,
-  // which is food & drink currently.
+  // which is Bar currently (because of sorting)
   expect(state.categories.data).not.toContainEqual({
     id: 'abcd',
-    name: 'Food & Drink',
+    name: 'Bar',
   });
   expect(state.categories.data).toContainEqual({
     id: 'abcd',
