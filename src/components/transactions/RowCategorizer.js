@@ -66,7 +66,6 @@ RowCategorizer.propTypes = {
       guess: PropTypes.string,
       confirmed: PropTypes.string
     }).isRequired,
-    editingCategory: PropTypes.bool.isRequired,
     categoryGuess: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired
