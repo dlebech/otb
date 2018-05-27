@@ -4,6 +4,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { shallow, mount } from 'enzyme';
 import Transactions from './Transactions';
 
+jest.mock('redux-modal', () => {
+  return {
+    connectModal: () => () => () => <span>YOLO</span>
+  };
+});
+
 describe('Transactions', () => {
   const mockStore = configureStore();
 

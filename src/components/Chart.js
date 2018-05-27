@@ -12,67 +12,12 @@ import {
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
 import moment from 'moment';
-import NoData from './NoData';
 import color from '../data/color'
-import Dates from './Dates';
 import * as actions from '../actions';
-
-const AmountCard = props => {
-  return (
-    <div className="card">
-      <div className="card-body">
-        <p className="display-3">{props.value}</p>
-        <h5 className="card-title">{props.title}</h5>
-      </div>
-    </div>
-  )
-};
-
-const findCategory = (categories, categoryId, returnFallback = true) => {
-  const category = categories.find(c => c.id === categoryId);
-  if (!category && returnFallback) return { name: 'Uncategorized' };
-  return category;
-};
-
-const Summary = props => {
-  const expenses = props.transactions.filter(d => d.amount < 0);
-  const incomes = props.transactions.filter(d => d.amount >= 0);
-
-  const expenseTotal = Math.round(Math.abs(sum(expenses, d => d.amount)))
-    .toLocaleString();
-
-  const incomeTotal = Math.round(sum(incomes, d => d.amount))
-    .toLocaleString();
-
-  const largestCategory = nest()
-    .key(d => d.category.confirmed || 'n/a')
-    .rollup(a => sum(a, d => d.amount))
-    .entries(expenses)
-    .sort((a, b) => a.value - b.value)[0];
-
-  let categorySpend;
-  if (largestCategory) {
-    const category = findCategory(props.categories, largestCategory.key);
-    categorySpend = {
-      title: `Spent on "${category.name}"`,
-      value: Math.round(Math.abs(largestCategory.value)).toLocaleString()
-    };
-  }
-
-  return (
-    <div className="row my-3">
-      <div className="col">
-        <AmountCard title="Expenses" value={expenseTotal} />
-      </div>
-      <div className="col">
-        <AmountCard title="Income" value={incomeTotal} />
-      </div>
-      {categorySpend && <div className="col">
-        <AmountCard {...categorySpend} />
-      </div>}
-    </div>
-  );
-};
+import { findCategory } from '../util';
+import NoData from './NoData';
+import Dates from './Dates';
+import Summary from './chart/Summary';
 
 const AmountPerDay = props => {
   const data = nest()
@@ -137,8 +82,8 @@ const Chart = props => {
   if (props.transactions.length === 0) return <NoData />;
 
   const filteredTransactions = props.transactions.filter(t => {
-    return moment(t.date)
-      .isBetween(props.startDate, props.endDate, 'day', '[]');
+    return !t.ignore &&
+      moment(t.date).isBetween(props.startDate, props.endDate, 'day', '[]');
   });
 
   return (

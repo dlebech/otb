@@ -115,4 +115,60 @@ describe('Chart', () => {
     expect(rendered.find('.card').eq(0).text()).toEqual('0Expenses');
     expect(rendered.find('.card').eq(1).text()).toEqual('0Income')
   });
+
+  it('should exclude ignored transactions', () => {
+    const store = mockStore({
+      transactions: {
+        data: [
+          {
+            date: '2018-01-01',
+            amount: -1,
+            category: {},
+            ignore: true
+          },
+          {
+            date: '2018-01-01',
+            amount: -1,
+            category: {}
+          },
+          {
+            date: '2018-01-02',
+            amount: 3,
+            category: {}
+          }
+        ]
+      },
+      categories: {
+        data: []
+      },
+      edit: {
+        dateSelect: {
+          'chart-dates': {
+            startDate: moment('2017-12-01'),
+            endDate: moment('2018-02-01'),
+          }
+        }
+      }
+    });
+
+    const wrapper = mount(<Chart store={store} />);
+    const lineChart = wrapper.find('LineChart');
+    expect(lineChart.length).toEqual(1);
+    expect(lineChart.props().data).toEqual([
+      {
+        key: '2018-01-01',
+        value: -1,
+      },
+      {
+        key: '2018-01-02',
+        value: 3,
+      }
+    ]);
+
+    const summary = wrapper.find('Summary');
+    expect(summary.length).toEqual(1);
+    const rendered = summary.render();
+    expect(rendered.find('.card').eq(0).text()).toEqual('1Expenses');
+    expect(rendered.find('.card').eq(1).text()).toEqual('3Income')
+  });
 });
