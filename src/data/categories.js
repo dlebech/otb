@@ -17,22 +17,24 @@ const defaultCategories = [
   // Staying alive
   foodAndDrink,
   { id: uuidv4(), name: 'Groceries', parent: foodAndDrink.id },
-  { id: uuidv4(), name: 'Eating Out', parent: foodAndDrink.id },
+  { id: uuidv4(), name: 'Restaurant/Fast-food', parent: foodAndDrink.id },
   { id: uuidv4(), name: 'Bar', parent: foodAndDrink.id },
+  { id: uuidv4(), name: 'Cafe', parent: foodAndDrink.id },
 
   // Getting around
   transportation,
   { id: uuidv4(), name: 'Public Transportation', parent: transportation.id },
-  { id: uuidv4(), name: 'Fuel', parent: transportation.id },
+  { id: uuidv4(), name: 'Fuel/Gas', parent: transportation.id },
   { id: uuidv4(), name: 'Car Loan/Leasing', parent: transportation.id },
   { id: uuidv4(), name: 'Car Maintenance', parent: transportation.id },
+  { id: uuidv4(), name: 'Car Insurance', parent: transportation.id },
 
   // Shelter
   home,
   { id: uuidv4(), name: 'Mortgage', parent: home.id },
   { id: uuidv4(), name: 'Rent', parent: home.id },
   { id: uuidv4(), name: 'Insurance', parent: home.id },
-  { id: uuidv4(), name: 'Utilities', parent: home.id },
+  { id: uuidv4(), name: 'Utilities/water/electricity', parent: home.id },
   { id: uuidv4(), name: 'Internet', parent: home.id },
 
   // Shopping
