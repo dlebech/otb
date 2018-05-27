@@ -24,17 +24,17 @@ const Confirm = connectModal({ name: CONFIRM_MODAL })(props => {
                   <div className="col-auto">
                     <button
                       type="button"
-                      className="btn btn-primary m-1"
+                      className={`btn ${props.yesButtonClass || 'btn-primary'} m-1`}
                       onClick={props.handleYes}
                     >
-                      Yes
+                      {props.yesLabel || 'Yes'}
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary m-1"
+                      className={`btn ${props.noButtonClass || 'btn-secondary'} m-1`}
                       onClick={props.handleHide}
                     >
-                      No
+                      {props.noLabel || 'No'}
                     </button>
                   </div>
                 </div>

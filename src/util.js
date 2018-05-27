@@ -28,3 +28,15 @@ export const guessColumnSpec = transactions => {
 
   return columnSpec;
 };
+
+/**
+ * Search for the category with the given ID in the category list.
+ * @param {Array} categories - A list of categories to search through
+ * @param {String} categoryId - The ID of the category
+ * @param {Boolean} [returnFallback] - Optionally return a fallback category, default is true
+ */
+export const findCategory = (categories, categoryId, returnFallback = true) => {
+  const category = categories.find(c => c.id === categoryId);
+  if (!category && returnFallback) return { name: 'Uncategorized' };
+  return category;
+};

@@ -208,6 +208,14 @@ const transactionsReducer = (state = initialTransactions, action) => {
           [indexToIgnore]: op
         }
       });
+    case actions.DELETE_ROW:
+      const indexToDelete = state.data.findIndex(c => c.id === action.rowId);
+      if (indexToDelete < 0) return state;
+      return update(state, {
+        data: {
+          $splice: [[indexToDelete, 1]]
+        }
+      });
     default:
       return state;
   }

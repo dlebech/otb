@@ -9,6 +9,7 @@ export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const EDIT_CATEGORY_FOR_ROW = 'EDIT_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
 export const IGNORE_ROW = 'IGNORE_ROW';
+export const DELETE_ROW = 'DELETE_ROW';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
@@ -89,6 +90,13 @@ export const ignoreRow = (rowId, ignore) => {
     type: IGNORE_ROW,
     rowId,
     ignore
+  };
+};
+
+export const deleteRow = rowId => {
+  return {
+    type: DELETE_ROW,
+    rowId
   };
 };
 

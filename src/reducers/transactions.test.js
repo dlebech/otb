@@ -384,3 +384,14 @@ it('should set a transaction to ignored', () => {
     id: 'abcd'
   });
 });
+
+it('should delete a transaction', () => {
+  const state = reducers({
+    transactions: {
+      data: [
+        { id: 'abcd' }
+      ]
+    }
+  }, actions.deleteRow('abcd'));
+  expect(state.transactions.data).toEqual([]);
+});
