@@ -25,7 +25,7 @@ const Transactions = props => {
             className="btn btn-outline-secondary ml-2"
             onClick={() => {
               const unconfirmedIds = props.transactions
-                .filter(t => !t.category.confirmed)
+                .filter(t => !t.category.confirmed && !t.ignore)
                 .map(t => t.id);
               props.handleGuessCategoryForRow(unconfirmedIds);
             }}
@@ -39,7 +39,6 @@ const Transactions = props => {
         transactions={props.transactions}
         categories={props.categories}
         handleRowCategory={props.handleRowCategory}
-        handleEditCategoryForRow={props.handleEditCategoryForRow}
         handleDeleteRow={props.handleDeleteRow}
         handleIgnoreRow={props.handleIgnoreRow}
         showModal={props.showModal}
@@ -53,18 +52,25 @@ const Transactions = props => {
 
 Transactions.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  categories: PropTypes.arrayOf(PropTypes.object).isRequired
+  categories: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => {
+  const categories = state.categories.data.reduce((obj, category) => {
+    obj[category.id] = category;
+    return obj;
+  }, {});
+
   const transactions = state.transactions.data.map(t => {
     return Object.assign({
-      editingCategory: state.edit.transactionCategories.has(t.id)
+      categoryGuess: categories[t.category.guess] || null,
+      categoryConfirmed: categories[t.category.confirmed] || null
     }, t);
-  })
+  });
+
   return {
     transactions,
-    categories: state.categories.data
+    categories
   };
 };
 
@@ -75,9 +81,6 @@ const mapDispatchToProps = dispatch => {
     },
     handleGuessCategoryForRow: rowId => {
       dispatch(actions.guessCategoryForRow(rowId));
-    },
-    handleEditCategoryForRow: rowId => {
-      dispatch(actions.editCategoryForRow(rowId));
     },
     handleDeleteRow: rowId => {
       dispatch(actions.deleteRow(rowId));

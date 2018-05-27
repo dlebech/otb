@@ -24,7 +24,9 @@ const TransactionRow = props => {
     });
   }
 
-  const className = props.transaction.ignore ? 'table-warning' : '';
+  let className = '';
+  if (props.transaction.ignore) className = 'table-warning'
+  else if (props.transaction.categoryGuess) className = 'table-info';
 
   return (
     <tr className={className}>
@@ -43,8 +45,7 @@ const TransactionRow = props => {
       <td>
         <RowCategorizer
           transaction={props.transaction}
-          categories={props.categories}
-          handleEditCategoryForRow={props.handleEditCategoryForRow}
+          categoryOptions={props.categoryOptions}
           handleRowCategory={props.handleRowCategory}
         />
       </td>
@@ -71,17 +72,24 @@ const TransactionRow = props => {
 TransactionRow.propTypes = {
   transaction: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    ignore: PropTypes.bool
+    ignore: PropTypes.bool,
+    categoryGuess: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    }),
+    categoryConfirmed: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
   }).isRequired,
-  categories: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
+  categoryOptions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired
   })).isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
-  handleEditCategoryForRow: PropTypes.func.isRequired,
   handleRowCategory: PropTypes.func.isRequired
 };
 
