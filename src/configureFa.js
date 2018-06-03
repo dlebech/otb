@@ -15,6 +15,7 @@ import faBan from '@fortawesome/fontawesome-free-solid/faBan';
 import faSort from '@fortawesome/fontawesome-free-solid/faSort';
 import faSortUp from '@fortawesome/fontawesome-free-solid/faSortUp';
 import faSortDown from '@fortawesome/fontawesome-free-solid/faSortDown';
+import faVial from '@fortawesome/fontawesome-free-solid/faVial';
 
 export default function configureFa() {
   fontawesome.library.add(
@@ -33,6 +34,7 @@ export default function configureFa() {
     faBan,
     faSort,
     faSortUp,
-    faSortDown
+    faSortDown,
+    faVial
   );
 };

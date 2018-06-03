@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import * as actions from '../actions';
 import RestoreData from './RestoreData';
 
 const IntroWithData = props => {
@@ -29,7 +30,7 @@ const IntroWithData = props => {
   );
 };
 
-const IntroWithoutData = () => {
+const IntroWithoutData = props => {
   return (
     <div className="jumbotron">
       <h1 className="display-4">Off The Books</h1>
@@ -41,9 +42,9 @@ const IntroWithoutData = () => {
         upload the file here. The data stays in your browser and is not
         shared or stored anywhere else.
       </p>
-      <Link className="btn btn-primary btn-lg m-1" to="/transaction/upload">Get Started</Link>
+      <Link className="btn btn-primary btn-lg m-1" to="/transaction/upload">Upload Transactions</Link>
       <RestoreData className="btn btn-secondary btn-lg m-1">
-        Restore Data from File
+        Restore Data
         <FontAwesomeIcon
           icon="question-circle"
           className="ml-1"
@@ -55,6 +56,23 @@ const IntroWithoutData = () => {
           }}
         />
       </RestoreData>
+      <button
+        type="button"
+        className="btn btn-secondary btn-lg m-1"
+        onClick={props.handleCreateData}
+      >
+        Demo
+        <FontAwesomeIcon
+          icon="question-circle"
+          className="ml-1"
+          fixedWidth
+          data-tip="If you just want to see how things work, you can create some test data and browse around."
+          onClick={e => {
+            e.stopPropagation();
+            return false;
+          }}
+        />
+      </button>
       <ReactTooltip className="small-tip" />
     </div>
   );
@@ -62,7 +80,7 @@ const IntroWithoutData = () => {
 
 const Intro = props => {
   if (props.numTransactions > 0) return <IntroWithData {...props} />;
-  return <IntroWithoutData />;
+  return <IntroWithoutData {...props} />;
 };
 
 const mapStateToProps = state => {
@@ -71,4 +89,10 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps)(Intro);
+const mapDispatchToProps = dispatch => {
+  return {
+    handleCreateData: () => dispatch(actions.createTestData())
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Intro);

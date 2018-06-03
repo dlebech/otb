@@ -9,30 +9,28 @@ const CategoryGuessConfirm = props => {
   return (
     <React.Fragment>
       <FontAwesomeIcon
-        icon="question-circle"
-        className="text-info mr-1"
-        data-tip="This is a guess, confirm or edit it on the right"
+        icon="thumbs-up"
+        className="text-success mx-1 cursor-pointer"
+        onClick={() => props.handleRowCategory(props.transactionId, props.categoryGuess.id)}
+        aria-label={`Confirm Guess (${props.categoryGuess.name})`}
+        data-tip={`Confirm Guess (${props.categoryGuess.name})`}
         fixedWidth
       />
-      {props.categoryGuess.name}
-      <button
-        type="button"
-        className="btn btn-outline-success btn-sm border-0"
-        onClick={() => props.handleRowCategory(props.transactionId, props.categoryGuess.id)}
-        aria-label="Confirm Guess"
-        data-tip="Confirm Guess"
-      >
-        <FontAwesomeIcon icon="thumbs-up" fixedWidth />
-      </button>
-      <button
-        type="button"
-        className="btn btn-outline-danger btn-sm border-0"
+      <FontAwesomeIcon
+        icon="thumbs-down"
+        className="text-danger mx-1 cursor-pointer"
         onClick={() => props.handleRowCategory(props.transactionId, '')}
-        aria-label="Reject guess"
-        data-tip="Reject guess"
-      >
-        <FontAwesomeIcon icon="thumbs-down" fixedWidth />
-      </button>
+        aria-label={`Reject Guess (${props.categoryGuess.name})`}
+        data-tip={`Reject Guess (${props.categoryGuess.name})`}
+        fixedWidth
+      />
+      <span className="mx-1">{props.categoryGuess.name}</span>
+      <FontAwesomeIcon
+        icon="question-circle"
+        className="text-info mx-1"
+        data-tip="This is a guess, confirm or reject with the thumbs up or down on the left."
+        fixedWidth
+      />
     </React.Fragment>
   );
 };

@@ -14,6 +14,7 @@ export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const EDIT_DATES = 'EDIT_DATES';
+export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 
 export const parseTransactionsStart = () => {
   return {
@@ -131,3 +132,5 @@ export const editDates = (dateSelectId, startDate, endDate) => {
     endDate
   };
 };
+
+export const createTestData = () => ({ type: CREATE_TEST_DATA });

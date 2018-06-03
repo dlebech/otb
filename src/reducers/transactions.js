@@ -216,6 +216,12 @@ const transactionsReducer = (state = initialTransactions, action) => {
           $splice: [[indexToDelete, 1]]
         }
       });
+    case actions.CREATE_TEST_DATA:
+      return update(state, {
+        data: {
+          $set: util.createTestData()
+        }
+      });
     default:
       return state;
   }
