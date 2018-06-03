@@ -19,7 +19,7 @@ const TransactionRow = props => {
       yesLabel: "Yes, delete it",
       yesButtonClass: "btn-danger",
       body: <ConfirmDelete
-        transactionDate={props.transaction.date}
+        transactionDate={props.transaction.date.format('L')}
         transactionDescription={props.transaction.description}
       />
     });

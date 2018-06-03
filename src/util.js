@@ -1,4 +1,6 @@
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
+import * as categories from './data/categories';
 
 /**
  * Given a list of transactions (an array of arrays), guess which column
@@ -39,4 +41,43 @@ export const findCategory = (categories, categoryId, returnFallback = true) => {
   const category = categories.find(c => c.id === categoryId);
   if (!category && returnFallback) return { name: 'Uncategorized' };
   return category;
+};
+
+export const createTestData = () => {
+  const startDate = moment().subtract(4, 'month');
+  const now = moment();
+  const transactions = [];
+  const categorySelection = [
+    categories.entertainment,
+    categories.foodAndDrink,
+    categories.home,
+    categories.money,
+    categories.shopping,
+    categories.transportation,
+    categories.travel
+  ];
+  while (startDate.isBefore(now)) {
+    startDate.add(1, 'day');
+    for (let i = 0; i < 3; i++) {
+      const category = categorySelection[Math.floor(Math.random() * categorySelection.length)];
+      const tCategory = {};
+      if (Math.round(Math.random()) === 1) tCategory.confirmed = category.id;
+      else if (Math.round(Math.random()) === 1) tCategory.guess = category.id;
+      transactions.push({
+        id: uuidv4(),
+        date: startDate.clone().format('YYYY-MM-DD'),
+        description: `A ${category.name} store`,
+        amount: -Math.round(Math.random() * 100 + 1),
+        total: 0,
+        category: tCategory
+      });
+    }
+  }
+
+  transactions.reduce((prev, cur) => {
+    cur.total = prev.total + cur.amount;
+    return cur;
+  });
+
+  return transactions;
 };

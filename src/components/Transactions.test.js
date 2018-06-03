@@ -102,7 +102,7 @@ describe('Transactions', () => {
     ).render();
 
     const categoryCol = container.find('tr').eq(1).find('td').eq(4);
-    expect(categoryCol.find('button').length).toEqual(2);
+    expect(categoryCol.find('svg').length).toEqual(3);
     expect(categoryCol.text()).toEqual('Travel');
   });
 });

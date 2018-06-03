@@ -62,10 +62,6 @@ class RowCategorizer extends React.Component {
 RowCategorizer.propTypes = {
   handleRowCategory: PropTypes.func.isRequired,
   transaction: PropTypes.shape({
-    category: PropTypes.shape({
-      guess: PropTypes.string,
-      confirmed: PropTypes.string
-    }).isRequired,
     categoryGuess: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired

@@ -30,4 +30,4 @@ it('should handle the toggle persist action', () => {
 it('should set parsing to false on parse transaction ending', () => {
   const state = reducers({ app: { isParsing: true } }, actions.parseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
   expect(state.app.isParsing).toEqual(false);
-})
+});
