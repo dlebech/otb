@@ -64,7 +64,6 @@ describe('Transactions', () => {
     expect(container.find('table').length).toEqual(1);
 
     const row = container.find('tr').eq(1);
-    expect(row.find('td').eq(0).text()).toEqual('2018-01-01');
     expect(row.find('td').eq(1).text()).toEqual('test');
     expect(row.find('td').eq(2).text()).toEqual('1');
     expect(row.find('td').eq(3).text()).toEqual('2');

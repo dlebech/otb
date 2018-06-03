@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Confirm from '../modals/Confirm';
 import RowCategorizer from './RowCategorizer';
@@ -30,8 +31,8 @@ const TransactionRow = props => {
 
   return (
     <tr className={className}>
-      <td>
-        {props.transaction.date}
+      <td className="text-nowrap">
+        {props.transaction.date.format('L')}
       </td>
       <td>
         {props.transaction.description}
@@ -42,14 +43,14 @@ const TransactionRow = props => {
       <td>
         {props.transaction.total}
       </td>
-      <td>
+      <td className="text-nowrap">
         <RowCategorizer
           transaction={props.transaction}
           categoryOptions={props.categoryOptions}
           handleRowCategory={props.handleRowCategory}
         />
       </td>
-      <td>
+      <td className="text-nowrap">
         <div className="d-inline-flex">
           <IgnoreTransaction
             transactionId={props.transaction.id}
@@ -72,6 +73,7 @@ const TransactionRow = props => {
 TransactionRow.propTypes = {
   transaction: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    date: PropTypes.instanceOf(moment),
     ignore: PropTypes.bool,
     categoryGuess: PropTypes.shape({
       id: PropTypes.string.isRequired,

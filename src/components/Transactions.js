@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { show, hide } from 'redux-modal';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import ReactTooltip from 'react-tooltip';
 import * as actions from '../actions';
 import Confirm from './modals/Confirm';
 import NoData from './NoData';
@@ -35,6 +35,7 @@ const Transactions = props => {
           </button>
         </div>
       </div>
+      <hr />
       <TransactionTable
         transactions={props.transactions}
         categories={props.categories}
@@ -45,7 +46,6 @@ const Transactions = props => {
         hideModal={props.hideModal}
       />
       <Confirm />
-      <ReactTooltip />
     </React.Fragment>
   );
 };
@@ -62,10 +62,12 @@ const mapStateToProps = state => {
   }, {});
 
   const transactions = state.transactions.data.map(t => {
-    return Object.assign({
+    return {
       categoryGuess: categories[t.category.guess] || null,
-      categoryConfirmed: categories[t.category.confirmed] || null
-    }, t);
+      categoryConfirmed: categories[t.category.confirmed] || null,
+      ...t,
+      date: moment(t.date)
+    };
   });
 
   return {
