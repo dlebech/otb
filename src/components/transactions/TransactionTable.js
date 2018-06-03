@@ -1,54 +1,143 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 import TransactionRow from './TransactionRow';
+import SortHeader from './SortHeader';
+import Pagination from '../shared/Pagination';
 
-const TransactionTable = props => {
-  const data = props.transactions;
+class TransactionTable extends React.Component {
+  constructor(props) {
+    super(props);
 
-  // Map category options here to avoid having children re-map these for every
-  // row.
-  const categoryOptions = Object.values(props.categories)
-    .map(category => ({
-      label: category.parent ?
-        `${props.categories[category.parent].name} - ${category.name}` :
-        category.name,
-      value: category.id
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+    this.state = {
+      page: 1,
+      pageSize: 50,
+      sortKey: 'date',
+      sortAscending: true
+    };
 
-  return (
-    <div className="row">
-      <div className="col">
-        <table className="table table-striped mt-3">
-          <thead className="thead-dark">
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Total</th>
-              <th>Category</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((transaction, i) => {
-              return <TransactionRow
-                key={`row-${transaction.id}`}
-                transaction={transaction}
-                categoryOptions={categoryOptions}
-                handleRowCategory={props.handleRowCategory}
-                handleDeleteRow={props.handleDeleteRow}
-                handleIgnoreRow={props.handleIgnoreRow}
-                showModal={props.showModal}
-                hideModal={props.hideModal}
-              />
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
+    this.handleSortChange = this.handleSortChange.bind(this);
+  }
+
+  handlePageChange(page) {
+    this.setState({ page }, () => {
+      ReactTooltip.rebuild();
+    });
+  }
+
+  handlePageSizeChange(pageSize) {
+    // Check that the new page does not exceed the existing page.
+    let page = this.state.page;
+    const lastPage = Math.ceil(this.props.transactions.length / pageSize);
+    if (lastPage < page) page = lastPage;
+    this.setState({ page, pageSize }, () => {
+      ReactTooltip.rebuild();
+    });
+  }
+
+  handleSortChange(sortKey, sortAscending) {
+    this.setState({ sortKey, sortAscending }, () => {
+      ReactTooltip.rebuild();
+    });
+  }
+
+  render() {
+    const data = [].concat(this.props.transactions)
+      // XXX This should probably be moved to a global state sorting for performance.
+      .sort((a, b) => {
+        const [val1, val2] = [a[this.state.sortKey], b[this.state.sortKey]];
+        if (typeof val1 === 'string') {
+          return this.state.sortAscending ? val1.localeCompare(val2) : val2.localeCompare(val1);
+        }
+        return this.state.sortAscending ? val1 - val2 : val2 - val1;
+      })
+      .slice((this.state.page-1) * this.state.pageSize, this.state.page * this.state.pageSize);
+
+    // Map category options here to avoid having children re-map these for every
+    // row.
+    const categoryOptions = Object.values(this.props.categories)
+      .map(category => ({
+        label: category.parent ?
+          `${this.props.categories[category.parent].name} - ${category.name}` :
+          category.name,
+        value: category.id
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col">
+            <Pagination
+              page={this.state.page}
+              pageSize={this.state.pageSize}
+              rowCount={this.props.transactions.length}
+              handlePageChange={this.handlePageChange}
+              handlePageSizeChange={this.handlePageSizeChange}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <table className="table table-striped table-responsive mt-3">
+              <thead className="thead-dark">
+                <tr>
+                  <SortHeader
+                    label="Date"
+                    sortKey="date"
+                    sortAscending={this.state.sortAscending}
+                    activeSortKey={this.state.sortKey}
+                    handleSortChange={this.handleSortChange}
+                  />
+                  <SortHeader
+                    label="Description"
+                    sortKey="description"
+                    sortAscending={this.state.sortAscending}
+                    activeSortKey={this.state.sortKey}
+                    handleSortChange={this.handleSortChange}
+                  />
+                  <SortHeader
+                    label="Amount"
+                    sortKey="amount"
+                    sortAscending={this.state.sortAscending}
+                    activeSortKey={this.state.sortKey}
+                    handleSortChange={this.handleSortChange}
+                  />
+                  <SortHeader
+                    label="Total"
+                    sortKey="total"
+                    sortAscending={this.state.sortAscending}
+                    activeSortKey={this.state.sortKey}
+                    handleSortChange={this.handleSortChange}
+                  />
+                  <th>Category</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((transaction, i) => {
+                  return <TransactionRow
+                    key={`row-${transaction.id}`}
+                    transaction={transaction}
+                    categoryOptions={categoryOptions}
+                    handleRowCategory={this.props.handleRowCategory}
+                    handleDeleteRow={this.props.handleDeleteRow}
+                    handleIgnoreRow={this.props.handleIgnoreRow}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
+                  />
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <ReactTooltip />
+      </React.Fragment>
+    );
+  }
+}
 
 TransactionTable.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.shape({
