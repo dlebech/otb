@@ -8,13 +8,13 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 const CategoryGuessConfirm = props => {
   return (
     <React.Fragment>
-      {props.categoryGuess.name}
       <FontAwesomeIcon
         icon="question-circle"
-        className="text-info" 
+        className="text-info mr-1"
         data-tip="This is a guess, confirm or edit it on the right"
         fixedWidth
       />
+      {props.categoryGuess.name}
       <button
         type="button"
         className="btn btn-outline-success btn-sm border-0"
