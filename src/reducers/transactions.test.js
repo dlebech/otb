@@ -399,5 +399,5 @@ it('should delete a transaction', () => {
 it('should create test data', () => {
   const state = reducers({}, actions.createTestData());
   expect(state.transactions.data.length).toBeGreaterThan(100);
-  expect(state.transactions.data[1].total).toBeGreaterThan(state.transactions.data[0].total);
+  expect(state.transactions.data[0].total).toBeGreaterThan(state.transactions.data[1].total);
 });
