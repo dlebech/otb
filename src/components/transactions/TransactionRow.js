@@ -26,8 +26,7 @@ const TransactionRow = props => {
   }
 
   let className = '';
-  if (props.transaction.ignore) className = 'table-warning'
-  else if (props.transaction.categoryGuess) className = 'table-info';
+  if (props.transaction.ignore) className = 'table-warning';
 
   return (
     <tr className={className}>

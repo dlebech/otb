@@ -17,15 +17,30 @@ const transactions = [
     id: 'a',
     date: moment('2018-01-02').locale('sv-SE'),
     amount: 1,
-    description: 'test',
+    description: 'test a',
     total: 3,
+    categoryConfirmed: {
+      id: 'a',
+      name: 'Food'
+    }
   },
   {
     id: 'b',
     date: moment('2018-01-01').locale('sv-SE'),
     amount: 2,
-    description: 'test',
+    description: 'test b',
     total: 2,
+    categoryConfirmed: {
+      id: 'a',
+      name: 'Food'
+    }
+  },
+  {
+    id: 'c',
+    date: moment('2018-01-03').locale('sv-SE'),
+    amount: 3,
+    description: 'test c',
+    total: 6,
   }
 ];
 
@@ -52,7 +67,7 @@ const defaultProps = {
 
 it('should show transaction rows', () => {
   const container = shallow(<TransactionTable {...defaultProps} />);
-  expect(container.find('TransactionRow').length).toEqual(2);
+  expect(container.find('TransactionRow').length).toEqual(3);
   const rendered = container.render();
   expect(rendered.find('tbody > tr').eq(0).find('td').first().text()).toEqual('2018-01-01');
   expect(rendered.find('tbody > tr').eq(1).find('td').first().text()).toEqual('2018-01-02');
@@ -80,11 +95,11 @@ it('should show page two', () => {
     />
   );
   container.instance().handlePageSizeChange(1);
-  container.instance().handlePageChange(2);
+  container.instance().handlePageChange(3);
   container.update();
   expect(container.find('TransactionRow').length).toEqual(1);
   const rendered = container.render();
-  expect(rendered.find('td').first().text()).toEqual('2018-01-02');
+  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
   expect(rendered.find('.page-item').first().hasClass('disabled')).toEqual(false);
   expect(rendered.find('.page-item').last().hasClass('disabled')).toEqual(true);
 });
@@ -99,7 +114,7 @@ it('should sort descending', () => {
   container.update();
   const rendered = container.render();
 
-  expect(rendered.find('tbody > tr').first().find('td').first().text()).toEqual('2018-01-02');
+  expect(rendered.find('tbody > tr').first().find('td').first().text()).toEqual('2018-01-03');
   expect(rendered.find('tbody > tr').last().find('td').first().text()).toEqual('2018-01-01');
 });
 
@@ -113,7 +128,20 @@ it('should change page if page size makes a page no longer exist', () => {
   container.instance().handlePageChange(2);
   container.instance().handlePageSizeChange(10);
   container.update();
-  expect(container.find('TransactionRow').length).toEqual(2);
+  expect(container.find('TransactionRow').length).toEqual(3);
   const rendered = container.render();
   expect(rendered.find('td').first().text()).toEqual('2018-01-01');
+});
+
+it('should show only uncategorized', () => {
+  const container = shallow(
+    <TransactionTable
+      {...defaultProps}
+    />
+  );
+  container.instance().handleShowOnlyUncategorized({ target: { checked: true }});
+  container.update();
+  expect(container.find('TransactionRow').length).toEqual(1);
+  const rendered = container.render();
+  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
 });

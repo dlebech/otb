@@ -13,12 +13,14 @@ class TransactionTable extends React.Component {
       page: 1,
       pageSize: 50,
       sortKey: 'date',
-      sortAscending: true
+      sortAscending: true,
+      showOnlyUncategorized: false
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleSortChange = this.handleSortChange.bind(this);
+    this.handleShowOnlyUncategorized = this.handleShowOnlyUncategorized.bind(this);
   }
 
   handlePageChange(page) {
@@ -43,9 +45,21 @@ class TransactionTable extends React.Component {
     });
   }
 
+  handleShowOnlyUncategorized(e) {
+    this.setState({ showOnlyUncategorized: e.target.checked }, () => {
+      ReactTooltip.rebuild();
+    });
+  }
+
   render() {
     const data = [].concat(this.props.transactions)
       // XXX This should probably be moved to a global state sorting for performance.
+      .filter(t => {
+        if (this.state.showOnlyUncategorized) {
+          return !t.categoryConfirmed;
+        }
+        return true;
+      })
       .sort((a, b) => {
         const [val1, val2] = [a[this.state.sortKey], b[this.state.sortKey]];
         if (typeof val1 === 'string') {
@@ -68,8 +82,8 @@ class TransactionTable extends React.Component {
 
     return (
       <React.Fragment>
-        <div className="row">
-          <div className="col">
+        <div className="row align-items-center">
+          <div className="col-auto">
             <Pagination
               page={this.state.page}
               pageSize={this.state.pageSize}
@@ -77,6 +91,20 @@ class TransactionTable extends React.Component {
               handlePageChange={this.handlePageChange}
               handlePageSizeChange={this.handlePageSizeChange}
             />
+          </div>
+          <div className="col-auto">
+            <div className="form-check">
+              <input
+                type="checkbox"
+                id="check-uncategorized"
+                className="form-check-input"
+                checked={this.state.showOnlyUncategorized}
+                onChange={this.handleShowOnlyUncategorized}
+              />
+              <label htmlFor="check-uncategorized" className="form-check-label">
+                Show only uncategorized
+              </label>
+            </div>
           </div>
         </div>
         <div className="row">
