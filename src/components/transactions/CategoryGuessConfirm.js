@@ -27,7 +27,7 @@ const CategoryGuessConfirm = props => {
       <span className="mx-1">{props.categoryGuess.name}</span>
       <FontAwesomeIcon
         icon="question-circle"
-        className="text-info mx-1"
+        className="text-info"
         data-tip="This is a guess, confirm or reject with the thumbs up or down on the left."
         fixedWidth
       />

@@ -1,3 +1,6 @@
+import chunk from 'lodash/chunk';
+import { sleep } from './util';
+
 export const PARSE_TRANSACTIONS_START = 'PARSE_TRANSACTIONS_START';
 export const PARSE_TRANSACTIONS_END = 'PARSE_TRANSACTIONS_END';
 export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
@@ -15,6 +18,10 @@ export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const EDIT_DATES = 'EDIT_DATES';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
+export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
+export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
+export const ENQUEUE_GUESS_ALL_CATEGORIES = 'ENQUEUE_GUESS_ALL_CATEGORIES';
+export const DEQUEUE_GUESS_ALL_CATEGORIES = 'DEQUEUE_GUESS_ALL_CATEGORIES';
 
 export const parseTransactionsStart = () => {
   return {
@@ -134,3 +141,38 @@ export const editDates = (dateSelectId, startDate, endDate) => {
 };
 
 export const createTestData = () => ({ type: CREATE_TEST_DATA });
+
+export const startGuessAllCategories = () => ({ type: START_GUESS_ALL_CATEGORIES });
+export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
+
+export const guessAllCategories = () => {
+  return async (dispatch, getState) => {
+    while (getState().app.isCategoryGuessing) {
+      await sleep(100);
+    }
+    // Determine the diversity of currently guessed categories
+    const guessedCategories = new Set(
+      getState().transactions.data
+        .filter(t => !!t.category.confirmed)
+        .map(t => t.category.confirmed)
+    );
+    if (guessedCategories.size < 3) return;
+
+    dispatch(startGuessAllCategories());
+
+
+    const transactionsToGuess = chunk(
+      getState().transactions.data
+        .filter(t => !t.category.confirmed && !t.ignore)
+        .map(t => t.id),
+      100
+    );
+
+    for (let i = 0; i < transactionsToGuess.length; i++) {
+      await dispatch(guessCategoryForRow(transactionsToGuess[i]));
+      await sleep(10);
+    }
+
+    dispatch(endGuessAllCategories());
+  };
+};

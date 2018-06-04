@@ -81,3 +81,7 @@ export const createTestData = () => {
 
   return transactions;
 };
+
+export const sleep = timeToSleep => {
+  return new Promise(resolve => setTimeout(resolve, timeToSleep));
+};

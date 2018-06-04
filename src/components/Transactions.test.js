@@ -15,6 +15,9 @@ describe('Transactions', () => {
 
   it('should render nothing when there are no transactions', () => {
     const store = mockStore({
+      app: {
+        isCategoryGuessing: false,
+      },
       transactions: {
         data: []
       },
@@ -33,8 +36,8 @@ describe('Transactions', () => {
 
   it('should render a table of transactions', () => {
     const store = mockStore({
-      edit: {
-        transactionCategories: new Set()
+      app: {
+        isCategoryGuessing: false,
       },
       transactions: {
         data: [
@@ -72,8 +75,8 @@ describe('Transactions', () => {
 
   it('should show guess confirm and edit buttons', () => {
     const store = mockStore({
-      edit: {
-        transactionCategories: new Set()
+      app: {
+        isCategoryGuessing: false,
       },
       transactions: {
         data: [
@@ -104,5 +107,38 @@ describe('Transactions', () => {
     const categoryCol = container.find('tr').eq(1).find('td').eq(4);
     expect(categoryCol.find('svg').length).toEqual(3);
     expect(categoryCol.text()).toEqual('Travel');
+  });
+
+  it('should render a spinner when guessing categories', () => {
+    const store = mockStore({
+      app: {
+        isCategoryGuessing: true,
+      },
+      transactions: {
+        data: [
+          {
+            id: 'abcd',
+            date: '2018-01-01',
+            amount: 1,
+            description: 'test',
+            total: 2,
+            category: {
+              guess: 'travel',
+              confirmed: ''
+            }
+          }
+        ]
+      },
+      categories: {
+        data: [{ id: 'travel', name: 'Travel' }]
+      }
+    });
+
+    const container = shallow(
+      <MemoryRouter>
+        <Transactions store={store} />
+      </MemoryRouter>
+    );
+    expect(container.render().find('.status').text()).toEqual('Guessing categories...');
   });
 });
