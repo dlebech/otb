@@ -109,7 +109,7 @@ class TransactionTable extends React.Component {
         </div>
         <div className="row">
           <div className="col">
-            <table className="table table-striped table-responsive mt-3">
+            <table className="table table-striped table-responsive-md mt-3">
               <thead className="thead-dark">
                 <tr>
                   <SortHeader

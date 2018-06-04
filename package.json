@@ -12,6 +12,7 @@
     "d3-collection": "^1.0.4",
     "downloadjs": "^1.4.7",
     "immutability-helper": "^2.6.6",
+    "lodash": "^4.17.10",
     "moment": "^2.22.0",
     "papaparse": "^4.3.7",
     "prop-types": "^15.6.1",

@@ -15,24 +15,27 @@ const Transactions = props => {
 
   return (
     <React.Fragment>
-      <div className="row">
-        <div className="col">
+      <div className="row align-items-center">
+        <div className="col-auto">
           <Link to="/transaction/upload" className="btn btn-outline-primary">
             <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
             Add More Transactions
           </Link>
           <button
             className="btn btn-outline-secondary ml-2"
-            onClick={() => {
-              const unconfirmedIds = props.transactions
-                .filter(t => !t.category.confirmed && !t.ignore)
-                .map(t => t.id);
-              props.handleGuessCategoryForRow(unconfirmedIds);
-            }}
+            onClick={() => props.handleGuessCategories()}
           >
             <FontAwesomeIcon icon="lightbulb" className="mr-1" fixedWidth />
             Guess missing categories
           </button>
+        </div>
+        <div className="col-auto status">
+          {props.isCategoryGuessing &&
+            <span>
+              Guessing categories...
+              <FontAwesomeIcon icon="spinner" className="ml-1" pulse />
+            </span>
+          }
         </div>
       </div>
       <hr />
@@ -52,7 +55,8 @@ const Transactions = props => {
 
 Transactions.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  categories: PropTypes.object.isRequired
+  categories: PropTypes.object.isRequired,
+  isCategoryGuessing: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = state => {
@@ -72,17 +76,19 @@ const mapStateToProps = state => {
 
   return {
     transactions,
-    categories
+    categories,
+    isCategoryGuessing: state.app.isCategoryGuessing
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleRowCategory: (rowId, category) => {
-      dispatch(actions.categorizeRow(rowId, category));
+    handleRowCategory: (rowId, categoryId) => {
+      dispatch(actions.categorizeRow(rowId, categoryId));
+      if (categoryId) dispatch(actions.guessAllCategories());
     },
-    handleGuessCategoryForRow: rowId => {
-      dispatch(actions.guessCategoryForRow(rowId));
+    handleGuessCategories: () => {
+      dispatch(actions.guessAllCategories())
     },
     handleDeleteRow: rowId => {
       dispatch(actions.deleteRow(rowId));

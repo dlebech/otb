@@ -3,6 +3,7 @@ import * as actions from '../actions';
 
 const initialApp = {
   isParsing: false,
+  isCategoryGuessing: false,
   storage: {
     localStorage: false
   }
@@ -30,6 +31,14 @@ const appReducer = (state = initialApp, action) => {
       if (!action.newState.app) return state;
       return update(state, {
         $set: action.newState.app
+      });
+    case actions.START_GUESS_ALL_CATEGORIES:
+      return update(state, {
+        isCategoryGuessing: { $set: true }
+      });
+    case actions.END_GUESS_ALL_CATEGORIES:
+      return update(state, {
+        isCategoryGuessing: { $set: false }
       });
     default:
       return state;
