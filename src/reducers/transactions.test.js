@@ -96,6 +96,7 @@ describe('import', () => {
   it('should handle save transaction action', () => {
     const state = reducers({
       transactions: {
+        data: [],
         import: {
           data: [
             ['some', 'header', 'annoying', 'i know'],
@@ -120,6 +121,69 @@ describe('import', () => {
         description: 'test row',
         amount: 123,
         total: 456,
+        category: {
+          guess: '',
+          confirmed: ''
+        }
+      }
+    ]);
+
+    // Resets the import
+    expect(state.transactions.import).toEqual({
+      data: [],
+      skipRows: 0,
+      columnSpec: []
+    });
+  });
+
+  it('should append import to existing transactions', () => {
+    const state = reducers({
+      transactions: {
+        data: [{
+          id: 'abcd',
+          date: '2018-04-06',
+          description: 'test row',
+          amount: 123,
+          total: 123,
+          category: {
+            guess: '',
+            confirmed: ''
+          }
+        }],
+        import: {
+          data: [
+            ['2018-04-07', 'test row 2', 123, 246]
+          ],
+          skipRows: 0,
+          columnSpec: [
+            { type: 'date' },
+            { type: 'description' },
+            { type: 'amount' },
+            { type: 'total' }
+          ]
+        }
+      }
+    }, actions.saveTransactions());
+
+    // Sets the data
+    expect(state.transactions.data).toEqual([
+      {
+        id: 'abcd',
+        date: '2018-04-06',
+        description: 'test row',
+        amount: 123,
+        total: 123,
+        category: {
+          guess: '',
+          confirmed: ''
+        }
+      },
+      {
+        id: 'abcd',
+        date: '2018-04-07',
+        description: 'test row 2',
+        amount: 123,
+        total: 246,
         category: {
           guess: '',
           confirmed: ''
