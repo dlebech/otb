@@ -92,7 +92,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
           $set: initialTransactions.import
         },
         data: {
-          $set: mapImportToTransactions(state.import)
+          $push: mapImportToTransactions(state.import)
         }
       });
     case actions.GUESS_CATEGORY_FOR_ROW:
