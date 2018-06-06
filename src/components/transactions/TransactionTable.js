@@ -48,7 +48,6 @@ class TransactionTable extends React.Component {
     // Only called when receiving new props or on the first render. So this is
     // where we should just set all the raw transactions into local state so we
     // can easier sort, filter, etc. later
-    console.log('deriving');
     const data = [].concat(props.transactions);
     const dataView = sortData(
       filterData(data, state.showOnlyUncategorized),
