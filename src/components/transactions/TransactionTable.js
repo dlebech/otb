@@ -5,10 +5,27 @@ import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
 import Pagination from '../shared/Pagination';
 
+const filterData = (data, showOnlyUncategorized = false) => {
+  return data.filter(t => showOnlyUncategorized ? !t.categoryConfirmed : true);
+};
+
+const sortData = (data, sortKey, sortAscending) => {
+  return [].concat(data) // Concat to avoid inplace sort of original array.
+    .sort((a, b) => {
+      const [val1, val2] = [a[sortKey], b[sortKey]];
+      if (typeof val1 === 'string') {
+        return sortAscending ? val1.localeCompare(val2) : val2.localeCompare(val1);
+      }
+      return sortAscending ? val1 - val2 : val2 - val1;
+    });
+}
+
 class TransactionTable extends React.Component {
   constructor(props) {
     super(props);
 
+    // The data from props is actually being stored in state as well, but they
+    // are set further down.
     this.state = {
       page: 1,
       pageSize: 50,
@@ -23,50 +40,61 @@ class TransactionTable extends React.Component {
     this.handleShowOnlyUncategorized = this.handleShowOnlyUncategorized.bind(this);
   }
 
+  componentDidUpdate() {
+    ReactTooltip.rebuild();
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    // Only called when receiving new props or on the first render. So this is
+    // where we should just set all the raw transactions into local state so we
+    // can easier sort, filter, etc. later
+    console.log('deriving');
+    const data = [].concat(props.transactions);
+    const dataView = sortData(
+      filterData(data, state.showOnlyUncategorized),
+      state.sortKey,
+      state.sortAscending
+    );
+    return { data, dataView };
+  }
+
   handlePageChange(page) {
-    this.setState({ page }, () => {
-      ReactTooltip.rebuild();
-    });
+    this.setState({ page });
   }
 
   handlePageSizeChange(pageSize) {
     // Check that the new page does not exceed the existing page.
     let page = this.state.page;
-    const lastPage = Math.ceil(this.props.transactions.length / pageSize);
+    const lastPage = Math.ceil(this.state.dataView.length / pageSize);
     if (lastPage < page) page = lastPage;
-    this.setState({ page, pageSize }, () => {
-      ReactTooltip.rebuild();
-    });
+    this.setState({ page, pageSize });
   }
 
   handleSortChange(sortKey, sortAscending) {
-    this.setState({ sortKey, sortAscending }, () => {
-      ReactTooltip.rebuild();
-    });
+    const dataView = sortData(this.state.dataView, sortKey, sortAscending);
+    this.setState({ sortKey, sortAscending, dataView });
   }
 
   handleShowOnlyUncategorized(e) {
-    this.setState({ showOnlyUncategorized: e.target.checked }, () => {
-      ReactTooltip.rebuild();
-    });
+    const showOnlyUncategorized = e.target.checked;
+
+    // Need to both re-filter and re-sort
+    const dataView = sortData(
+      filterData(this.state.data, showOnlyUncategorized),
+      this.state.sortKey,
+      this.state.sortAscending
+    );
+
+    // Check if the new filter changes the last page.
+    let page = this.state.page;
+    const lastPage = Math.ceil(dataView.length / this.state.pageSize);
+    if (lastPage < page) page = lastPage;
+
+    this.setState({ page, showOnlyUncategorized, dataView });
   }
 
   render() {
-    const data = [].concat(this.props.transactions)
-      // XXX This should probably be moved to a global state sorting for performance.
-      .filter(t => {
-        if (this.state.showOnlyUncategorized) {
-          return !t.categoryConfirmed;
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        const [val1, val2] = [a[this.state.sortKey], b[this.state.sortKey]];
-        if (typeof val1 === 'string') {
-          return this.state.sortAscending ? val1.localeCompare(val2) : val2.localeCompare(val1);
-        }
-        return this.state.sortAscending ? val1 - val2 : val2 - val1;
-      })
+    const dataPage = this.state.dataView
       .slice((this.state.page-1) * this.state.pageSize, this.state.page * this.state.pageSize);
 
     // Map category options here to avoid having children re-map these for every
@@ -87,7 +115,7 @@ class TransactionTable extends React.Component {
             <Pagination
               page={this.state.page}
               pageSize={this.state.pageSize}
-              rowCount={this.props.transactions.length}
+              rowCount={this.state.dataView.length}
               handlePageChange={this.handlePageChange}
               handlePageSizeChange={this.handlePageSizeChange}
             />
@@ -145,7 +173,7 @@ class TransactionTable extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {data.map((transaction, i) => {
+                {dataPage.map((transaction, i) => {
                   return <TransactionRow
                     key={`row-${transaction.id}`}
                     transaction={transaction}
@@ -185,7 +213,7 @@ TransactionTable.propTypes = {
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired,
+  handleRowCategory: PropTypes.func.isRequired
 };
 
 export default TransactionTable;
