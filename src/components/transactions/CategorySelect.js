@@ -25,6 +25,7 @@ const CategorySelect = props => {
       options={props.options}
       onChange={onChange}
       styles={customStyles}
+      autoFocus={props.focus}
     />
   );
 };
@@ -36,7 +37,12 @@ CategorySelect.propTypes = {
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
   })).isRequired,
-  categoryConfirmedId: PropTypes.string
+  categoryConfirmedId: PropTypes.string,
+  focus: PropTypes.bool
+};
+
+CategorySelect.defaultProps = {
+  focus: false
 };
 
 export default CategorySelect;
