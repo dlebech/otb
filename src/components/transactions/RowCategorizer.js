@@ -8,8 +8,8 @@ class RowCategorizer extends React.Component {
     super(props);
 
     this.state = {
-      editing: !props.transaction.categoryGuess &&
-        !props.transaction.categoryConfirmed
+      editing: !props.transaction.categoryGuess && !props.transaction.categoryConfirmed,
+      focus: false
     };
 
     this.handleEditCategory = this.handleEditCategory.bind(this);
@@ -18,16 +18,18 @@ class RowCategorizer extends React.Component {
   static getDerivedStateFromProps(props, state) {
     if (state.editing &&
       (props.transaction.categoryGuess || props.transaction.categoryConfirmed)) {
-      return { editing: false };
+      return { editing: false, focus: false };
     } else if (!state.editing && 
      (!props.transaction.categoryGuess && !props.transaction.categoryConfirmed)) {
-      return { editing: true };
+      // If we're in here, it means that we were not previously editing a
+      // category, but now we are. We can thus focus the select.
+      return { editing: true, focus: true };
     }
     return null;
   }
 
   handleEditCategory() {
-    this.setState({ editing: true });
+    this.setState({ editing: true, focus: true });
   }
 
   render() {
@@ -53,6 +55,7 @@ class RowCategorizer extends React.Component {
           selectedValue={categoryConfirmedAsOption}
           options={this.props.categoryOptions}
           handleRowCategory={this.props.handleRowCategory}
+          focus={this.state.focus}
         />}
       </React.Fragment>
     );
