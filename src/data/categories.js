@@ -11,7 +11,7 @@ export const money = { id: uuidv4(), name: 'Money' }
 
 const defaultCategories = [
   // Any list of categories will by definition be opionated in some form. The
-  // goal is not to have a complete set of categories but rather a small handful
+  // goal is not to have a complete set of categories but rather a small-ish set
   // of useful categories to get started with.
 
   // Staying alive
@@ -25,6 +25,7 @@ const defaultCategories = [
   transportation,
   { id: uuidv4(), name: 'Public Transportation', parent: transportation.id },
   { id: uuidv4(), name: 'Fuel/Gas', parent: transportation.id },
+  { id: uuidv4(), name: 'Parking', parent: transportation.id },
   { id: uuidv4(), name: 'Car Loan/Leasing', parent: transportation.id },
   { id: uuidv4(), name: 'Car Maintenance', parent: transportation.id },
   { id: uuidv4(), name: 'Car Insurance', parent: transportation.id },
@@ -33,9 +34,13 @@ const defaultCategories = [
   home,
   { id: uuidv4(), name: 'Mortgage', parent: home.id },
   { id: uuidv4(), name: 'Rent', parent: home.id },
+  { id: uuidv4(), name: 'Maintenance', parent: home.id },
   { id: uuidv4(), name: 'Insurance', parent: home.id },
-  { id: uuidv4(), name: 'Utilities/water/electricity', parent: home.id },
+  { id: uuidv4(), name: 'Heating', parent: home.id },
+  { id: uuidv4(), name: 'Water', parent: home.id },
+  { id: uuidv4(), name: 'Electricity', parent: home.id },
   { id: uuidv4(), name: 'Internet', parent: home.id },
+  { id: uuidv4(), name: 'Phone', parent: home.id },
 
   // Shopping
   shopping,
@@ -54,17 +59,19 @@ const defaultCategories = [
   { id: uuidv4(), name: 'Books', parent: entertainment.id },
   { id: uuidv4(), name: 'Music', parent: entertainment.id },
   { id: uuidv4(), name: 'TV', parent: entertainment.id },
+  { id: uuidv4(), name: 'Cinema/theater/concert', parent: entertainment.id },
 
   // Travel
   travel,
-  { id: uuidv4(), name: 'Lodging', parent: travel.id },
+  { id: uuidv4(), name: 'Lodging/hotel/apartment', parent: travel.id },
   { id: uuidv4(), name: 'Tickets', parent: travel.id },
 
   // The money stuff
   money,
   { id: uuidv4(), name: 'Income', parent: money.id },
   { id: uuidv4(), name: 'Savings', parent: money.id },
-  { id: uuidv4(), name: 'Transfers', parent: money.id },
+  { id: uuidv4(), name: 'Investments', parent: money.id },
+  { id: uuidv4(), name: 'Account Transfers', parent: money.id },
   { id: uuidv4(), name: 'Fees', parent: money.id },
   { id: uuidv4(), name: 'Tax', parent: money.id }
 ];
