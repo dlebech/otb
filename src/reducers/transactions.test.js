@@ -1,4 +1,3 @@
-import bayes from 'bayes';
 import reducers from './index';
 import * as actions from '../actions';
 

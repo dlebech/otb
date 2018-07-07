@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
+import Creatable from 'react-select/lib/Creatable';
 
 const customStyles = {
   control: (base, state) => ({
@@ -19,13 +19,18 @@ const CategorySelect = props => {
     }
   };
 
+  const onCreateOption = name => {
+    props.handleRowCategory(props.transactionId, null, name);
+  };
+
   return (
-    <Select
+    <Creatable
       value={props.selectedValue}
       options={props.options}
       onChange={onChange}
       styles={customStyles}
       autoFocus={props.focus}
+      onCreateOption={onCreateOption}
     />
   );
 };

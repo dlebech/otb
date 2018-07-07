@@ -127,8 +127,8 @@ const transactionsReducer = (state = initialTransactions, action) => {
     case actions.CATEGORIZE_ROW:
       const rowIndexCategorize = state.data.findIndex(row => row.id === action.rowId);
       if (rowIndexCategorize < 0) return state;
-      // If there's currently no bayes classifier or if the category changed from non-empty,
-      // create a new one.
+      // If there's currently no bayes classifier or if the category changed
+      // from non-empty, create a new one.
       let classifier;
       if (state.categorizer.bayes && !state.data[rowIndexCategorize].category.confirmed) {
         classifier = bayes.fromJson(state.categorizer.bayes)
@@ -139,8 +139,8 @@ const transactionsReducer = (state = initialTransactions, action) => {
       }
 
       // Train on the new category we are about to add
-      if (action.category && state.data[rowIndexCategorize].description) {
-        classifier.learn(state.data[rowIndexCategorize].description, action.category);
+      if (action.categoryId && state.data[rowIndexCategorize].description) {
+        classifier.learn(state.data[rowIndexCategorize].description, action.categoryId);
       }
 
       return update(state, {
@@ -153,7 +153,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
           [rowIndexCategorize]: {
             category: {
               confirmed: {
-                $set: action.category
+                $set: action.categoryId
               },
               $unset: ['guess']
             }

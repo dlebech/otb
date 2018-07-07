@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const SortIndicator = props => {
   const icon = !props.active ? 'sort' : props.ascending ? 'sort-up' : 'sort-down';
