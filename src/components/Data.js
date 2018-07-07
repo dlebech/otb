@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import download from 'downloadjs';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RestoreData from './RestoreData';
 import Categories from './Categories';
 

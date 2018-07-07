@@ -77,7 +77,7 @@ RowCategorizer.propTypes = {
   categoryOptions: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
-  })).isRequired,
+  })).isRequired
 };
 
 export default RowCategorizer;

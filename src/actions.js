@@ -77,11 +77,11 @@ export const guessCategoryForRow = rowId => {
   };
 };
 
-export const categorizeRow = (rowId, category) => {
+export const categorizeRow = (rowId, categoryId) => {
   return {
     type: CATEGORIZE_ROW,
     rowId,
-    category
+    categoryId
   };
 };
 
@@ -112,6 +112,25 @@ export const addCategory = (name, parentId) => {
     type: ADD_CATEGORY,
     name,
     parentId
+  };
+};
+
+export const addCategoryWithRow = (name, parentId, rowId) => {
+  return (dispatch, getState) => {
+    // First add the new category
+    dispatch(addCategory(name, parentId));
+
+    // Then find the updated categories so we can get the category ID.
+    // The new category is probably the last one in the array, but just to be
+    // safe, let's loop through them... but backwards for that wee bit of extra
+    // speed :-)
+    const categories = getState().categories.data;
+    for (let i = categories.length - 1; i >= 0; i--) {
+      if (categories[i].name === name) {
+        dispatch(categorizeRow(rowId, categories[i].id));
+        break;
+      }
+    }
   };
 };
 
