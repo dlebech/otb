@@ -18,6 +18,9 @@ class RowCategorizer extends React.Component {
   static getDerivedStateFromProps(props, state) {
     if (state.editing &&
       (props.transaction.categoryGuess || props.transaction.categoryConfirmed)) {
+      // If we're in here, it means that we were previously editing, but now we
+      // have a category guess or confirmed category. Thus, we don't want to
+      // edit no more.
       return { editing: false, focus: false };
     } else if (!state.editing && 
      (!props.transaction.categoryGuess && !props.transaction.categoryConfirmed)) {
@@ -29,7 +32,8 @@ class RowCategorizer extends React.Component {
   }
 
   handleEditCategory() {
-    this.setState({ editing: true, focus: true });
+    // We start editing a category by resetting it's category ID.
+    this.props.handleRowCategory(this.props.transaction.id, '');
   }
 
   render() {
