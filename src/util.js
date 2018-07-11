@@ -74,6 +74,16 @@ export const createTestData = () => {
     }
   }
 
+  // Add some income...
+  transactions.push({
+    id: uuidv4(),
+    date: startDate.clone().format('YYYY-MM-DD'),
+    description: `Some income`,
+    amount: 123,
+    total: 0,
+    category: {}
+  });
+
   transactions.reduce((prev, cur) => {
     cur.total = prev.total + cur.amount;
     return cur;
@@ -84,4 +94,19 @@ export const createTestData = () => {
 
 export const sleep = timeToSleep => {
   return new Promise(resolve => setTimeout(resolve, timeToSleep));
+};
+
+/**
+ * A simple converter that ensures the given input is a number type. Removed
+ * commas from strings so the conversion is smoother. This has a bias towards
+ * numbers with comma as a thousand separator. That's just life... for now.
+ * @param {Number|String} number
+ * @returns {Number}
+ */
+export const cleanNumber = number => {
+  if (typeof number === 'number') return number;
+  if (typeof number === 'string') return Number(number.replace(',', ''));
+
+  // Ok well...
+  return 0;
 };
