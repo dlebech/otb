@@ -99,7 +99,8 @@ describe('import', () => {
         import: {
           data: [
             ['some', 'header', 'annoying', 'i know'],
-            ['2018-04-06', 'test row', 123, 456]
+            ['2018-04-06', 'test row', 123, 456],
+            ['2018-04-06', 'test row 2', '123,456.78', '456,789.01']
           ],
           skipRows: 1,
           columnSpec: [
@@ -120,6 +121,17 @@ describe('import', () => {
         description: 'test row',
         amount: 123,
         total: 456,
+        category: {
+          guess: '',
+          confirmed: ''
+        }
+      },
+      {
+        id: 'abcd',
+        date: '2018-04-06',
+        description: 'test row 2',
+        amount: 123456.78,
+        total: 456789.01,
         category: {
           guess: '',
           confirmed: ''

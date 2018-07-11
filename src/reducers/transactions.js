@@ -33,8 +33,8 @@ const mapImportToTransactions = transactionsImport => {
         id: uuidv4(),
         date: transaction[dateIndex],
         description: transaction[descIndex],
-        amount: transaction[amountIndex],
-        total: transaction[totalIndex],
+        amount: util.cleanNumber(transaction[amountIndex]),
+        total: util.cleanNumber(transaction[totalIndex]),
         category: {
           guess: '',
           confirmed: ''
