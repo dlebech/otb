@@ -40,7 +40,7 @@ class Data extends React.Component {
               <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
               Download All Data
             </button>
-            <RestoreData className="btn btn-outline-secondary m-1">
+            <RestoreData className="btn btn-outline-secondary m-1" persistor={this.props.persistor}>
               Restore Previous Download
             </RestoreData>
           </div>

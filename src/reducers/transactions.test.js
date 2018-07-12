@@ -8,6 +8,7 @@ jest.mock('uuid/v4', () => {
 it('should set default data', () => {
   const state = reducers({}, { type: 'NOOP' });
   expect(state.transactions).toEqual({
+    version: 1,
     data: [],
     import: {
       data: [],
@@ -17,6 +18,53 @@ it('should set default data', () => {
     categorizer: {
       bayes: ''
     }
+  });
+});
+
+describe('migrations', () => {
+  it('should not perform upgrade when the version is correct', () => {
+
+  });
+
+  it('should perform v1 migration (description update)', () => {
+    const state = reducers({
+      transactions: {
+        data: [
+          { description: 'This is 123456 cool' },
+          { description: '2018-01-01 Also cool' }
+        ]
+      }
+    }, { type: 'NOOP' });
+
+    expect(state.transactions).toEqual({
+      version: 1,
+      data: [
+        { description: 'This is 123456 cool', descriptionCleaned: 'this is cool' },
+        { description: '2018-01-01 Also cool', descriptionCleaned: 'also cool' }
+      ]
+    });
+  });
+
+  it('should not perform upgrade when the version is correct', () => {
+    // This is kind of dependent on the above functionality working.
+    const state = reducers({
+      transactions: {
+        version: 1, // This is fake just to trick the migrater.
+        data: [
+          { description: 'This is 123456 cool' },
+          { description: '2018-01-01 Also cool' }
+        ]
+      }
+    }, { type: 'NOOP' });
+
+    expect(state.transactions).toEqual({
+      version: 1,
+      data: [
+        // Description remains unchanged
+        { description: 'This is 123456 cool' },
+        { description: '2018-01-01 Also cool' }
+      ]
+    });
   });
 });
 
@@ -119,6 +167,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row',
+        descriptionCleaned: 'test row',
         amount: 123,
         total: 456,
         category: {
@@ -130,6 +179,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row 2',
+        descriptionCleaned: 'test row 2',
         amount: 123456.78,
         total: 456789.01,
         category: {
@@ -154,6 +204,7 @@ describe('import', () => {
           id: 'abcd',
           date: '2018-04-06',
           description: 'test row',
+          descriptionCleaned: 'test row',
           amount: 123,
           total: 123,
           category: {
@@ -182,6 +233,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row',
+        descriptionCleaned: 'test row',
         amount: 123,
         total: 123,
         category: {
@@ -193,6 +245,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-07',
         description: 'test row 2',
+        descriptionCleaned: 'test row 2',
         amount: 123,
         total: 246,
         category: {

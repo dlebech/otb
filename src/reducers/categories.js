@@ -42,6 +42,11 @@ const categoriesReducer = (state = initialCategories, action) => {
           $splice: [[indexToDelete, 1]]
         }
       });
+    case actions.RESTORE_STATE_FROM_FILE:
+      if (!action.newState.categories) return state;
+      return update(state, {
+        $set: action.newState.categories
+      });
     default:
       return state;
   }

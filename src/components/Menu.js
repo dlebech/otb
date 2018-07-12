@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { show } from 'redux-modal';
 import { toggleLocalStorage } from '../actions';
 import SaveData from './modals/SaveData';
+import { toggleLocalStorage as utilToggleLocalStorage } from '../util';
 
 class Menu extends React.Component {
   constructor(props) {
@@ -26,15 +27,7 @@ class Menu extends React.Component {
   async handleToggleStorage(e) {
     const enabled = e.target.checked;
 
-    // Pause/purge/resume the persistor, depending on the value.
-    if (enabled) {
-      await this.props.persistor.persist();
-      await this.props.persistor.flush();
-    } else {
-      await this.props.persistor.pause();
-      await this.props.persistor.flush();
-      await this.props.persistor.purge();
-    }
+    await utilToggleLocalStorage(this.props.persistor, enabled);
 
     // Dispatch to redux
     this.props.toggleLocalStorage(enabled);

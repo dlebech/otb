@@ -46,3 +46,15 @@ it('should delete a category', () => {
     name: 'Shopping',
   });
 });
+
+it('should restore from file', () => {
+  const state = reducers({}, actions.restoreStateFromFile({
+    categories: {
+      data: [{ id: 'abcd', name: 'Hobby' }]
+    }
+  }));
+
+  expect(state.categories.data).toEqual([
+    { id: 'abcd', name: 'Hobby' }
+  ])
+});

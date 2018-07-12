@@ -5,6 +5,7 @@ import * as actions from '../actions';
 import * as util from '../util';
 
 const initialTransactions = {
+  version: 1,
   import: {
     data: [],
     skipRows: 0,
@@ -33,6 +34,7 @@ const mapImportToTransactions = transactionsImport => {
         id: uuidv4(),
         date: transaction[dateIndex],
         description: transaction[descIndex],
+        descriptionCleaned: util.cleanTransactionDescription(transaction[descIndex]),
         amount: util.cleanNumber(transaction[amountIndex]),
         total: util.cleanNumber(transaction[totalIndex]),
         category: {
@@ -46,14 +48,52 @@ const mapImportToTransactions = transactionsImport => {
 const retrainBayes = transactions => {
   const classifier = bayes();
   transactions.forEach(t => {
-    if (t.category.confirmed && t.description) {
-      classifier.learn(t.description, t.category.confirmed);
+    if (t.category.confirmed && t.descriptionCleaned) {
+      classifier.learn(t.descriptionCleaned, t.category.confirmed);
     }
   });
   return classifier;
 };
 
+const v1Migration = state => {
+  if (!state.data) return state;
+
+  const newTransactions = state.data.map(t => {
+    return update(t, {
+      $apply: obj => {
+        return update(obj, {
+          descriptionCleaned: {
+            $set: util.cleanTransactionDescription(obj.description)
+          }
+        });
+      }
+    });
+  });
+
+  return update(state, {
+    version: {
+      $set: 1
+    },
+    data: {
+      $set: newTransactions
+    }
+  });
+};
+
+const migrations = [v1Migration];
+
+const migrate = state => {
+  for (let i = state.version || 0; i < migrations.length; i++) {
+    state = migrations[i](state);
+  }
+  return state;
+};
+
 const transactionsReducer = (state = initialTransactions, action) => {
+  // Perform migrations first.
+  // Note: Also do migrations after restoring a file!
+  state = migrate(state);
+
   switch (action.type) {
     case actions.PARSE_TRANSACTIONS_END:
       return update(state, {
@@ -110,7 +150,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
 
       let newState = state;
       rowIndexes.forEach(i => {
-        const guess = guesstimator.categorize(newState.data[i].description);
+        const guess = guesstimator.categorize(newState.data[i].descriptionCleaned);
         newState = update(newState, {
           data: {
             [i]: {
@@ -139,8 +179,8 @@ const transactionsReducer = (state = initialTransactions, action) => {
       }
 
       // Train on the new category we are about to add
-      if (action.categoryId && state.data[rowIndexCategorize].description) {
-        classifier.learn(state.data[rowIndexCategorize].description, action.categoryId);
+      if (action.categoryId && state.data[rowIndexCategorize].descriptionCleaned) {
+        classifier.learn(state.data[rowIndexCategorize].descriptionCleaned, action.categoryId);
       }
 
       return update(state, {
@@ -162,9 +202,10 @@ const transactionsReducer = (state = initialTransactions, action) => {
       });
     case actions.RESTORE_STATE_FROM_FILE:
       if (!action.newState.transactions) return state;
-      return update(state, {
+      state = update(state, {
         $set: action.newState.transactions
       });
+      return migrate(state);
     case actions.DELETE_CATEGORY:
       let retrain = false;
       for (let i = 0; i < state.data.length; i++) {
