@@ -104,8 +104,28 @@ export const sleep = timeToSleep => {
  * @returns {Number}
  */
 export const cleanNumber = number => {
+  // Note. I am aware of the numeral package... but it didn't work perfectly for
+  // this use case. So for now, just just going with something super super
+  // simple.
   if (typeof number === 'number') return number;
-  if (typeof number === 'string') return Number(number.replace(',', ''));
+  if (typeof number === 'string') {
+    // Replace spaces with nothing.
+    number = number.replace(/\s/g, '');
+
+    // Simplistic matching of period thousand separator. Replace with nothing.
+    if (/.*\..*,.*/.test(number)) number = number.replace(/\./g, '');
+
+    // Now, if there are commas preceding periods (American), replace with nothing.
+    // Otherwise replace the commas with periods (if there are exactly two decimals)
+    // Or replace commas with nothing...
+    // The second condition is an aproximation. It's not perfect :-)
+    if (/.*,.*\..*/.test(number)) number = number.replace(/,/g, '');
+    else if (/,\d{2}$/.test(number)) number = number.replace(',', '.');
+    else number = number.replace(',', '');
+
+    // Finally, just replace commas with nothing (if there are any left)
+    return Number(number);
+  }
 
   // Ok well...
   return 0;
