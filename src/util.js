@@ -123,10 +123,33 @@ export const cleanNumber = number => {
     else if (/,\d{2}$/.test(number)) number = number.replace(',', '.');
     else number = number.replace(',', '');
 
-    // Finally, just replace commas with nothing (if there are any left)
     return Number(number);
   }
 
   // Ok well...
   return 0;
+};
+
+/**
+ * Removes dates and long-ish digits from transactions to avoid tokenizing
+ * these and using them for training categorization. Also lowercases.
+ * @param {String} description - The description for a transaction
+ */
+export const cleanTransactionDescription = description => {
+  if (!description) return description;
+  description = description.replace(/\d{2,4}.{0,1}\d{2}.{0,1}\d{2,4}\s*/g, '');
+  description = description.replace(/\d{4}\d*\s*/g, '');
+  return description.toLowerCase();
+};
+
+export const toggleLocalStorage = async (persistor, enabled) => {
+  // Pause/purge/resume the persistor, depending on the value.
+  if (enabled) {
+    await persistor.persist();
+    await persistor.flush();
+  } else {
+    await persistor.pause();
+    await persistor.flush();
+    await persistor.purge();
+  }
 };

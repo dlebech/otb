@@ -13,11 +13,11 @@ const App = props => {
       <React.Fragment>
         <Route path="/*" render={routeProps => <Menu persistor={props.persistor} {...routeProps} />} />
         <div className="container mt-4">
-          <Route exact path="/" component={Intro} />
+          <Route exact path="/" render={routeProps => <Intro persistor={props.persistor} {...routeProps} />} />
           <Route exact path="/chart" component={Chart} />
           <Route exact path="/transaction" component={Transactions} />
           <Route exact path="/transaction/upload" component={TransactionUpload} />
-          <Route exact path="/data" component={Data} />
+          <Route exact path="/data" render={routeProps => <Data persistor={props.persistor} {...routeProps} />} />
         </div>
       </React.Fragment>
     </Router>

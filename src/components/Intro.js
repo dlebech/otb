@@ -43,7 +43,7 @@ const IntroWithoutData = props => {
         shared or stored anywhere else.
       </p>
       <Link className="btn btn-primary btn-lg m-1" to="/transaction/upload">Upload Transactions</Link>
-      <RestoreData className="btn btn-secondary btn-lg m-1">
+      <RestoreData className="btn btn-secondary btn-lg m-1" persistor={props.persistor}>
         Restore Data
         <FontAwesomeIcon
           icon="question-circle"
