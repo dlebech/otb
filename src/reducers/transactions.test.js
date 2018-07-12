@@ -167,6 +167,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row',
+        descriptionCleaned: 'test row',
         amount: 123,
         total: 456,
         category: {
@@ -178,6 +179,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row 2',
+        descriptionCleaned: 'test row 2',
         amount: 123456.78,
         total: 456789.01,
         category: {
@@ -202,6 +204,7 @@ describe('import', () => {
           id: 'abcd',
           date: '2018-04-06',
           description: 'test row',
+          descriptionCleaned: 'test row',
           amount: 123,
           total: 123,
           category: {
@@ -230,6 +233,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-06',
         description: 'test row',
+        descriptionCleaned: 'test row',
         amount: 123,
         total: 123,
         category: {
@@ -241,6 +245,7 @@ describe('import', () => {
         id: 'abcd',
         date: '2018-04-07',
         description: 'test row 2',
+        descriptionCleaned: 'test row 2',
         amount: 123,
         total: 246,
         category: {

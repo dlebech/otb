@@ -56,6 +56,8 @@ const retrainBayes = transactions => {
 };
 
 const v1Migration = state => {
+  if (!state.data) return state;
+
   const newTransactions = state.data.map(t => {
     return update(t, {
       $apply: obj => {
