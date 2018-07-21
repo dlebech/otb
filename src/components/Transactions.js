@@ -4,7 +4,9 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { show, hide } from 'redux-modal';
+import { createSearchAction } from 'redux-search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import debounce from 'lodash/debounce';
 import * as actions from '../actions';
 import Confirm from './modals/Confirm';
 import NoData from './NoData';
@@ -17,6 +19,8 @@ class Transactions extends React.Component {
 
     this.handleRowCategory = this.handleRowCategory.bind(this);
     this.handleNewRowCategory = this.handleNewRowCategory.bind(this);
+
+    this.state = { searchText: props.searchText };
   }
 
   async handleNewRowCategory(...args) {
@@ -43,7 +47,7 @@ class Transactions extends React.Component {
   }
 
   render() {
-    if (this.props.transactions.length === 0) return <NoData />;
+    if (!this.props.hasTransactions) return <NoData />;
 
     return (
       <React.Fragment>
@@ -77,6 +81,7 @@ class Transactions extends React.Component {
           handleRowCategory={this.handleRowCategory}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
+          handleSearch={this.props.handleSearch}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
         />
@@ -99,7 +104,13 @@ const mapStateToProps = state => {
     return obj;
   }, {});
 
-  const transactions = state.transactions.data.map(t => {
+  let transactions = state.transactions.data;
+  if (state.search.transactions.result.length !== state.transactions.data) {
+    const ids = new Set(state.search.transactions.result);
+    transactions = transactions.filter(t => ids.has(t.id));
+  }
+
+  transactions = transactions.map(t => {
     return {
       categoryGuess: categories[t.category.guess] || null,
       categoryConfirmed: categories[t.category.confirmed] || null,
@@ -111,9 +122,13 @@ const mapStateToProps = state => {
   return {
     transactions,
     categories,
-    isCategoryGuessing: state.app.isCategoryGuessing
+    isCategoryGuessing: state.app.isCategoryGuessing,
+    hasTransactions: state.transactions.data.length > 0,
+    searchText: state.search.transactions.text
   };
 };
+
+const searchTransactions = createSearchAction('transactions');
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -138,7 +153,10 @@ const mapDispatchToProps = dispatch => {
     },
     hideModal: (...args) => {
       dispatch(hide(...args));
-    }
+    },
+    handleSearch: debounce(text => {
+      dispatch(searchTransactions(text));
+    }, 100)
   };
 };
 

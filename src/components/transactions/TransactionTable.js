@@ -31,14 +31,17 @@ class TransactionTable extends React.Component {
       pageSize: 50,
       sortKey: 'date',
       sortAscending: true,
-      showOnlyUncategorized: false
+      showOnlyUncategorized: false,
+      searchText: props.searchText
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleSortChange = this.handleSortChange.bind(this);
     this.handleShowOnlyUncategorized = this.handleShowOnlyUncategorized.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
+
 
   componentDidUpdate() {
     ReactTooltip.rebuild();
@@ -59,6 +62,12 @@ class TransactionTable extends React.Component {
 
   handlePageChange(page) {
     this.setState({ page });
+  }
+
+  handleSearch(e) {
+    this.setState({ searchText: e.target.value }, () => {
+      this.props.handleSearch(this.state.searchText);
+    });
   }
 
   handlePageSizeChange(pageSize) {
@@ -110,7 +119,34 @@ class TransactionTable extends React.Component {
     return (
       <React.Fragment>
         <div className="row align-items-center">
-          <div className="col-auto">
+          <div className="col-lg-6">
+            <div className="row align-items-center">
+              <div className="col-auto">
+                <input
+                  type="text"
+                  placeHolder="Search for a transaction"
+                  className="form-control form-col-auto"
+                  value={this.state.searchText}
+                  onChange={this.handleSearch}
+                />
+              </div>
+              <div className="col-auto">
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    id="check-uncategorized"
+                    className="form-check-input"
+                    checked={this.state.showOnlyUncategorized}
+                    onChange={this.handleShowOnlyUncategorized}
+                  />
+                  <label htmlFor="check-uncategorized" className="form-check-label">
+                    Show only uncategorized
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6 mt-3 mt-lg-0">
             <Pagination
               page={this.state.page}
               pageSize={this.state.pageSize}
@@ -118,20 +154,6 @@ class TransactionTable extends React.Component {
               handlePageChange={this.handlePageChange}
               handlePageSizeChange={this.handlePageSizeChange}
             />
-          </div>
-          <div className="col-auto">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                id="check-uncategorized"
-                className="form-check-input"
-                checked={this.state.showOnlyUncategorized}
-                onChange={this.handleShowOnlyUncategorized}
-              />
-              <label htmlFor="check-uncategorized" className="form-check-label">
-                Show only uncategorized
-              </label>
-            </div>
           </div>
         </div>
         <div className="row">
