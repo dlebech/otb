@@ -4,6 +4,7 @@ import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { shallow, mount } from 'enzyme';
 import TransactionTable from './TransactionTable';
+import { uncategorized } from '../../data/categories';
 
 jest.mock('redux-modal', () => {
   return {
@@ -139,9 +140,30 @@ it('should show only uncategorized', () => {
       {...defaultProps}
     />
   );
-  container.instance().handleShowOnlyUncategorized({ target: { checked: true }});
+
+  // Simulate a react-select callback
+  container.instance().handleCategorySelect(
+    [{ value: uncategorized.id }],
+    { action: 'select-option' }
+  );
   container.update();
   expect(container.find('TransactionRow').length).toEqual(1);
   const rendered = container.render();
   expect(rendered.find('td').first().text()).toEqual('2018-01-03');
+});
+
+it('should show a specific category', () => {
+  const container = shallow(
+    <TransactionTable
+      {...defaultProps}
+    />
+  );
+
+  // Simulate a react-select callback
+  container.instance().handleCategorySelect(
+    [{ value: 'a' }], // Fake category ID matching the transactions above
+    { action: 'select-option' }
+  );
+  container.update();
+  expect(container.find('TransactionRow').length).toEqual(2);
 });

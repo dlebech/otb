@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { reducer as modalReducer } from 'redux-modal';
+import { reducer as searchReducer } from 'redux-search';
 import appReducer from './app';
 import editReducer from './edit';
 import transactionsReducer from './transactions';
@@ -10,5 +11,6 @@ export default combineReducers({
   transactions: transactionsReducer,
   categories: categoriesReducer,
   modal: modalReducer,
-  edit: editReducer
+  edit: editReducer,
+  search: searchReducer
 });

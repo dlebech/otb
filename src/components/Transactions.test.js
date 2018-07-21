@@ -23,6 +23,11 @@ describe('Transactions', () => {
       },
       categories: {
         data: []
+      },
+      search: {
+        transactions: {
+          result: []
+        }
       }
     });
 
@@ -31,7 +36,35 @@ describe('Transactions', () => {
         <Transactions store={store} />
       </MemoryRouter>
     );
-    expect(container.render().text()).toEqual('No data yet. Add some.');
+    const rendered = container.render();
+    expect(rendered.text()).toEqual('No data yet. Add some.');
+    expect(rendered.find('a').text()).toEqual('Add some');
+  });
+
+  it('should show table when there are transactions, even when search is empty', () => {
+    const store = mockStore({
+      app: {
+        isCategoryGuessing: false,
+      },
+      transactions: {
+        data: [{}]
+      },
+      categories: {
+        data: []
+      },
+      search: {
+        transactions: {
+          result: []
+        }
+      }
+    });
+
+    const container = shallow(
+      <MemoryRouter>
+        <Transactions store={store} />
+      </MemoryRouter>
+    );
+    expect(container.render().find('a').text()).toEqual('Add More Transactions');
   });
 
   it('should render a table of transactions', () => {
@@ -56,6 +89,11 @@ describe('Transactions', () => {
       },
       categories: {
         data: [{ id: 'food', name: 'Food' }]
+      },
+      search: {
+        transactions: {
+          result: ['abcd']
+        }
       }
     });
 
@@ -95,6 +133,11 @@ describe('Transactions', () => {
       },
       categories: {
         data: [{ id: 'travel', name: 'Travel' }]
+      },
+      search: {
+        transactions: {
+          result: ['abcd']
+        }
       }
     });
 
@@ -131,6 +174,11 @@ describe('Transactions', () => {
       },
       categories: {
         data: [{ id: 'travel', name: 'Travel' }]
+      },
+      search: {
+        transactions: {
+          result: ['abcd']
+        }
       }
     });
 

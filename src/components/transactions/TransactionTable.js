@@ -1,12 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
+import Select from 'react-select';
 import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
 import Pagination from '../shared/Pagination';
+import { uncategorized } from '../../data/categories';
 
-const filterData = (data, showOnlyUncategorized = false) => {
-  return data.filter(t => showOnlyUncategorized ? !t.categoryConfirmed : true);
+const filterData = (data, categories) => {
+  let categoryFilter = t => true;
+  if (Array.isArray(categories) && categories.length > 0) {
+    categories = new Set(categories);
+    categoryFilter = t => {
+      return (!t.categoryConfirmed && categories.has(uncategorized.id)) ||
+        (!!t.categoryConfirmed && categories.has(t.categoryConfirmed.id));
+    };
+  }
+
+  // Right now, the only filter we have is the categoryFilter...
+  return data.filter(t => categoryFilter(t));
 };
 
 const sortData = (data, sortKey, sortAscending) => {
@@ -31,13 +43,15 @@ class TransactionTable extends React.Component {
       pageSize: 50,
       sortKey: 'date',
       sortAscending: true,
-      showOnlyUncategorized: false
+      filterCategories: [],
+      searchText: props.searchText
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleSortChange = this.handleSortChange.bind(this);
-    this.handleShowOnlyUncategorized = this.handleShowOnlyUncategorized.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleCategorySelect = this.handleCategorySelect.bind(this);
   }
 
   componentDidUpdate() {
@@ -50,7 +64,7 @@ class TransactionTable extends React.Component {
     // can easier sort, filter, etc. later
     const data = [].concat(props.transactions);
     const dataView = sortData(
-      filterData(data, state.showOnlyUncategorized),
+      filterData(data, state.filterCategories),
       state.sortKey,
       state.sortAscending
     );
@@ -59,6 +73,12 @@ class TransactionTable extends React.Component {
 
   handlePageChange(page) {
     this.setState({ page });
+  }
+
+  handleSearch(e) {
+    this.setState({ searchText: e.target.value }, () => {
+      this.props.handleSearch(this.state.searchText);
+    });
   }
 
   handlePageSizeChange(pageSize) {
@@ -74,12 +94,18 @@ class TransactionTable extends React.Component {
     this.setState({ sortKey, sortAscending, dataView });
   }
 
-  handleShowOnlyUncategorized(e) {
-    const showOnlyUncategorized = e.target.checked;
+  handleCategorySelect(options, action) {
+    if (action.action !== 'select-option' &&
+      action.action !== 'remove-value' &&
+      action.action !== 'clear') {
+      return;
+    }
+
+    const filterCategories = options.map(o => o.value);
 
     // Need to both re-filter and re-sort
     const dataView = sortData(
-      filterData(this.state.data, showOnlyUncategorized),
+      filterData(this.state.data, filterCategories),
       this.state.sortKey,
       this.state.sortAscending
     );
@@ -88,8 +114,9 @@ class TransactionTable extends React.Component {
     let page = this.state.page;
     const lastPage = Math.ceil(dataView.length / this.state.pageSize);
     if (lastPage < page) page = lastPage;
+    if (page === 0) page = 1;
 
-    this.setState({ page, showOnlyUncategorized, dataView });
+    this.setState({ page, filterCategories, dataView });
   }
 
   render() {
@@ -107,10 +134,40 @@ class TransactionTable extends React.Component {
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
 
+    const categoryOptionsWithUncategorized = [
+      {
+        label: uncategorized.name,
+        value: uncategorized.id
+      }
+    ].concat(categoryOptions);
+
     return (
       <React.Fragment>
         <div className="row align-items-center">
-          <div className="col-auto">
+          <div className="col-lg-6">
+            <div className="row align-items-center">
+              <div className="col-auto">
+                <input
+                  type="text"
+                  placeholder="Search for a transaction"
+                  className="form-control form-col-auto"
+                  value={this.state.searchText}
+                  onChange={this.handleSearch}
+                />
+              </div>
+              <div className="col">
+                <Select
+                  options={categoryOptionsWithUncategorized}
+                  name="category-filter"
+                  className="category-select"
+                  placeholder="Filter by category..."
+                  onChange={this.handleCategorySelect}
+                  isMulti
+                />
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6 mt-3 mt-lg-0">
             <Pagination
               page={this.state.page}
               pageSize={this.state.pageSize}
@@ -118,20 +175,6 @@ class TransactionTable extends React.Component {
               handlePageChange={this.handlePageChange}
               handlePageSizeChange={this.handlePageSizeChange}
             />
-          </div>
-          <div className="col-auto">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                id="check-uncategorized"
-                className="form-check-input"
-                checked={this.state.showOnlyUncategorized}
-                onChange={this.handleShowOnlyUncategorized}
-              />
-              <label htmlFor="check-uncategorized" className="form-check-label">
-                Show only uncategorized
-              </label>
-            </div>
           </div>
         </div>
         <div className="row">

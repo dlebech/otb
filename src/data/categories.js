@@ -9,6 +9,10 @@ export const entertainment = { id: uuidv4(), name: 'Entertainment' };
 export const travel = { id: uuidv4(), name: 'Travel' };
 export const money = { id: uuidv4(), name: 'Money' }
 
+// This is a special uncategorized category that is only useful for special case
+// matching. Defined here so it's the same everywhere
+export const uncategorized = { id: 'UNCATEGORIZED', name: 'UNCATEGORIZED' };
+
 const defaultCategories = [
   // Any list of categories will by definition be opionated in some form. The
   // goal is not to have a complete set of categories but rather a small-ish set

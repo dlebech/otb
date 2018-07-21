@@ -1,7 +1,8 @@
-import { createStore, applyMiddleware } from 'redux'
+import { applyMiddleware, compose, createStore } from 'redux'
 import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
+import { reduxSearch } from 'redux-search';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './reducers'
 
@@ -13,16 +14,31 @@ if (process.env.NODE_ENV === 'development') {
 const persistConfig = {
   key: 'otb',
   storage: storage,
-  blacklist: ['edit', 'modal']
+  blacklist: ['edit', 'modal', 'search']
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export default function configureStore(preloadedState) {
+  const enhancer = compose(
+    applyMiddleware(...middlewares),
+    reduxSearch({
+      resourceIndexes: {
+        transactions: ['description', 'descriptionCleand']
+      },
+      resourceSelector: (resourceName, state) => {
+        if (resourceName === 'transactions') {
+          return state.transactions.data;
+        }
+        return [];
+      }
+    })
+  );
+
   const store = createStore(
     persistedReducer,
     preloadedState, 
-    applyMiddleware(...middlewares)
+    enhancer
   );
 
   const persistor = persistStore(store);
