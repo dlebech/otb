@@ -43,56 +43,56 @@ class Menu extends React.Component {
 
     return (
       <React.Fragment>
-      <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-        <div className="container">
-          <Link className="navbar-brand" to="/">Off The Books</Link>
-          <div className="navbar-collapse">
-            <ul className="navbar-nav mr-auto">
-              <li className={`nav-item${active('/transaction')}`}>
-                <Link className="nav-link" to="/transaction">
-                  <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
-                  Transactions
-                </Link>
-              </li>
-              <li className={`nav-item${active('/chart')}`}>
-                <Link className="nav-link" to="/chart">
-                  <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
-                  Charts
-                </Link>
-              </li>
-              <li className={`nav-item${active('/data')}`}>
-                <Link className="nav-link" to="/data">
-                  <FontAwesomeIcon icon="database" className="mr-1" fixedWidth />
-                  Manage Data
-                </Link>
-              </li>
-            </ul>
-            <form className="form-inline">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  id="local-storage-check"
-                  className="form-check-input"
-                  checked={this.props.localStorageEnabled}
-                  onChange={this.handleToggleStorage}
+        <nav className="navbar navbar-expand-md navbar-dark bg-dark">
+          <div className="container">
+            <Link className="navbar-brand" to="/">Off The Books</Link>
+            <div className="navbar-collapse">
+              <ul className="navbar-nav mr-auto">
+                <li className={`nav-item${active('/transaction')}`}>
+                  <Link className="nav-link" to="/transaction">
+                    <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
+                    Transactions
+                  </Link>
+                </li>
+                <li className={`nav-item${active('/chart')}`}>
+                  <Link className="nav-link" to="/chart">
+                    <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
+                    Charts
+                  </Link>
+                </li>
+                <li className={`nav-item${active('/data')}`}>
+                  <Link className="nav-link" to="/data">
+                    <FontAwesomeIcon icon="database" className="mr-1" fixedWidth />
+                    Manage Data
+                  </Link>
+                </li>
+              </ul>
+              <form className="form-inline">
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    id="local-storage-check"
+                    className="form-check-input"
+                    checked={this.props.localStorageEnabled}
+                    onChange={this.handleToggleStorage}
+                  />
+                  <label className="form-check-label navbar-text" htmlFor="local-storage-check">
+                    Save Data in Browser
+                  </label>
+                </div>
+              </form>
+              <div className="navbar-text text-info">
+                <FontAwesomeIcon
+                  icon="question-circle"
+                  className="ml-1"
+                  fixedWidth
+                  onClick={() => this.props.showModal(SaveData.modalName)}
                 />
-                <label className="form-check-label navbar-text" htmlFor="local-storage-check">
-                  Save Data in Browser
-                </label>
               </div>
-            </form>
-            <div className="navbar-text text-info">
-              <FontAwesomeIcon
-                icon="question-circle"
-                className="ml-1"
-                fixedWidth
-                onClick={() => this.props.showModal(SaveData.modalName)}
-              />
             </div>
           </div>
-        </div>
-      </nav>
-      <SaveData />
+        </nav>
+        <SaveData />
       </React.Fragment>
     );
   }

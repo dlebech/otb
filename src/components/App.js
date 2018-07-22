@@ -6,6 +6,8 @@ import TransactionUpload from './TransactionUpload';
 import Chart from './Chart';
 import Transactions from './Transactions';
 import Data from './Data';
+import Privacy from './Privacy';
+import Footer from './Footer';
 
 const App = props => {
   return (
@@ -18,7 +20,9 @@ const App = props => {
           <Route exact path="/transaction" component={Transactions} />
           <Route exact path="/transaction/upload" component={TransactionUpload} />
           <Route exact path="/data" render={routeProps => <Data persistor={props.persistor} {...routeProps} />} />
+          <Route exact path="/privacy" component={Privacy} />
         </div>
+        <Route path="/*" component={Footer} />
       </React.Fragment>
     </Router>
   );
