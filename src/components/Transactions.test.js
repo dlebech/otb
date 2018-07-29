@@ -28,6 +28,9 @@ describe('Transactions', () => {
         transactions: {
           result: []
         }
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 
@@ -56,6 +59,9 @@ describe('Transactions', () => {
         transactions: {
           result: []
         }
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 
@@ -94,6 +100,9 @@ describe('Transactions', () => {
         transactions: {
           result: ['abcd']
         }
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 
@@ -138,6 +147,9 @@ describe('Transactions', () => {
         transactions: {
           result: ['abcd']
         }
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 
@@ -179,6 +191,9 @@ describe('Transactions', () => {
         transactions: {
           result: ['abcd']
         }
+      },
+      edit: {
+        dateSelect: {}
       }
     });
 

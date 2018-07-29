@@ -78,10 +78,12 @@ class Transactions extends React.Component {
         <TransactionTable
           transactions={this.props.transactions}
           categories={this.props.categories}
+          dateSelect={this.props.dateSelect}
           handleRowCategory={this.handleRowCategory}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
           handleSearch={this.props.handleSearch}
+          handleDatesChange={this.props.handleDatesChange}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
         />
@@ -119,12 +121,20 @@ const mapStateToProps = state => {
     };
   });
 
+  const dateSelectId = 'transaction-dates';
+  const dateSelect = state.edit.dateSelect[dateSelectId] || {
+    startDate: null,
+    endDate: null
+  };
+  dateSelect.id = dateSelectId;
+
   return {
     transactions,
     categories,
     isCategoryGuessing: state.app.isCategoryGuessing,
     hasTransactions: state.transactions.data.length > 0,
-    searchText: state.search.transactions.text
+    searchText: state.search.transactions.text,
+    dateSelect
   };
 };
 
@@ -156,7 +166,10 @@ const mapDispatchToProps = dispatch => {
     },
     handleSearch: debounce(text => {
       dispatch(searchTransactions(text));
-    }, 100)
+    }, 100),
+    handleDatesChange: (dateSelectId, startDate, endDate) => {
+      dispatch(actions.editDates(dateSelectId, startDate, endDate));
+    }
   };
 };
 

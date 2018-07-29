@@ -56,9 +56,14 @@ const categories = {
   }
 };
 
+const dateSelect = {
+  id: 'transaction-dates'
+};
+
 const defaultProps = {
   transactions,
   categories,
+  dateSelect,
   showModal: jest.fn(),
   hideModal: jest.fn(),
   handleIgnoreRow: jest.fn(),
@@ -89,7 +94,7 @@ it('should show less rows when paginating', () => {
   expect(rendered.find('.page-item').last().hasClass('disabled')).toEqual(false);
 });
 
-it('should show page two', () => {
+it('should show page three', () => {
   const container = shallow(
     <TransactionTable
       {...defaultProps}
@@ -166,4 +171,22 @@ it('should show a specific category', () => {
   );
   container.update();
   expect(container.find('TransactionRow').length).toEqual(2);
+});
+
+it('should filter by date', () => {
+  const props = Object.assign({}, defaultProps, {
+    dateSelect: {
+      id: 'transaction-dates',
+      startDate: moment('2018-01-03').locale('sv-SE'),
+      endDate: moment('2018-02-03').locale('sv-SE')
+    }
+  })
+  const container = shallow(
+    <TransactionTable
+      {...props}
+    />
+  );
+  expect(container.find('TransactionRow').length).toEqual(1);
+  const rendered = container.render();
+  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
 });

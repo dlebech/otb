@@ -2,13 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Select from 'react-select';
+import moment from 'moment';
 import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
 import Pagination from '../shared/Pagination';
 import { uncategorized } from '../../data/categories';
+import Dates from '../Dates';
 
-const filterData = (data, categories) => {
+const filterData = (data, categories, dateSelect) => {
   let categoryFilter = t => true;
+  let dateFilter = t => true;
   if (Array.isArray(categories) && categories.length > 0) {
     categories = new Set(categories);
     categoryFilter = t => {
@@ -17,8 +20,14 @@ const filterData = (data, categories) => {
     };
   }
 
-  // Right now, the only filter we have is the categoryFilter...
-  return data.filter(t => categoryFilter(t));
+  if (dateSelect.startDate && dateSelect.endDate) {
+    dateFilter = t => {
+      return moment(t.date)
+        .isBetween(dateSelect.startDate, dateSelect.endDate, 'day', '[]');
+    };
+  }
+
+  return data.filter(t => categoryFilter(t) && dateFilter(t));
 };
 
 const sortData = (data, sortKey, sortAscending) => {
@@ -52,6 +61,7 @@ class TransactionTable extends React.Component {
     this.handleSortChange = this.handleSortChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.handleCategorySelect = this.handleCategorySelect.bind(this);
+    this.handleDatesChange = this.handleDatesChange.bind(this);
   }
 
   componentDidUpdate() {
@@ -64,7 +74,7 @@ class TransactionTable extends React.Component {
     // can easier sort, filter, etc. later
     const data = [].concat(props.transactions);
     const dataView = sortData(
-      filterData(data, state.filterCategories),
+      filterData(data, state.filterCategories, props.dateSelect),
       state.sortKey,
       state.sortAscending
     );
@@ -79,6 +89,10 @@ class TransactionTable extends React.Component {
     this.setState({ searchText: e.target.value }, () => {
       this.props.handleSearch(this.state.searchText);
     });
+  }
+
+  handleDatesChange({ startDate, endDate }) {
+    this.props.handleDatesChange(this.props.dateSelect.id, startDate, endDate);
   }
 
   handlePageSizeChange(pageSize) {
@@ -105,7 +119,7 @@ class TransactionTable extends React.Component {
 
     // Need to both re-filter and re-sort
     const dataView = sortData(
-      filterData(this.state.data, filterCategories),
+      filterData(this.state.data, filterCategories, this.props.dateSelect),
       this.state.sortKey,
       this.state.sortAscending
     );
@@ -143,7 +157,22 @@ class TransactionTable extends React.Component {
 
     return (
       <React.Fragment>
-        <div className="row align-items-center">
+        <div className="row">
+          <div className="col-12">
+            <Dates
+              id={this.props.dateSelect.id}
+              startDate={this.props.dateSelect.startDate}
+              endDate={this.props.dateSelect.endDate}
+              handleDatesChange={this.handleDatesChange}
+              showPresets={false}
+              dateProps={{
+                showClearDates: true,
+                small: true
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-3 row align-items-center">
           <div className="col-lg-6">
             <div className="row align-items-center">
               <div className="col-auto">
@@ -251,11 +280,16 @@ TransactionTable.propTypes = {
     })
   })).isRequired,
   categories: PropTypes.object.isRequired,
+  dateSelect: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired
+  handleRowCategory: PropTypes.func.isRequired,
+  handleSearch: PropTypes.func.isRequired,
+  handleDatesChange: PropTypes.func.isRequired
 };
 
 export default TransactionTable;
