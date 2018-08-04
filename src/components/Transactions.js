@@ -19,8 +19,6 @@ class Transactions extends React.Component {
 
     this.handleRowCategory = this.handleRowCategory.bind(this);
     this.handleNewRowCategory = this.handleNewRowCategory.bind(this);
-
-    this.state = { searchText: props.searchText };
   }
 
   async handleNewRowCategory(...args) {
@@ -78,14 +76,18 @@ class Transactions extends React.Component {
         <TransactionTable
           transactions={this.props.transactions}
           categories={this.props.categories}
-          dateSelect={this.props.dateSelect}
           handleRowCategory={this.handleRowCategory}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
           handleSearch={this.props.handleSearch}
           handleDatesChange={this.props.handleDatesChange}
+          handlePageChange={this.props.handlePageChange}
+          handlePageSizeChange={this.props.handlePageSizeChange}
+          handleSortChange={this.props.handleSortChange}
+          handleFilterCategories={this.props.handleFilterCategories}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
+          {...this.props.transactionListSettings}
         />
         <Confirm />
         <NewCategoryForRow />
@@ -133,8 +135,11 @@ const mapStateToProps = state => {
     categories,
     isCategoryGuessing: state.app.isCategoryGuessing,
     hasTransactions: state.transactions.data.length > 0,
-    searchText: state.search.transactions.text,
-    dateSelect
+    transactionListSettings: {
+      searchText: state.search.transactions.text,
+      dateSelect,
+      ...state.edit.transactionList
+    }
   };
 };
 
@@ -166,9 +171,21 @@ const mapDispatchToProps = dispatch => {
     },
     handleSearch: debounce(text => {
       dispatch(searchTransactions(text));
-    }, 100),
+    }, 250),
     handleDatesChange: (dateSelectId, startDate, endDate) => {
       dispatch(actions.editDates(dateSelectId, startDate, endDate));
+    },
+    handlePageChange: page => {
+      dispatch(actions.setTransactionListPage(page));
+    },
+    handlePageSizeChange: (pageSize, numTransactions) => {
+      dispatch(actions.setTransactionListPageSize(pageSize, numTransactions));
+    },
+    handleSortChange: (sortKey, sortAscending) => {
+      dispatch(actions.setTransactionListSort(sortKey, sortAscending));
+    },
+    handleFilterCategories: (filterCategories, numTransactions) => {
+      dispatch(actions.setTransactionListFilterCategories(filterCategories, numTransactions));
     }
   };
 };

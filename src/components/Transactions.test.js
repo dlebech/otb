@@ -102,7 +102,11 @@ describe('Transactions', () => {
         }
       },
       edit: {
-        dateSelect: {}
+        dateSelect: {},
+        transactionList: {
+          page: 1,
+          pageSize: 50
+        }
       }
     });
 
@@ -149,7 +153,11 @@ describe('Transactions', () => {
         }
       },
       edit: {
-        dateSelect: {}
+        dateSelect: {},
+        transactionList: {
+          page: 1,
+          pageSize: 50
+        }
       }
     });
 

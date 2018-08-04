@@ -23,6 +23,12 @@ export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
 export const ENQUEUE_GUESS_ALL_CATEGORIES = 'ENQUEUE_GUESS_ALL_CATEGORIES';
 export const DEQUEUE_GUESS_ALL_CATEGORIES = 'DEQUEUE_GUESS_ALL_CATEGORIES';
 
+// Transaction list edit changes
+export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
+export const SET_TRANSACTION_LIST_PAGE_SIZE = 'SET_TRANSACTION_LIST_PAGE_SIZE';
+export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
+export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
+
 export const parseTransactionsStart = () => {
   return {
     type: PARSE_TRANSACTIONS_START
@@ -156,6 +162,37 @@ export const editDates = (dateSelectId, startDate, endDate) => {
     dateSelectId,
     startDate,
     endDate
+  };
+};
+
+export const setTransactionListPage = page => {
+  return {
+    type: SET_TRANSACTION_LIST_PAGE,
+    page
+  };
+};
+
+export const setTransactionListPageSize = (pageSize, numTransactions) => {
+  return {
+    type: SET_TRANSACTION_LIST_PAGE_SIZE,
+    pageSize,
+    numTransactions
+  };
+};
+
+export const setTransactionListSort = (sortKey, sortAscending) => {
+  return {
+    type: SET_TRANSACTION_LIST_SORT,
+    sortKey,
+    sortAscending
+  };
+};
+
+export const setTransactionListFilterCategories = (filterCategories, numTransactions) => {
+  return {
+    type: SET_TRANSACTION_LIST_FILTER_CATEGORIES,
+    filterCategories,
+    numTransactions
   };
 };
 
