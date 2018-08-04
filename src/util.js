@@ -43,55 +43,6 @@ export const findCategory = (categories, categoryId, returnFallback = true) => {
   return category;
 };
 
-export const createTestData = () => {
-  const startDate = moment().subtract(4, 'month');
-  const now = moment();
-  const transactions = [];
-  const categorySelection = [
-    categories.entertainment,
-    categories.foodAndDrink,
-    categories.home,
-    categories.money,
-    categories.shopping,
-    categories.transportation,
-    categories.travel
-  ];
-  while (startDate.isBefore(now)) {
-    startDate.add(1, 'day');
-    for (let i = 0; i < 3; i++) {
-      const category = categorySelection[Math.floor(Math.random() * categorySelection.length)];
-      const tCategory = {};
-      if (Math.round(Math.random()) === 1) tCategory.confirmed = category.id;
-      else if (Math.round(Math.random()) === 1) tCategory.guess = category.id;
-      transactions.push({
-        id: uuidv4(),
-        date: startDate.clone().format('YYYY-MM-DD'),
-        description: `A ${category.name} store`,
-        amount: -Math.round(Math.random() * 100 + 1),
-        total: 0,
-        category: tCategory
-      });
-    }
-  }
-
-  // Add some income...
-  transactions.push({
-    id: uuidv4(),
-    date: startDate.clone().format('YYYY-MM-DD'),
-    description: `Some income`,
-    amount: 123,
-    total: 0,
-    category: {}
-  });
-
-  transactions.reduce((prev, cur) => {
-    cur.total = prev.total + cur.amount;
-    return cur;
-  });
-
-  return transactions;
-};
-
 export const sleep = timeToSleep => {
   return new Promise(resolve => setTimeout(resolve, timeToSleep));
 };
@@ -152,4 +103,55 @@ export const toggleLocalStorage = async (persistor, enabled) => {
     await persistor.flush();
     await persistor.purge();
   }
+};
+
+export const createTestData = () => {
+  const startDate = moment().subtract(4, 'month');
+  const now = moment();
+  const transactions = [];
+  const categorySelection = [
+    categories.entertainment,
+    categories.foodAndDrink,
+    categories.home,
+    categories.money,
+    categories.shopping,
+    categories.transportation,
+    categories.travel
+  ];
+  while (startDate.isBefore(now)) {
+    startDate.add(1, 'day');
+    for (let i = 0; i < 3; i++) {
+      const category = categorySelection[Math.floor(Math.random() * categorySelection.length)];
+      const tCategory = {};
+      if (Math.round(Math.random()) === 1) tCategory.confirmed = category.id;
+      else if (Math.round(Math.random()) === 1) tCategory.guess = category.id;
+      transactions.push({
+        id: uuidv4(),
+        date: startDate.clone().format('YYYY-MM-DD'),
+        description: `A ${category.name} store`,
+        descriptionCleaned: cleanTransactionDescription(`A ${category.name} store`),
+        amount: -Math.round(Math.random() * 100 + 1),
+        total: 0,
+        category: tCategory
+      });
+    }
+  }
+
+  // Add some income...
+  transactions.push({
+    id: uuidv4(),
+    date: startDate.clone().format('YYYY-MM-DD'),
+    description: 'Some income',
+    descriptionCleaned: cleanTransactionDescription('Some income'),
+    amount: 123,
+    total: 0,
+    category: {}
+  });
+
+  transactions.reduce((prev, cur) => {
+    cur.total = prev.total + cur.amount;
+    return cur;
+  });
+
+  return transactions;
 };

@@ -258,10 +258,16 @@ const transactionsReducer = (state = initialTransactions, action) => {
         }
       });
     case actions.CREATE_TEST_DATA:
+      const testTransactions = util.createTestData();
       return update(state, {
         data: {
-          $set: util.createTestData()
-        }
+          $set: testTransactions
+        },
+        categorizer: {
+          bayes: {
+            $set: retrainBayes(testTransactions).toJson()
+          }
+        },
       });
     default:
       return state;
