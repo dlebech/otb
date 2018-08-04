@@ -48,9 +48,19 @@ const Pagination = props => {
         <li className={`page-item${props.page === 1 ? ' disabled' : ''}`}>
           <button
             className="page-link"
+            onClick={() => props.handlePageChange(1)}
+          >
+            <span aria-hidden="true">&laquo;</span>
+            <span className="sr-only">First Page</span>
+          </button>
+        </li>
+        <li className={`page-item${props.page === 1 ? ' disabled' : ''}`}>
+          <button
+            className="page-link"
             onClick={() => props.handlePageChange(props.page - 1)}
           >
-            Previous
+            <span aria-hidden="true">&lsaquo;</span>
+            <span className="sr-only">Previous Page</span>
           </button>
         </li>
         {pages}
@@ -59,7 +69,17 @@ const Pagination = props => {
             className="page-link"
             onClick={() => props.handlePageChange(props.page + 1)}
           >
-            Next
+            <span aria-hidden="true">&rsaquo;</span>
+            <span className="sr-only">Next Page</span>
+          </button>
+        </li>
+        <li className={`page-item${props.page === lastPage ? ' disabled' : ''}`}>
+          <button
+            className="page-link"
+            onClick={() => props.handlePageChange(lastPage)}
+          >
+            <span aria-hidden="true">&raquo;</span>
+            <span className="sr-only">First Page</span>
           </button>
         </li>
       </ul>

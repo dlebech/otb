@@ -20,7 +20,7 @@ const SortHeader = props => {
   return (
     <th
       scope="col"
-      className="text-nowrap"
+      className="text-nowrap cursor-pointer"
       onClick={() => props.handleSortChange(props.sortKey, !props.sortAscending)}
     >
       {props.label}

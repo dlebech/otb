@@ -84,7 +84,7 @@ class Menu extends React.Component {
               <div className="navbar-text text-info">
                 <FontAwesomeIcon
                   icon="question-circle"
-                  className="ml-1"
+                  className="ml-1 cursor-pointer"
                   fixedWidth
                   onClick={() => this.props.showModal(SaveData.modalName)}
                 />

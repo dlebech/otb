@@ -2,13 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Select from 'react-select';
+import moment from 'moment';
+import { uncategorized } from '../../data/categories';
+import Pagination from '../shared/Pagination';
+import Dates from '../Dates';
 import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
-import Pagination from '../shared/Pagination';
-import { uncategorized } from '../../data/categories';
+import SearchField from './SearchField';
 
-const filterData = (data, categories) => {
+const filterData = (data, categories, dateSelect) => {
   let categoryFilter = t => true;
+  let dateFilter = t => true;
   if (Array.isArray(categories) && categories.length > 0) {
     categories = new Set(categories);
     categoryFilter = t => {
@@ -17,8 +21,14 @@ const filterData = (data, categories) => {
     };
   }
 
-  // Right now, the only filter we have is the categoryFilter...
-  return data.filter(t => categoryFilter(t));
+  if (dateSelect.startDate && dateSelect.endDate) {
+    dateFilter = t => {
+      return moment(t.date)
+        .isBetween(dateSelect.startDate, dateSelect.endDate, 'day', '[]');
+    };
+  }
+
+  return data.filter(t => categoryFilter(t) && dateFilter(t));
 };
 
 const sortData = (data, sortKey, sortAscending) => {
@@ -38,60 +48,36 @@ class TransactionTable extends React.Component {
 
     // The data from props is actually being stored in state as well, but they
     // are set further down.
-    this.state = {
-      page: 1,
-      pageSize: 50,
-      sortKey: 'date',
-      sortAscending: true,
-      filterCategories: [],
-      searchText: props.searchText
-    };
+    this.state = {};
 
-    this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
-    this.handleSortChange = this.handleSortChange.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
     this.handleCategorySelect = this.handleCategorySelect.bind(this);
+    this.handleDatesChange = this.handleDatesChange.bind(this);
   }
 
   componentDidUpdate() {
     ReactTooltip.rebuild();
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props) {
     // Only called when receiving new props or on the first render. So this is
     // where we should just set all the raw transactions into local state so we
     // can easier sort, filter, etc. later
     const data = [].concat(props.transactions);
     const dataView = sortData(
-      filterData(data, state.filterCategories),
-      state.sortKey,
-      state.sortAscending
+      filterData(data, props.filterCategories, props.dateSelect),
+      props.sortKey,
+      props.sortAscending
     );
     return { data, dataView };
   }
 
-  handlePageChange(page) {
-    this.setState({ page });
-  }
-
-  handleSearch(e) {
-    this.setState({ searchText: e.target.value }, () => {
-      this.props.handleSearch(this.state.searchText);
-    });
+  handleDatesChange({ startDate, endDate }) {
+    this.props.handleDatesChange(this.props.dateSelect.id, startDate, endDate);
   }
 
   handlePageSizeChange(pageSize) {
-    // Check that the new page does not exceed the existing page.
-    let page = this.state.page;
-    const lastPage = Math.ceil(this.state.dataView.length / pageSize);
-    if (lastPage < page) page = lastPage;
-    this.setState({ page, pageSize });
-  }
-
-  handleSortChange(sortKey, sortAscending) {
-    const dataView = sortData(this.state.dataView, sortKey, sortAscending);
-    this.setState({ sortKey, sortAscending, dataView });
+    this.props.handlePageSizeChange(pageSize, this.state.dataView.length);
   }
 
   handleCategorySelect(options, action) {
@@ -103,25 +89,15 @@ class TransactionTable extends React.Component {
 
     const filterCategories = options.map(o => o.value);
 
-    // Need to both re-filter and re-sort
-    const dataView = sortData(
-      filterData(this.state.data, filterCategories),
-      this.state.sortKey,
-      this.state.sortAscending
-    );
-
-    // Check if the new filter changes the last page.
-    let page = this.state.page;
-    const lastPage = Math.ceil(dataView.length / this.state.pageSize);
-    if (lastPage < page) page = lastPage;
-    if (page === 0) page = 1;
-
-    this.setState({ page, filterCategories, dataView });
+    // Since he category filter might reduce the number of transactions, we need
+    // to know the new number of transactions here.
+    const newData = filterData(this.state.data, filterCategories, this.props.dateSelect)
+    this.props.handleFilterCategories(filterCategories, newData.length);
   }
 
   render() {
     const dataPage = this.state.dataView
-      .slice((this.state.page-1) * this.state.pageSize, this.state.page * this.state.pageSize);
+      .slice((this.props.page-1) * this.props.pageSize, this.props.page * this.props.pageSize);
 
     // Map category options here to avoid having children re-map these for every
     // row.
@@ -143,17 +119,26 @@ class TransactionTable extends React.Component {
 
     return (
       <React.Fragment>
-        <div className="row align-items-center">
+        <div className="row">
+          <div className="col-12">
+            <Dates
+              id={this.props.dateSelect.id}
+              startDate={this.props.dateSelect.startDate}
+              endDate={this.props.dateSelect.endDate}
+              handleDatesChange={this.handleDatesChange}
+              showPresets={false}
+              dateProps={{
+                showClearDates: true,
+                small: true
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-3 row align-items-center">
           <div className="col-lg-6">
             <div className="row align-items-center">
               <div className="col-auto">
-                <input
-                  type="text"
-                  placeholder="Search for a transaction"
-                  className="form-control form-col-auto"
-                  value={this.state.searchText}
-                  onChange={this.handleSearch}
-                />
+                <SearchField handleSearch={this.props.handleSearch} searchText={this.props.searchText} />
               </div>
               <div className="col">
                 <Select
@@ -169,10 +154,10 @@ class TransactionTable extends React.Component {
           </div>
           <div className="col-lg-6 mt-3 mt-lg-0">
             <Pagination
-              page={this.state.page}
-              pageSize={this.state.pageSize}
+              page={this.props.page}
+              pageSize={this.props.pageSize}
               rowCount={this.state.dataView.length}
-              handlePageChange={this.handlePageChange}
+              handlePageChange={this.props.handlePageChange}
               handlePageSizeChange={this.handlePageSizeChange}
             />
           </div>
@@ -185,30 +170,30 @@ class TransactionTable extends React.Component {
                   <SortHeader
                     label="Date"
                     sortKey="date"
-                    sortAscending={this.state.sortAscending}
-                    activeSortKey={this.state.sortKey}
-                    handleSortChange={this.handleSortChange}
+                    sortAscending={this.props.sortAscending}
+                    activeSortKey={this.props.sortKey}
+                    handleSortChange={this.props.handleSortChange}
                   />
                   <SortHeader
                     label="Description"
                     sortKey="description"
-                    sortAscending={this.state.sortAscending}
-                    activeSortKey={this.state.sortKey}
-                    handleSortChange={this.handleSortChange}
+                    sortAscending={this.props.sortAscending}
+                    activeSortKey={this.props.sortKey}
+                    handleSortChange={this.props.handleSortChange}
                   />
                   <SortHeader
                     label="Amount"
                     sortKey="amount"
-                    sortAscending={this.state.sortAscending}
-                    activeSortKey={this.state.sortKey}
-                    handleSortChange={this.handleSortChange}
+                    sortAscending={this.props.sortAscending}
+                    activeSortKey={this.props.sortKey}
+                    handleSortChange={this.props.handleSortChange}
                   />
                   <SortHeader
                     label="Total"
                     sortKey="total"
-                    sortAscending={this.state.sortAscending}
-                    activeSortKey={this.state.sortKey}
-                    handleSortChange={this.handleSortChange}
+                    sortAscending={this.props.sortAscending}
+                    activeSortKey={this.props.sortKey}
+                    handleSortChange={this.props.handleSortChange}
                   />
                   <th>Category</th>
                   <th></th>
@@ -238,6 +223,7 @@ class TransactionTable extends React.Component {
 }
 
 TransactionTable.propTypes = {
+  // Required fields
   transactions: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
@@ -251,11 +237,26 @@ TransactionTable.propTypes = {
     })
   })).isRequired,
   categories: PropTypes.object.isRequired,
+  dateSelect: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired,
+  page: PropTypes.number.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  sortKey: PropTypes.string.isRequired,
+  sortAscending: PropTypes.bool.isRequired,
+  filterCategories: PropTypes.arrayOf(PropTypes.string).isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired
+  handleRowCategory: PropTypes.func.isRequired,
+  handleSearch: PropTypes.func.isRequired,
+  handleDatesChange: PropTypes.func.isRequired,
+  handlePageChange: PropTypes.func.isRequired,
+  handlePageSizeChange: PropTypes.func.isRequired,
+  handleSortChange: PropTypes.func.isRequired,
+  handleFilterCategories: PropTypes.func.isRequired,
+  searchText: PropTypes.string
 };
 
 export default TransactionTable;

@@ -5,9 +5,12 @@ import 'react-dates/initialize';
 import { DateRangePicker, START_DATE } from 'react-dates';
 
 import 'react-dates/lib/css/_datepicker.css';
+import '../css/datepicker.css';
 
 const DatePreset = props => {
-  const isActive = props.startDate.isSame(props.currentStartDate, 'day') &&
+  const isActive = props.startDate &&
+    props.endDate &&
+    props.startDate.isSame(props.currentStartDate, 'day') &&
     props.endDate.isSame(props.currentEndDate, 'day');
 
   const className = `btn ${isActive ? 'btn-secondary' : 'btn-outline-secondary'}`;
@@ -29,8 +32,8 @@ DatePreset.propTypes = {
   label: PropTypes.string.isRequired,
   startDate: PropTypes.object.isRequired,
   endDate: PropTypes.object.isRequired,
-  currentStartDate: PropTypes.object.isRequired,
-  currentEndDate: PropTypes.object.isRequired,
+  currentStartDate: PropTypes.object,
+  currentEndDate: PropTypes.object,
   handleDatesChange: PropTypes.func.isRequired
 };
 
@@ -70,19 +73,20 @@ class Dates extends React.Component {
   render() {
     return (
       <div className="row align-items-center">
-        <div className="col-auto">
+        <div className="col-lg-auto">
           <DateRangePicker
             startDate={this.props.startDate}
             startDateId={`${this.props.id}-start-date`}
             endDate={this.props.endDate}
-            endDateId={`${this.props.id}-end-date-id`}
+            endDateId={`${this.props.id}-end-date`}
             focusedInput={this.state.focusedInput}
             onFocusChange={this.handleFocusChange}
             onDatesChange={this.props.handleDatesChange}
             isOutsideRange={() => false}
+            {...this.props.dateProps}
           />
         </div>
-        <div className="col-auto">
+        {this.props.showPresets && <div className="col-lg-6 mt-3 mt-lg-0">
           <div className="btn-group">
             {presets.map(preset => {
               return <DatePreset 
@@ -96,7 +100,7 @@ class Dates extends React.Component {
               />
             })}
           </div>
-        </div>
+        </div>}
       </div>
     );
   }
@@ -104,9 +108,16 @@ class Dates extends React.Component {
 
 Dates.propTypes = {
   id: PropTypes.string.isRequired,
-  startDate: PropTypes.object.isRequired,
-  endDate: PropTypes.object.isRequired,
-  handleDatesChange: PropTypes.func.isRequired
+  startDate: PropTypes.object,
+  endDate: PropTypes.object,
+  handleDatesChange: PropTypes.func.isRequired,
+  showPresets: PropTypes.bool,
+  dateProps: PropTypes.object
+};
+
+Dates.defaultProps = {
+  showPresets: true,
+  dateProps: {}
 };
 
 export default Dates;

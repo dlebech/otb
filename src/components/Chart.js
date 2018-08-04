@@ -140,7 +140,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     handleDatesChange: (dateSelectId, startDate, endDate) => {
-      return dispatch(actions.editDates(dateSelectId, startDate, endDate));
+      dispatch(actions.editDates(dateSelectId, startDate, endDate));
     }
   };
 };
