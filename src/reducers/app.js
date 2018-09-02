@@ -40,6 +40,12 @@ const appReducer = (state = initialApp, action) => {
       return update(state, {
         isCategoryGuessing: { $set: false }
       });
+    case actions.SET_DEFAULT_CURRENCY:
+      return update(state, {
+        defaultCurrency: {
+          $set: action.currency
+        }
+      });
     default:
       return state;
   }

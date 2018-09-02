@@ -20,6 +20,7 @@ export const EDIT_DATES = 'EDIT_DATES';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
 export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
+export const SET_DEFAULT_CURRENCY = 'SET_DEFAULT_CURRENCY'
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -198,6 +199,13 @@ export const createTestData = () => ({ type: CREATE_TEST_DATA });
 
 export const startGuessAllCategories = () => ({ type: START_GUESS_ALL_CATEGORIES });
 export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
+
+export const setDefaultCurrency = currency => {
+  return {
+    type: SET_DEFAULT_CURRENCY,
+    currency
+  };
+};
 
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {

@@ -22,10 +22,6 @@ it('should set default data', () => {
 });
 
 describe('migrations', () => {
-  it('should not perform upgrade when the version is correct', () => {
-
-  });
-
   it('should perform v1 migration (description update)', () => {
     const state = reducers({
       transactions: {
@@ -529,4 +525,22 @@ it('should create test data', () => {
   expect(state.transactions.data.length).toBeGreaterThan(100);
   expect(state.transactions.data[0].total).toBeGreaterThan(state.transactions.data[1].total);
   expect(state.transactions.categorizer.bayes.length).toBeGreaterThan(0);
+});
+
+it('should set a default currency on transactions without currency', () => {
+  const state = reducers({
+    transactions: {
+      version: 1,
+      data: [
+        { id: 'abcd' },
+        { id: 'efgh' },
+        { id: 'ijkl', currency: 'SEK' }
+      ]
+    }
+  }, actions.setDefaultCurrency('USD'));
+  expect(state.transactions.data).toEqual([
+    { id: 'abcd', currency: 'USD' },
+    { id: 'efgh', currency: 'USD' },
+    { id: 'ijkl', currency: 'SEK' }
+  ]);
 });

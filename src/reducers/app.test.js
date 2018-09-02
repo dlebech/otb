@@ -40,3 +40,7 @@ it('should handle the guess start action', () => {
 it('should handle the guess end action', () => {
   expect(reducers({ app: { isCategoryGuessing: true } }, actions.endGuessAllCategories()).app.isCategoryGuessing).toEqual(false);
 });
+
+it('should set the default currency', () => {
+  expect(reducers({}, actions.setDefaultCurrency('USD')).app.defaultCurrency).toEqual('USD');
+});

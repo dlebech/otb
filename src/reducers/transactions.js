@@ -269,6 +269,20 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         },
       });
+    case actions.SET_DEFAULT_CURRENCY:
+      for (let i = 0; i < state.data.length; i++) {
+        if (state.data[i].currency) continue;
+        state = update(state, {
+          data: {
+            [i]: {
+              currency: {
+                $set: action.currency
+              }
+            }
+          }
+        });
+      }
+      return state
     default:
       return state;
   }
