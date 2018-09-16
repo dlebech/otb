@@ -46,6 +46,14 @@ const appReducer = (state = initialApp, action) => {
           $set: action.currency
         }
       });
+    case actions.START_FETCH_CURRENCIES:
+      return update(state, {
+        isFetchingCurrencies: { $set: true }
+      });
+    case actions.END_FETCH_CURRENCIES:
+      return update(state, {
+        isFetchingCurrencies: { $set: false }
+      });
     default:
       return state;
   }

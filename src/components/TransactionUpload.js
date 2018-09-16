@@ -125,7 +125,7 @@ const TransactionUpload = props => {
     <React.Fragment>
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
-          <li className="breadcrumb-item"><Link to="/transaction">Transactions</Link></li>
+          <li className="breadcrumb-item"><Link to="/transactions">Transactions</Link></li>
           <li className="breadcrumb-item active" aria-current="page">Upload</li>
         </ol>
       </nav>

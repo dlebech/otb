@@ -93,3 +93,8 @@ it('should change page if current page is too high for filter categories', () =>
   expect(state.edit.transactionList.filterCategories).toEqual(['abcd']);
   expect(state.edit.transactionList.page).toEqual(1);
 });
+
+it('should handle currencies', () => {
+  const state = reducers({}, actions.setCurrencies(['USD', 'JPY']));
+  expect(state.edit.currencies).toEqual(['USD', 'JPY']);
+});

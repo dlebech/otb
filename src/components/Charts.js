@@ -17,7 +17,7 @@ import * as actions from '../actions';
 import { findCategory } from '../util';
 import NoData from './NoData';
 import Dates from './Dates';
-import Summary from './chart/Summary';
+import Summary from './charts/Summary';
 
 const AmountPerDay = props => {
   const data = nest()
@@ -78,7 +78,7 @@ const AmountPerCategory = props => {
   )
 };
 
-const Chart = props => {
+const Charts = props => {
   if (props.transactions.length === 0) return <NoData />;
 
   const filteredTransactions = props.transactions.filter(t => {
@@ -145,4 +145,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chart);
+export default connect(mapStateToProps, mapDispatchToProps)(Charts);

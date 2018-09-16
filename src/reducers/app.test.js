@@ -44,3 +44,11 @@ it('should handle the guess end action', () => {
 it('should set the default currency', () => {
   expect(reducers({}, actions.setDefaultCurrency('USD')).app.defaultCurrency).toEqual('USD');
 });
+
+it('should handle fetch currencies start action', () => {
+  expect(reducers({}, actions.startFetchCurrencies()).app.isFetchingCurrencies).toEqual(true);
+});
+
+it('should handle fetch currencies end action', () => {
+  expect(reducers({ app: { isFetchingCurrencies: true } }, actions.endFetchCurrencies()).app.isFetchingCurrencies).toEqual(false);
+});

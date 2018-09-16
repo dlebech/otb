@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as actions from '../actions';
-import RestoreData from './RestoreData';
+import RestoreData from './manageData/RestoreData';
 
 const IntroWithData = props => {
   return (
@@ -14,15 +14,15 @@ const IntroWithData = props => {
         You have {props.numTransactions} transactions so far.
       </p>
       <hr />
-      <Link className="btn btn-primary m-1" to="/transaction/upload">
+      <Link className="btn btn-primary m-1" to="/transactions/upload">
         <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
         Upload more transactions
       </Link>
-      <Link className="btn btn-secondary m-1" to="/transaction">
+      <Link className="btn btn-secondary m-1" to="/transactions">
         <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
         Existing transactions
       </Link>
-      <Link className="btn btn-secondary m-1" to="/chart">
+      <Link className="btn btn-secondary m-1" to="/charts">
         <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
         Charts
       </Link>
@@ -42,7 +42,7 @@ const IntroWithoutData = props => {
         upload the file here. The data stays in your browser and is not
         shared or stored anywhere else.
       </p>
-      <Link className="btn btn-primary btn-lg m-1" to="/transaction/upload">Upload Transactions</Link>
+      <Link className="btn btn-primary btn-lg m-1" to="/transactions/upload">Upload Transactions</Link>
       <RestoreData className="btn btn-secondary btn-lg m-1" persistor={props.persistor}>
         Restore Data
         <FontAwesomeIcon

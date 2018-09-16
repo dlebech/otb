@@ -51,7 +51,7 @@ class Transactions extends React.Component {
       <React.Fragment>
         <div className="row align-items-center">
           <div className="col-auto">
-            <Link to="/transaction/upload" className="btn btn-outline-primary">
+            <Link to="/transactions/upload" className="btn btn-outline-primary">
               <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
               Add More Transactions
             </Link>

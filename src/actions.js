@@ -1,5 +1,6 @@
 import chunk from 'lodash/chunk';
 import { sleep } from './util';
+import { lambdaBase } from './config';
 
 export const PARSE_TRANSACTIONS_START = 'PARSE_TRANSACTIONS_START';
 export const PARSE_TRANSACTIONS_END = 'PARSE_TRANSACTIONS_END';
@@ -21,6 +22,9 @@ export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
 export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
 export const SET_DEFAULT_CURRENCY = 'SET_DEFAULT_CURRENCY'
+export const SET_CURRENCIES = 'SET_CURRENCIES';
+export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
+export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -207,6 +211,16 @@ export const setDefaultCurrency = currency => {
   };
 };
 
+export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
+export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
+
+export const setCurrencies = currencies => {
+  return {
+    type: SET_CURRENCIES,
+    currencies
+  };
+};
+
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
     while (getState().app.isCategoryGuessing) {
@@ -222,7 +236,6 @@ export const guessAllCategories = () => {
 
     dispatch(startGuessAllCategories());
 
-
     const transactionsToGuess = chunk(
       getState().transactions.data
         .filter(t => !t.category.confirmed && !t.ignore)
@@ -236,5 +249,14 @@ export const guessAllCategories = () => {
     }
 
     dispatch(endGuessAllCategories());
+  };
+};
+
+export const fetchCurrencies = () => {
+  return async dispatch => {
+    dispatch(startFetchCurrencies());
+    const currencies = await fetch(`${lambdaBase}/currencies`).then(res => res.json());
+    dispatch(setCurrencies(currencies));
+    dispatch(endFetchCurrencies());
   };
 };

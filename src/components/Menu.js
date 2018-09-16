@@ -48,14 +48,14 @@ class Menu extends React.Component {
             <Link className="navbar-brand" to="/">Off The Books</Link>
             <div className="navbar-collapse">
               <ul className="navbar-nav mr-auto">
-                <li className={`nav-item${active('/transaction')}`}>
-                  <Link className="nav-link" to="/transaction">
+                <li className={`nav-item${active('/transactions')}`}>
+                  <Link className="nav-link" to="/transactions">
                     <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
                     Transactions
                   </Link>
                 </li>
-                <li className={`nav-item${active('/chart')}`}>
-                  <Link className="nav-link" to="/chart">
+                <li className={`nav-item${active('/charts')}`}>
+                  <Link className="nav-link" to="/charts">
                     <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
                     Charts
                   </Link>
