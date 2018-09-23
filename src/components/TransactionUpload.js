@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import Papa from 'papaparse';
 import * as actions from '../actions';
 
 const UploadForm = props => {
@@ -38,7 +37,7 @@ const UploadForm = props => {
             className="btn btn-primary"
             onClick={() => {
               props.handleSave();
-              props.history.push('/transaction')
+              props.history.push('/transactions')
             }}
           >
             Save
@@ -169,9 +168,15 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleFileChange: e => {
+    handleFileChange: async e => {
+      // File needs to be extracted here, because it is unavailable after the
+      // dynamic import below for some reason.
+      const file = e.target.files[0];
+
       dispatch(actions.parseTransactionsStart());
-      Papa.parse(e.target.files[0], {
+
+      const Papa = await import('papaparse');
+      Papa.parse(file, {
         dynamicTyping: true,
         skipEmptyLines: true,
         complete: results => dispatch(actions.parseTransactionsEnd(results.errors, results.data))
