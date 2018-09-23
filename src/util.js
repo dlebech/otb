@@ -1,6 +1,7 @@
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import * as categories from './data/categories';
+import { defaultAccount }  from './data/accounts';
 
 /**
  * Given a list of transactions (an array of arrays), guess which column
@@ -132,7 +133,8 @@ export const createTestData = () => {
         descriptionCleaned: cleanTransactionDescription(`A ${category.name} store`),
         amount: -Math.round(Math.random() * 100 + 1),
         total: 0,
-        category: tCategory
+        category: tCategory,
+        account: defaultAccount.id
       });
     }
   }
@@ -145,7 +147,8 @@ export const createTestData = () => {
     descriptionCleaned: cleanTransactionDescription('Some income'),
     amount: 123,
     total: 0,
-    category: {}
+    category: {},
+    account: defaultAccount.id
   });
 
   transactions.reduce((prev, cur) => {

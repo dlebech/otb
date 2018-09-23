@@ -11,11 +11,11 @@ const initialApp = {
 
 const appReducer = (state = initialApp, action) => {
   switch (action.type) {
-    case actions.PARSE_TRANSACTIONS_START:
+    case actions.IMPORT_PARSE_TRANSACTIONS_START:
       return update(state, {
         isParsing: { $set: true }
       });
-    case actions.PARSE_TRANSACTIONS_END:
+    case actions.IMPORT_PARSE_TRANSACTIONS_END:
       return update(state, {
         isParsing: { $set: false }
       });
@@ -39,12 +39,6 @@ const appReducer = (state = initialApp, action) => {
     case actions.END_GUESS_ALL_CATEGORIES:
       return update(state, {
         isCategoryGuessing: { $set: false }
-      });
-    case actions.SET_DEFAULT_CURRENCY:
-      return update(state, {
-        defaultCurrency: {
-          $set: action.currency
-        }
       });
     case actions.START_FETCH_CURRENCIES:
       return update(state, {

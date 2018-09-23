@@ -47,7 +47,7 @@ describe('Transaction Upload', () => {
 
     // Should dispatch
     expect(store.getActions()).toEqual([
-      { type: actions.SAVE_TRANSACTIONS }
+      { type: actions.IMPORT_SAVE_TRANSACTIONS }
     ]);
 
     expect(push).toHaveBeenCalled();

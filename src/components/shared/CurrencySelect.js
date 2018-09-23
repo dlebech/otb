@@ -26,15 +26,15 @@ class CurrencySelect extends React.Component {
     if (currencies.length === 0) return null;
 
     const options = currencies.map(c => ({ label: c, value: c }));
-    const selectedValue = this.props.defaultCurrency ?
-      {label: this.props.defaultCurrency, value: this.props.defaultCurrency} : null;
+    const selectedValue = this.props.selectedCurrency ?
+      {label: this.props.selectedCurrency, value: this.props.selectedCurrency} : null;
 
     return (
       <Select
         options={options}
         name="default-currency"
         className="currency-select"
-        placeholder="Set default currency..."
+        placeholder="Select currency..."
         onChange={this.handleCurrencySelect}
         value={selectedValue}
       />
@@ -44,13 +44,12 @@ class CurrencySelect extends React.Component {
 
 CurrencySelect.propTypes = {
   onChange: PropTypes.func.isRequired,
-  defaultCurrency: PropTypes.string,
+  selectedCurrency: PropTypes.string,
   currencies: PropTypes.arrayOf(PropTypes.string)
 };
 
 const mapStateToProps = state => {
   return {
-    defaultCurrency: state.app.defaultCurrency,
     currencies: state.edit.currencies
   };
 };

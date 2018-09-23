@@ -75,26 +75,26 @@ const mapDispatchToProps = dispatch => {
       // dynamic import below for some reason.
       const file = e.target.files[0];
 
-      dispatch(actions.parseTransactionsStart());
+      dispatch(actions.importParseTransactionsStart());
 
       const Papa = await import('papaparse');
       Papa.parse(file, {
         dynamicTyping: true,
         skipEmptyLines: true,
-        complete: results => dispatch(actions.parseTransactionsEnd(results.errors, results.data))
+        complete: results => dispatch(actions.importParseTransactionsEnd(results.errors, results.data))
       });
     },
     handleSkipRowsChange: e => {
-      dispatch(actions.updateSkipRows(Number(e.target.value)))
+      dispatch(actions.importUpdateSkipRows(Number(e.target.value)))
     },
     handleColumnTypeChange: (columnIndex, columnType) => {
-      dispatch(actions.updateColumnType(columnIndex, columnType));
+      dispatch(actions.importUpdateColumnType(columnIndex, columnType));
     },
     handleSave: () => {
-      dispatch(actions.saveTransactions());
+      dispatch(actions.importSaveTransactions());
     },
     handleCancel: () => {
-      dispatch(actions.cancelTransactions());
+      dispatch(actions.importCancelTransactions());
     }
   };
 };

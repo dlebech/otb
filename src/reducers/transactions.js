@@ -37,6 +37,7 @@ const mapImportToTransactions = transactionsImport => {
         descriptionCleaned: util.cleanTransactionDescription(transaction[descIndex]),
         amount: util.cleanNumber(transaction[amountIndex]),
         total: util.cleanNumber(transaction[totalIndex]),
+        account: transactionsImport.account,
         category: {
           guess: '',
           confirmed: ''
@@ -95,20 +96,20 @@ const transactionsReducer = (state = initialTransactions, action) => {
   state = migrate(state);
 
   switch (action.type) {
-    case actions.PARSE_TRANSACTIONS_END:
+    case actions.IMPORT_PARSE_TRANSACTIONS_END:
       return update(state, {
         import: {
           data: { $set: action.transactions },
           columnSpec: { $set: util.guessColumnSpec(action.transactions) }
         }
       });
-    case actions.UPDATE_SKIP_ROWS:
+    case actions.IMPORT_UPDATE_SKIP_ROWS:
       return update(state, {
         import: {
           skipRows: { $set: action.skipRows }
         }
       });
-    case actions.UPDATE_COLUMN_TYPE:
+    case actions.IMPORT_UPDATE_COLUMN_TYPE:
       return update(state, {
         import: {
           columnSpec: {
@@ -120,13 +121,19 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         }
       });
-    case actions.CANCEL_TRANSACTIONS:
+    case actions.IMPORT_UPDATE_ACCOUNT:
+      return update(state, {
+        import: {
+          account: { $set: action.account }
+        }
+      });
+    case actions.IMPORT_CANCEL_TRANSACTIONS:
       return update(state, {
         import: {
           $set: initialTransactions.import
         }
       });
-    case actions.SAVE_TRANSACTIONS:
+    case actions.IMPORT_SAVE_TRANSACTIONS:
       return update(state, {
         import: {
           $set: initialTransactions.import

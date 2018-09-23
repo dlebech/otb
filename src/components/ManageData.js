@@ -2,10 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import download from 'downloadjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as actions from '../actions';
 import RestoreData from './manageData/RestoreData';
-import CurrencySelect from './shared/CurrencySelect';
-import Categories from './Categories';
+import Categories from './manageData/Categories';
+import Accounts from './manageData/Accounts';
 
 class ManageData extends React.Component {
   constructor(props) {
@@ -25,37 +24,30 @@ class ManageData extends React.Component {
     return (
       <React.Fragment>
         <div className="row">
-          <div className="col-md-6">
-            <div className="row">
-              <div className="col-auto">
-                <dl>
-                  <dt>Categorized transactions</dt>
-                  <dd>{this.props.numTransactionsCategorized}</dd>
-                  <dt>Uncategorized transactions</dt>
-                  <dd>{this.props.numTransactionsUncategorized}</dd>
-                  <dt>Total transactions</dt>
-                  <dd>{this.props.numTransactions}</dd>
-                </dl>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col">
-                <button
-                  type="button"
-                  className="btn btn-outline-primary m-1"
-                  onClick={this.handleDownload}
-                >
-                  <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
-                  Download All Data
-                </button>
-                <RestoreData className="btn btn-outline-secondary m-1" persistor={this.props.persistor}>
-                  Restore Previous Download
-                </RestoreData>
-              </div>
-            </div>
+          <div className="col">
+            <dl className="row">
+              <dt className="col-auto">Total transactions:</dt>
+              <dd className="col-auto">{this.props.numTransactions}</dd>
+              <dt className="col-auto">Categorized:</dt>
+              <dd className="col-auto">{this.props.numTransactionsCategorized}</dd>
+              <dt className="col-auto">Uncategorized:</dt>
+              <dd className="col-auto">{this.props.numTransactionsUncategorized}</dd>
+            </dl>
           </div>
-          <div className="col-md-6">
-            <CurrencySelect onChange={this.props.setDefaultCurrency} />
+        </div>
+        <div className="row">
+          <div className="col">
+            <button
+              type="button"
+              className="btn btn-outline-primary m-1"
+              onClick={this.handleDownload}
+            >
+              <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
+              Download All Data
+            </button>
+            <RestoreData className="btn btn-outline-secondary m-1" persistor={this.props.persistor}>
+              Restore Previous Download
+            </RestoreData>
           </div>
         </div>
         <hr />
@@ -63,6 +55,10 @@ class ManageData extends React.Component {
           <div className="col">
             <h3>Categories</h3>
             <Categories />
+          </div>
+          <div className="col">
+            <h3>Accounts</h3>
+            <Accounts />
           </div>
         </div>
       </React.Fragment>
@@ -82,12 +78,4 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setDefaultCurrency: currency => {
-      dispatch(actions.setDefaultCurrency(currency));
-    }
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ManageData);
+export default connect(mapStateToProps)(ManageData);
