@@ -1,82 +1,53 @@
 import axios from 'axios';
-import yauzl from 'yauzl';
 import Papa from 'papaparse';
+import { unzip } from './zip';
 
 const rateDailyUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip';
 const rateHistUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip';
 
-const promisify = api => {
-  return (...args) => {
-    return new Promise((resolve, reject) => {
-      api(...args, (err, response) => {
-        if (err) return reject(err);
-        resolve(response);
-      });
-    });
-  };
-};
+// Simple global cache for storing the unzipped versions of the rates. This is
+// of course not going to work a lot of the time, since this is Lambda, but it
+// should help a little bit, especially during testing.
+const cache = {};
 
-const yauzlFromBuffer = promisify(yauzl.fromBuffer);
+const fetchRatesCsv = async url => {
+  if (url in cache) {
+    console.log('Using cached CSV file');
+    return cache[url];
+  }
 
-const unzipCsvs = async data => {
-  // Prepare the zip file
-  const zipFile = await yauzlFromBuffer(data, { lazyEntries: true });
-  console.log('Number of entries in zipfile:', zipFile.entryCount);
-
-  // Open a read stream
-  const openReadStream = promisify(zipFile.openReadStream.bind(zipFile));
-
-  // Read all entries and return each csv file.
-  return new Promise((resolve, reject) => {
-    const files = {};
-
-    zipFile.readEntry();
-    zipFile.on('entry', async entry => {
-      console.log('Reading file:', entry.fileName);
-
-      files[entry.fileName] = []; // Create an empty array to gather the chunks
-
-      const stream = await openReadStream(entry);
-
-      stream.on('end', () => {
-        console.log('Done with:', entry.fileName);
-
-        // Gather all the chunks into a string
-        files[entry.fileName] = Buffer.concat(files[entry.fileName]).toString();
-
-        // Read the next entry
-        zipFile.readEntry(); 
-      });
-
-      stream.on('data', chunk => {
-        files[entry.fileName].push(chunk);
-      });
-    });
-
-    zipFile.on('end', () => {
-      resolve(files);
-    });
-
-    zipFile.on('error', reject);
-  });
-}
-
-export const fetchRates = async options => {
-  options = options || {};
-
-  // TODO: Change to historical when date is requested
-  const url = rateDailyUrl;
+  console.log(`Fetching CSV from ${url}`)
 
   const resp = await axios.get(url, {
     responseType: 'arraybuffer'
   });
-  const files = await unzipCsvs(resp.data);
+  const files = await unzip(resp.data);
 
   // There's only one CSV in the zip for now.
   const csvFile = Papa.parse(Object.values(files)[0], {
     header: true,
     skipEmptyLines: true
   });
+
+  cache[url] = csvFile;
+
+  return csvFile;
+};
+
+/**
+ * Fetch a and unzip a list of currency rates from the Euro Foreign Exchange Rates.
+ * @param {Object} options - request options.
+ * @returns {Array} A list of exchange rates (one per day)
+ */
+export const fetchRates = async options => {
+  options = options || {};
+
+  console.log('Got options', options);
+
+  // TODO: Change to historical when date is requested
+  const url = rateDailyUrl;
+
+  const csvFile = await fetchRatesCsv(url);
 
   let validColumns = null;
   if (Array.isArray(options.currencies) && options.currencies) {
