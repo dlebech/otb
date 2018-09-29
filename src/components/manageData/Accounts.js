@@ -140,6 +140,7 @@ class Account extends React.Component {
         <span
           className="cursor-pointer"
           onClick={this.handleEditAccount}
+          data-tip={`ID: ${this.props.account.id}`}
         >
           {this.props.account.name} ({this.props.account.currency || 'No currency specified'})
           <FontAwesomeIcon

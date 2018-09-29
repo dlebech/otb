@@ -535,3 +535,18 @@ it('should create test data', () => {
   expect(state.transactions.data[0].account).toBeDefined();
   expect(state.transactions.categorizer.bayes.length).toBeGreaterThan(0);
 });
+
+it('should update empty account fields', () => {
+  const state = reducers({
+    transactions: {
+      data: [
+        { id: 'a', account: 'c' },
+        { id: 'b' }
+      ]
+    }
+  }, actions.setEmptyTransactionsAccount('d'));
+  expect(state.transactions.data).toEqual([
+    { id: 'a', account: 'c' },
+    { id: 'b', account: 'd' }
+  ]);
+});

@@ -18,6 +18,9 @@ describe('Transactions', () => {
       app: {
         isCategoryGuessing: false,
       },
+      accounts: {
+        data: []
+      },
       transactions: {
         data: []
       },
@@ -49,6 +52,9 @@ describe('Transactions', () => {
       app: {
         isCategoryGuessing: false,
       },
+      accounts: {
+        data: []
+      },
       transactions: {
         data: [{}]
       },
@@ -77,6 +83,9 @@ describe('Transactions', () => {
     const store = mockStore({
       app: {
         isCategoryGuessing: false,
+      },
+      accounts: {
+        data: []
       },
       transactions: {
         data: [
@@ -129,6 +138,9 @@ describe('Transactions', () => {
       app: {
         isCategoryGuessing: false,
       },
+      accounts: {
+        data: []
+      },
       transactions: {
         data: [
           {
@@ -176,6 +188,9 @@ describe('Transactions', () => {
     const store = mockStore({
       app: {
         isCategoryGuessing: true,
+      },
+      accounts: {
+        data: []
       },
       transactions: {
         data: [

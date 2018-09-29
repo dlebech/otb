@@ -158,3 +158,16 @@ export const createTestData = () => {
 
   return transactions;
 };
+
+/**
+ * Simple wrapper for toLocaleString that makes sure string numbers can also be formatted.
+ * @param {String|Number} num - The number to format
+ * @param {Object} options - The options given to the toLocaleString function
+ * @param {String} [locale=en-US] - Optional locale string
+ * @returns {String}
+ */
+export const formatNumber = (num, options, locale = 'en-US') => {
+  options = options || {};
+  num = cleanNumber(num);
+  return num.toLocaleString(locale, options);
+};

@@ -1,23 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import download from 'downloadjs';
+import ReactTooltip from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RestoreData from './manageData/RestoreData';
 import Categories from './manageData/Categories';
 import Accounts from './manageData/Accounts';
+import * as actions from '../actions';
 
 class ManageData extends React.Component {
   constructor(props) {
     super(props);
 
     this.handleDownload = this.handleDownload.bind(this);
+    this.handleSetAccountOnTransactions = this.handleSetAccountOnTransactions.bind(this);
   }
 
-  handleDownload() {
+  async handleDownload() {
     const blob = new Blob([JSON.stringify(this.props.state)], {
       type: 'application/json'
     });
+    const download = await import('downloadjs');
     download(blob, 'data.json', 'application/json');
+  }
+
+  handleSetAccountOnTransactions() {
+    this.props.handleSetAccountOnTransactions(this.props.state.accounts.data[0].id);
   }
 
   render() {
@@ -35,6 +42,21 @@ class ManageData extends React.Component {
             </dl>
           </div>
         </div>
+        {this.props.numTransactionsWithoutAccount > 0 && <div className="row">
+          <div className="col-auto alert alert-warning">
+            <p>
+              <strong>Transactions without an account:</strong> {this.props.numTransactionsWithoutAccount}
+            </p>
+            <button
+              type="button"
+              id="set-account-on-transactions"
+              className="btn btn-primary"
+              onClick={this.handleSetAccountOnTransactions}
+            >
+              Set an account on these transactions
+            </button>
+          </div>
+        </div>}
         <div className="row">
           <div className="col">
             <button
@@ -61,21 +83,36 @@ class ManageData extends React.Component {
             <Accounts />
           </div>
         </div>
+        <ReactTooltip />
       </React.Fragment>
     );
   }
 };
 
 const mapStateToProps = state => {
-  const categorized = state.transactions.data.filter(t => !!t.category.confirmed).length;
+  let categorized = 0;
+  let withoutAccount = 0;
+  state.transactions.data.forEach(t => {
+    if (!!t.category.confirmed) categorized++;
+    if (!t.account) withoutAccount++;
+  });
   const uncategorized = state.transactions.data.length - categorized;
 
   return {
     state,
     numTransactions: state.transactions.data.length,
     numTransactionsCategorized: categorized,
-    numTransactionsUncategorized: uncategorized
+    numTransactionsUncategorized: uncategorized,
+    numTransactionsWithoutAccount: withoutAccount
   };
 };
 
-export default connect(mapStateToProps)(ManageData);
+const mapDispatchToProps = dispatch => {
+  return {
+    handleSetAccountOnTransactions: accountId => {
+      dispatch(actions.setEmptyTransactionsAccount(accountId));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ManageData);

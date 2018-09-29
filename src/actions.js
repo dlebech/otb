@@ -43,6 +43,8 @@ export const SET_TRANSACTION_LIST_PAGE_SIZE = 'SET_TRANSACTION_LIST_PAGE_SIZE';
 export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
 export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
 
+export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
+
 export const toggleLocalStorage = enabled => {
   return {
     type: TOGGLE_LOCAL_STORAGE,
@@ -238,6 +240,13 @@ export const setTransactionListFilterCategories = (filterCategories, numTransact
     type: SET_TRANSACTION_LIST_FILTER_CATEGORIES,
     filterCategories,
     numTransactions
+  };
+};
+
+export const setEmptyTransactionsAccount = accountId => {
+  return {
+    type: SET_EMPTY_TRANSACTIONS_ACCOUNT,
+    accountId
   };
 };
 

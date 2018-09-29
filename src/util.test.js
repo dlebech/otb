@@ -1,6 +1,12 @@
 import * as util  from './util';
 
 describe('cleanNumber', () => {
+  it('should return a number as-is', () => {
+    expect(util.cleanNumber(123)).toEqual(123)
+    expect(util.cleanNumber(123.456)).toEqual(123.456);
+    expect(util.cleanNumber(1000123.456)).toEqual(1000123.456);
+  });
+
   it('should return numbers', () => {
     expect(util.cleanNumber('123')).toEqual(123)
     expect(util.cleanNumber('123.456')).toEqual(123.456);
@@ -44,5 +50,19 @@ describe('cleanTransactionDescription', () => {
   it('should lowercase', () => {
     expect(util.cleanTransactionDescription('this IS cool'))
       .toEqual('this is cool');
+  });
+});
+
+describe('formatNumber', () => {
+  it('should format a number', () => {
+    expect(util.formatNumber(1234.56)).toEqual('1,234.56');
+  });
+
+  it('should format a number as a string', () => {
+    expect(util.formatNumber('1234.56')).toEqual('1,234.56');
+  });
+
+  it('should format a currency', () => {
+    expect(util.formatNumber(1234.56, { style: 'currency', currency: 'USD' })).toEqual('$1,234.56');
   });
 });

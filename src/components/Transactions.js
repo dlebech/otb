@@ -76,6 +76,7 @@ class Transactions extends React.Component {
         <TransactionTable
           transactions={this.props.transactions}
           categories={this.props.categories}
+          accounts={this.props.accounts}
           handleRowCategory={this.handleRowCategory}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
@@ -99,6 +100,7 @@ class Transactions extends React.Component {
 Transactions.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   categories: PropTypes.object.isRequired,
+  accounts: PropTypes.object.isRequired,
   isCategoryGuessing: PropTypes.bool.isRequired
 }
 
@@ -113,6 +115,11 @@ const mapStateToProps = state => {
     const ids = new Set(state.search.transactions.result);
     transactions = transactions.filter(t => ids.has(t.id));
   }
+
+  const accounts = state.accounts.data.reduce((obj, account) => {
+    obj[account.id] = account;
+    return obj;
+  }, {});
 
   transactions = transactions.map(t => {
     return {
@@ -133,6 +140,7 @@ const mapStateToProps = state => {
   return {
     transactions,
     categories,
+    accounts,
     isCategoryGuessing: state.app.isCategoryGuessing,
     hasTransactions: state.transactions.data.length > 0,
     transactionListSettings: {

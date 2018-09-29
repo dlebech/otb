@@ -1,8 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import configureStore from 'redux-mock-store';
-import { MemoryRouter } from 'react-router-dom';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import TransactionTable from './TransactionTable';
 import { uncategorized } from '../../data/categories';
 
@@ -56,6 +54,13 @@ const categories = {
   }
 };
 
+const accounts = {
+  a: {
+    id: 'a',
+    name: 'Default Account'
+  }
+}
+
 const dateSelect = {
   id: 'transaction-dates'
 };
@@ -63,6 +68,7 @@ const dateSelect = {
 const defaultProps = {
   transactions,
   categories,
+  accounts,
   dateSelect,
   page: 1,
   pageSize: 50,

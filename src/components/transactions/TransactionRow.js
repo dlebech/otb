@@ -6,6 +6,7 @@ import Confirm from '../modals/Confirm';
 import RowCategorizer from './RowCategorizer';
 import IgnoreTransaction from './IgnoreTransaction';
 import ConfirmDelete from './ConfirmDelete';
+import { formatNumber } from '../../util';
 
 const TransactionRow = props => {
   const handleDelete = async () => {
@@ -28,19 +29,48 @@ const TransactionRow = props => {
   let className = '';
   if (props.transaction.ignore) className = 'table-warning';
 
+  const account = props.accounts[props.transaction.account] || { name: 'N/A' };
+  const amountTip =
+    `Full amount:${formatNumber(props.transaction.amount)}<br>` +
+    `Currency: ${account.currency}`;
+
+  const totalTip =
+    `Full amount:${formatNumber(props.transaction.total)}<br>` +
+    `Currency: ${account.currency}`;
+
+  const amount = formatNumber(props.transaction.amount, { maximumFractionDigits: 0 });
+  const total = formatNumber(props.transaction.total, { maximumFractionDigits: 0 });
+
   return (
     <tr className={className}>
       <td className="text-nowrap">
         {props.transaction.date.format('L')}
       </td>
       <td>
-        {props.transaction.description}
+        <span
+          className="cursor-help"
+          data-tip={`Account: ${account.name}`}
+        >
+          {props.transaction.description}
+        </span>
       </td>
-      <td>
-        {props.transaction.amount}
+      <td className="text-right">
+        <span
+          className="cursor-help"
+          data-tip={amountTip}
+          data-html
+        >
+          {amount}
+        </span>
       </td>
-      <td>
-        {props.transaction.total}
+      <td className="text-right">
+        <span
+          className="cursor-help"
+          data-tip={totalTip}
+          data-html
+        >
+          {total}
+        </span>
       </td>
       <td className="text-nowrap">
         <RowCategorizer
@@ -87,6 +117,7 @@ TransactionRow.propTypes = {
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
   })).isRequired,
+  accounts: PropTypes.object.isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,

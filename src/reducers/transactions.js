@@ -3,6 +3,7 @@ import bayes from 'bayes';
 import uuidv4 from 'uuid/v4';
 import * as actions from '../actions';
 import * as util from '../util';
+import { defaultAccount } from '../data/accounts';
 
 const initialTransactions = {
   version: 1,
@@ -276,6 +277,21 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         },
       });
+    case actions.SET_EMPTY_TRANSACTIONS_ACCOUNT:
+      for (let i = 0; i < state.data.length; i++) {
+        const t = state.data[i];
+        if (!!t.account) continue;
+        state = update(state, {
+          data: {
+            [i]: {
+              account: {
+                $set: action.accountId
+              }
+            }
+          }
+        });
+      }
+      return state;
     default:
       return state;
   }
