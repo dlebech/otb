@@ -80,10 +80,10 @@ export const importUpdateColumnType = (columnIndex, columnType) => {
   };
 };
 
-export const importUpdateAccount = account => {
+export const importUpdateAccount = accountId => {
   return {
     type: IMPORT_UPDATE_ACCOUNT,
-    account
+    accountId
   };
 };
 

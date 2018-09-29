@@ -3,7 +3,6 @@ import bayes from 'bayes';
 import uuidv4 from 'uuid/v4';
 import * as actions from '../actions';
 import * as util from '../util';
-import { defaultAccount } from '../data/accounts';
 
 const initialTransactions = {
   version: 1,
@@ -125,7 +124,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
     case actions.IMPORT_UPDATE_ACCOUNT:
       return update(state, {
         import: {
-          account: { $set: action.account }
+          account: { $set: action.accountId }
         }
       });
     case actions.IMPORT_CANCEL_TRANSACTIONS:

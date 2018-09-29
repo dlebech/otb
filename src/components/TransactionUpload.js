@@ -37,6 +37,9 @@ class TransactionUpload extends React.Component {
           handleCancel={this.props.handleCancel}
           hasTransactions={!!this.props.transactions && this.props.transactions.length > 0}
           skipRows={this.props.skipRows}
+          handleAccountChange={this.props.handleAccountChange}
+          accounts={this.props.accounts}
+          selectedAccount={this.props.account}
         />
         <PreviewTable
           transactions={this.props.transactions}
@@ -51,6 +54,11 @@ class TransactionUpload extends React.Component {
 
 TransactionUpload.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.array).isRequired,
+  accounts: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    currency: PropTypes.string
+  })).isRequired,
   skipRows: PropTypes.number.isRequired,
   columnSpec: PropTypes.arrayOf(PropTypes.object),
   handleFileChange: PropTypes.func.isRequired,
@@ -63,8 +71,10 @@ TransactionUpload.propTypes = {
 const mapStateToProps = state => {
   return {
     transactions: state.transactions.import.data,
+    account: state.transactions.import.account,
     skipRows: state.transactions.import.skipRows,
-    columnSpec: state.transactions.import.columnSpec
+    columnSpec: state.transactions.import.columnSpec,
+    accounts: state.accounts.data
   };
 };
 
@@ -95,6 +105,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleCancel: () => {
       dispatch(actions.importCancelTransactions());
+    },
+    handleAccountChange: accountId => {
+      dispatch(actions.importUpdateAccount(accountId));
     }
   };
 };

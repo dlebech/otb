@@ -38,7 +38,7 @@ class CurrencySelect extends React.Component {
         onChange={this.handleCurrencySelect}
         value={selectedValue}
       />
-    )
+    );
   }
 };
 
