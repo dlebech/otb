@@ -8,7 +8,7 @@ const initialEditor = {
     pageSize: 50,
     sortKey: 'date',
     sortAscending: true,
-    filterCategories: []
+    filterCategories: new Set()
   }
 };
 
@@ -69,10 +69,18 @@ const editReducer = (state = initialEditor, action) => {
       return update(state, {
         transactionList: {
           filterCategories: {
-            $set: action.filterCategories
+            $set: new Set(action.filterCategories)
           },
           page: {
             $set: determinePage(state.transactionList.page, state.transactionList.pageSize, action.numTransactions)
+          }
+        }
+      });
+    case actions.SET_TRANSACTION_LIST_ROUND_AMOUNT:
+      return update(state, {
+        transactionList: {
+          roundAmount: {
+            $set: action.enabled
           }
         }
       });

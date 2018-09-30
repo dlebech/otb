@@ -20,7 +20,7 @@ const SortHeader = props => {
   return (
     <th
       scope="col"
-      className="text-nowrap cursor-pointer"
+      className={`text-nowrap cursor-pointer${props.className ? (' ' + props.className) : ''}`}
       onClick={() => props.handleSortChange(props.sortKey, !props.sortAscending)}
     >
       {props.label}
@@ -37,7 +37,12 @@ SortHeader.propTypes = {
   sortKey: PropTypes.string.isRequired,
   activeSortKey: PropTypes.string.isRequired,
   sortAscending: PropTypes.bool.isRequired,
-  handleSortChange: PropTypes.func.isRequired
+  handleSortChange: PropTypes.func.isRequired,
+  className: PropTypes.string
+};
+
+SortHeader.defaultProps = {
+  className: ''
 };
 
 export default SortHeader;

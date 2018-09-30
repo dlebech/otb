@@ -13,7 +13,8 @@ it('should set default data', () => {
     import: {
       data: [],
       skipRows: 0,
-      columnSpec: []
+      columnSpec: [],
+      dateFormat: ''
     },
     categorizer: {
       bayes: ''
@@ -76,7 +77,23 @@ describe('import', () => {
           { type: 'description' },
           { type: 'amount' },
           { type: 'total' }
-        ]
+        ],
+        dateFormat: 'YYYY-MM-DD'
+      });
+    });
+
+    it('should guess different date formats', () => {
+      const state = reducers({}, actions.importParseTransactionsEnd(null, [['06.04.2018', 'test row', 123, 456]]));
+      expect(state.transactions.import).toEqual({
+        data: [['06.04.2018', 'test row', 123, 456]],
+        skipRows: 0,
+        columnSpec: [
+          { type: 'date' },
+          { type: 'description' },
+          { type: 'amount' },
+          { type: 'total' }
+        ],
+        dateFormat: 'DD-MM-YYYY'
       });
     });
 
@@ -90,7 +107,8 @@ describe('import', () => {
           { type: 'description' },
           { type: 'total' },
           { type: 'date' }
-        ]
+        ],
+        dateFormat: 'YYYY-MM-DD'
       });
     });
   });
@@ -103,6 +121,11 @@ describe('import', () => {
   it('should handle set account name action', () => {
     const state = reducers({}, actions.importUpdateAccount('abcd'));
     expect(state.transactions.import.account).toEqual('abcd');
+  });
+
+  it('should handle set date format action', () => {
+    const state = reducers({}, actions.importSetDateFormat('YYYY-MM-DD'));
+    expect(state.transactions.import.dateFormat).toEqual('YYYY-MM-DD');
   });
 
   it('should handle column type updates', () => {
@@ -137,7 +160,8 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
-      columnSpec: []
+      columnSpec: [],
+      dateFormat: ''
     });
   });
 
@@ -149,7 +173,8 @@ describe('import', () => {
           data: [
             ['some', 'header', 'annoying', 'i know'],
             ['2018-04-06', 'test row', 123, 456],
-            ['2018-04-06', 'test row 2', '123,456.78', '456,789.01']
+            ['2018-04-06', 'test row 2', '123,456.78', '456,789.01'],
+            ['2018-04-06', 'test row 3', '123.456,78', '140,45']
           ],
           skipRows: 1,
           columnSpec: [
@@ -190,6 +215,19 @@ describe('import', () => {
           guess: '',
           confirmed: ''
         }
+      },
+      {
+        id: 'abcd',
+        date: '2018-04-06',
+        description: 'test row 3',
+        descriptionCleaned: 'test row 3',
+        amount: 123456.78,
+        total: 140.45,
+        account: 'abcd',
+        category: {
+          guess: '',
+          confirmed: ''
+        }
       }
     ]);
 
@@ -197,7 +235,8 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
-      columnSpec: []
+      columnSpec: [],
+      dateFormat: ''
     });
   });
 
@@ -218,7 +257,7 @@ describe('import', () => {
         }],
         import: {
           data: [
-            ['2018-04-07', 'test row 2', 123, 246]
+            ['07/04/2018', 'test row 2', 123, 246]
           ],
           skipRows: 0,
           columnSpec: [
@@ -226,7 +265,8 @@ describe('import', () => {
             { type: 'description' },
             { type: 'amount' },
             { type: 'total' }
-          ]
+          ],
+          dateFormat: 'DD-MM-YYYY'
         }
       }
     }, actions.importSaveTransactions());
@@ -263,7 +303,8 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
-      columnSpec: []
+      columnSpec: [],
+      dateFormat: ''
     });
   });
 });

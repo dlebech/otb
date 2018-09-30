@@ -13,6 +13,7 @@
     "d3-collection": "^1.0.4",
     "downloadjs": "^1.4.7",
     "immutability-helper": "^2.6.6",
+    "jschardet": "^1.6.0",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "netlify-lambda": "^0.4.0",

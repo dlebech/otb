@@ -4,6 +4,32 @@ import * as categories from './data/categories';
 import { defaultAccount }  from './data/accounts';
 
 /**
+ * Guess the date format for a string that could potentially be a date. Makes a
+ * simple match on a date-like format with support for both hyphen, period and
+ * forward slash.
+ * @param {String} s - The string to check
+ * @returns {String} The date format, either 'YYYY-MM-DD', 'DD-MM-YYYY' or ''.
+ */
+export const guessDateFormat = s => {
+  s = s.trim();
+  if (/^\d{4}[.\-/]\d{2}[.\-/]\d{2}$/.test(s)) return 'YYYY-MM-DD';
+  if (/^\d{2}[.\-/]\d{2}[.\-/]\d{4}$/.test(s)) return 'DD-MM-YYYY';
+  return '';
+};
+
+/**
+ * A thin wrapper around moment's parse function that replaces periods and
+ * forward slashes with hyphens before parsing with moment and the given date
+ * format.
+ * @param {String} val - A date (hopefully) as a string
+ * @param {String} dateFormat - A moment date format, using hyphens, e.g. 'YYYY-MM-DD'.
+ * @returns {Moment} A moment instance
+ */
+export const momentParse = (val, dateFormat) => {
+  return moment(val.replace(/[.-]/g, '-'), dateFormat);
+};
+
+/**
  * Given a list of transactions (an array of arrays), guess which column
  * correspond to date, descriptions, etc.
  * @param {Array} transactions - A list of transactions
@@ -11,7 +37,8 @@ import { defaultAccount }  from './data/accounts';
 export const guessColumnSpec = transactions => {
   // Take the last transaction for now since there might be headers at the top.
   const transaction = transactions[transactions.length - 1];
-  const columnSpec = transaction.map(t => ({ type: '' }));
+  const columnSpec = transaction.map(() => ({ type: '' }));
+  let dateFormat = '';
 
   const hasColumnType = columnType => columnSpec.some(c => c.type === columnType);
 
@@ -20,16 +47,22 @@ export const guessColumnSpec = transactions => {
     // If the type is a string, use it as date or description.
     // If the type is a number, use as amount or total, depending on whether we
     // found one of these already.
-    if (typeof val === 'string') {
-      if (!hasColumnType('date') && moment(val).isValid()) columnSpec[i].type = 'date';
-      else if (!hasColumnType('description')) columnSpec[i].type = 'description';
+    if (typeof val === 'string' && val) {
+      if (!hasColumnType('date') ) {
+        dateFormat = guessDateFormat(val);
+        if (dateFormat && momentParse(val, dateFormat).isValid()) {
+          columnSpec[i].type = 'date';
+          continue;
+        }
+      }
+      if (!hasColumnType('description')) columnSpec[i].type = 'description';
     } else if (typeof val === 'number') {
       if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
       else columnSpec[i].type = 'total';
     }
   }
 
-  return columnSpec;
+  return [columnSpec, dateFormat];
 };
 
 /**
@@ -170,4 +203,14 @@ export const formatNumber = (num, options, locale = 'en-US') => {
   options = options || {};
   num = cleanNumber(num);
   return num.toLocaleString(locale, options);
+};
+
+export const detectFileEncoding = async file => {
+  const jschardet = await import('jschardet');
+
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(jschardet.detect(reader.result));
+    reader.readAsBinaryString(file);
+  });
 };

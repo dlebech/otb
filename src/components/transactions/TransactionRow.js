@@ -8,6 +8,37 @@ import IgnoreTransaction from './IgnoreTransaction';
 import ConfirmDelete from './ConfirmDelete';
 import { formatNumber } from '../../util';
 
+const Amount = props => {
+  if (!props.hasMultipleAccounts && !props.roundAmount) return <span>{props.amount}</span>;
+
+  const roundedAmount = formatNumber(props.amount, { maximumFractionDigits: 0 });
+  const fullAmount = formatNumber(props.amount, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const amountTip =
+    (props.roundAmount ? `Full amount: ${fullAmount}<br>` : '') +
+    `Currency: ${props.account.currency}<br>` +
+    `Account: ${props.account.name}`;
+
+  return (
+    <span
+      className="cursor-help"
+      data-tip={amountTip}
+      data-html
+    >
+      {roundedAmount}
+    </span>
+  );
+};
+
+Amount.propTypes = {
+  amount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  hasMultipleAccounts: PropTypes.bool.isRequired,
+  roundAmount: PropTypes.bool.isRequired
+};
+
 const TransactionRow = props => {
   const handleDelete = async () => {
     await props.hideModal(Confirm.modalName);
@@ -30,16 +61,7 @@ const TransactionRow = props => {
   if (props.transaction.ignore) className = 'table-warning';
 
   const account = props.accounts[props.transaction.account] || { name: 'N/A' };
-  const amountTip =
-    `Full amount:${formatNumber(props.transaction.amount)}<br>` +
-    `Currency: ${account.currency}`;
-
-  const totalTip =
-    `Full amount:${formatNumber(props.transaction.total)}<br>` +
-    `Currency: ${account.currency}`;
-
-  const amount = formatNumber(props.transaction.amount, { maximumFractionDigits: 0 });
-  const total = formatNumber(props.transaction.total, { maximumFractionDigits: 0 });
+  const hasMultipleAccounts = Object.keys(props.accounts).length >= 2;
 
   return (
     <tr className={className}>
@@ -47,30 +69,23 @@ const TransactionRow = props => {
         {props.transaction.date.format('L')}
       </td>
       <td>
-        <span
-          className="cursor-help"
-          data-tip={`Account: ${account.name}`}
-        >
-          {props.transaction.description}
-        </span>
+        {props.transaction.description}
       </td>
       <td className="text-right">
-        <span
-          className="cursor-help"
-          data-tip={amountTip}
-          data-html
-        >
-          {amount}
-        </span>
+        <Amount
+          amount={props.transaction.amount}
+          account={account}
+          hasMultipleAccounts={hasMultipleAccounts}
+          roundAmount={props.roundAmount}
+        />
       </td>
       <td className="text-right">
-        <span
-          className="cursor-help"
-          data-tip={totalTip}
-          data-html
-        >
-          {total}
-        </span>
+        <Amount
+          amount={props.transaction.total}
+          account={account}
+          hasMultipleAccounts={hasMultipleAccounts}
+          roundAmount={!props.roundAmount}
+        />
       </td>
       <td className="text-nowrap">
         <RowCategorizer
@@ -122,7 +137,8 @@ TransactionRow.propTypes = {
   hideModal: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired
+  handleRowCategory: PropTypes.func.isRequired,
+  roundAmount: PropTypes.bool.isRequired
 };
 
 export default TransactionRow;

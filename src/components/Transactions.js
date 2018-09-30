@@ -86,6 +86,7 @@ class Transactions extends React.Component {
           handlePageSizeChange={this.props.handlePageSizeChange}
           handleSortChange={this.props.handleSortChange}
           handleFilterCategories={this.props.handleFilterCategories}
+          handleRoundAmount={this.props.handleRoundAmount}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
           {...this.props.transactionListSettings}
@@ -194,6 +195,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleFilterCategories: (filterCategories, numTransactions) => {
       dispatch(actions.setTransactionListFilterCategories(filterCategories, numTransactions));
+    },
+    handleRoundAmount: enabled => {
+      dispatch(actions.setTransactionListRoundAmount(enabled));
     }
   };
 };
