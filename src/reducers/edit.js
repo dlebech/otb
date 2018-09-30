@@ -76,6 +76,12 @@ const editReducer = (state = initialEditor, action) => {
           }
         }
       });
+    case actions.SET_CURRENCIES:
+      return update(state, {
+        currencies: {
+          $set: action.currencies
+        }
+      });
     default:
       return state;
   }

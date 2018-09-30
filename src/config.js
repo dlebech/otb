@@ -1,0 +1,1 @@
+export const lambdaBase = process.env.LAMBDA_BASE || '/.netlify/functions';

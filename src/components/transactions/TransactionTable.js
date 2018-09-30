@@ -205,6 +205,7 @@ class TransactionTable extends React.Component {
                     key={`row-${transaction.id}`}
                     transaction={transaction}
                     categoryOptions={categoryOptions}
+                    accounts={this.props.accounts}
                     handleRowCategory={this.props.handleRowCategory}
                     handleDeleteRow={this.props.handleDeleteRow}
                     handleIgnoreRow={this.props.handleIgnoreRow}
@@ -237,6 +238,7 @@ TransactionTable.propTypes = {
     })
   })).isRequired,
   categories: PropTypes.object.isRequired,
+  accounts: PropTypes.object.isRequired,
   dateSelect: PropTypes.shape({
     id: PropTypes.string.isRequired
   }).isRequired,

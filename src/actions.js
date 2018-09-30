@@ -1,27 +1,41 @@
 import chunk from 'lodash/chunk';
 import { sleep } from './util';
+import { lambdaBase } from './config';
 
-export const PARSE_TRANSACTIONS_START = 'PARSE_TRANSACTIONS_START';
-export const PARSE_TRANSACTIONS_END = 'PARSE_TRANSACTIONS_END';
 export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
-export const SAVE_TRANSACTIONS = 'SAVE_TRANSACTIONS';
-export const CANCEL_TRANSACTIONS = 'CANCEL_TRANSACTIONS';
-export const UPDATE_SKIP_ROWS = 'UPDATE_SKIP_ROWS';
-export const UPDATE_COLUMN_TYPE = 'UPDATE_COLUMN_TYPE';
+
+// Import actions
+export const IMPORT_PARSE_TRANSACTIONS_START = 'IMPORT_PARSE_TRANSACTIONS_START';
+export const IMPORT_PARSE_TRANSACTIONS_END = 'IMPORT_PARSE_TRANSACTIONS_END';
+export const IMPORT_SAVE_TRANSACTIONS = 'IMPORT_SAVE_TRANSACTIONS';
+export const IMPORT_CANCEL_TRANSACTIONS = 'IMPORT_CANCEL_TRANSACTIONS';
+export const IMPORT_UPDATE_SKIP_ROWS = 'IMPORT_UPDATE_SKIP_ROWS';
+export const IMPORT_UPDATE_COLUMN_TYPE = 'IMPORT_UPDATE_COLUMN_TYPE';
+export const IMPORT_UPDATE_ACCOUNT = 'IMPORT_UPDATE_ACCOUNT';
+
+// Account actions
+export const ADD_ACCOUNT = 'ADD_ACCOUNT';
+export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT';
+export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
+
+// Category actions
+export const ADD_CATEGORY = 'ADD_CATEGORY';
+export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
+export const DELETE_CATEGORY = 'DELETE_CATEGORY';
+
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
 export const IGNORE_ROW = 'IGNORE_ROW';
 export const DELETE_ROW = 'DELETE_ROW';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
-export const ADD_CATEGORY = 'ADD_CATEGORY';
-export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
-export const DELETE_CATEGORY = 'DELETE_CATEGORY';
+
 export const EDIT_DATES = 'EDIT_DATES';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
 export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
-export const ENQUEUE_GUESS_ALL_CATEGORIES = 'ENQUEUE_GUESS_ALL_CATEGORIES';
-export const DEQUEUE_GUESS_ALL_CATEGORIES = 'DEQUEUE_GUESS_ALL_CATEGORIES';
+export const SET_CURRENCIES = 'SET_CURRENCIES';
+export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
+export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -29,11 +43,7 @@ export const SET_TRANSACTION_LIST_PAGE_SIZE = 'SET_TRANSACTION_LIST_PAGE_SIZE';
 export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
 export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
 
-export const parseTransactionsStart = () => {
-  return {
-    type: PARSE_TRANSACTIONS_START
-  };
-};
+export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
 export const toggleLocalStorage = enabled => {
   return {
@@ -42,37 +52,74 @@ export const toggleLocalStorage = enabled => {
   };
 };
 
-export const parseTransactionsEnd = (error, transactions) => {
+export const importParseTransactionsStart = () => {
   return {
-    type: PARSE_TRANSACTIONS_END,
+    type: IMPORT_PARSE_TRANSACTIONS_START
+  };
+};
+
+export const importParseTransactionsEnd = (error, transactions) => {
+  return {
+    type: IMPORT_PARSE_TRANSACTIONS_END,
     transactions
   };
 };
 
-export const updateSkipRows = skipRows => {
+export const importUpdateSkipRows = skipRows => {
   return {
-    type: UPDATE_SKIP_ROWS,
+    type: IMPORT_UPDATE_SKIP_ROWS,
     skipRows
   };
 };
 
-export const updateColumnType = (columnIndex, columnType) => {
+export const importUpdateColumnType = (columnIndex, columnType) => {
   return {
-    type: UPDATE_COLUMN_TYPE,
+    type: IMPORT_UPDATE_COLUMN_TYPE,
     columnIndex,
     columnType
   };
 };
 
-export const saveTransactions = () => {
+export const importUpdateAccount = accountId => {
   return {
-    type: SAVE_TRANSACTIONS
+    type: IMPORT_UPDATE_ACCOUNT,
+    accountId
   };
 };
 
-export const cancelTransactions = () => {
+export const importSaveTransactions = () => {
   return {
-    type: CANCEL_TRANSACTIONS
+    type: IMPORT_SAVE_TRANSACTIONS
+  };
+};
+
+export const importCancelTransactions = () => {
+  return {
+    type: IMPORT_CANCEL_TRANSACTIONS
+  };
+};
+
+export const addAccount = (name, currency) => {
+  return {
+    type: ADD_ACCOUNT,
+    name,
+    currency
+  };
+};
+
+export const updateAccount = (accountId, name, currency) => {
+  return {
+    type: UPDATE_ACCOUNT,
+    accountId,
+    name,
+    currency
+  };
+};
+
+export const deleteAccount = accountId => {
+  return {
+    type: DELETE_ACCOUNT,
+    accountId
   };
 };
 
@@ -196,10 +243,27 @@ export const setTransactionListFilterCategories = (filterCategories, numTransact
   };
 };
 
+export const setEmptyTransactionsAccount = accountId => {
+  return {
+    type: SET_EMPTY_TRANSACTIONS_ACCOUNT,
+    accountId
+  };
+};
+
 export const createTestData = () => ({ type: CREATE_TEST_DATA });
 
 export const startGuessAllCategories = () => ({ type: START_GUESS_ALL_CATEGORIES });
 export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
+
+export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
+export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
+
+export const setCurrencies = currencies => {
+  return {
+    type: SET_CURRENCIES,
+    currencies
+  };
+};
 
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
@@ -216,7 +280,6 @@ export const guessAllCategories = () => {
 
     dispatch(startGuessAllCategories());
 
-
     const transactionsToGuess = chunk(
       getState().transactions.data
         .filter(t => !t.category.confirmed && !t.ignore)
@@ -230,5 +293,14 @@ export const guessAllCategories = () => {
     }
 
     dispatch(endGuessAllCategories());
+  };
+};
+
+export const fetchCurrencies = () => {
+  return async dispatch => {
+    dispatch(startFetchCurrencies());
+    const currencies = await fetch(`${lambdaBase}/currencies`).then(res => res.json());
+    dispatch(setCurrencies(currencies));
+    dispatch(endFetchCurrencies());
   };
 };

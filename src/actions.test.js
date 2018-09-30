@@ -4,9 +4,10 @@ import * as actions from './actions';
 
 const mockStore = configureStore([thunk]);
 
-it('should dispatch and add category and categorize row', async () => {
-  // Mock store does not call any reducers, so adding the category is done to fake the adding of the category.
-  // The add category functionality itself is tested in the reducer tests.
+it('should dispatch and add category and categorize row', () => {
+  // Mock store does not call any reducers, so adding the category is done to
+  // fake the adding of the category. The add category functionality itself is
+  // tested in the reducer tests.
   const store = mockStore({
     categories: {
       data: [{ id: 'abcd', name: 'Hobby' }]
@@ -27,4 +28,28 @@ it('should dispatch and add category and categorize row', async () => {
       rowId: 'efgh'
     },
   ]);
+});
+
+describe('fetchCurrencies', () => {
+  afterEach(() => fetch.resetMocks());
+
+  it('should fetch and set currencies', async () => {
+    const store = mockStore({});
+    fetch.once(JSON.stringify(['USD', 'JPY']));
+
+    await store.dispatch(actions.fetchCurrencies());
+
+    expect(store.getActions()).toEqual([
+      {
+        type: actions.START_FETCH_CURRENCIES
+      },
+      {
+        type: actions.SET_CURRENCIES,
+        currencies: ['USD', 'JPY']
+      },
+      {
+        type: actions.END_FETCH_CURRENCIES
+      },
+    ]);
+  });
 });

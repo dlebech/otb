@@ -1,7 +1,7 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import Transactions from './Transactions';
 
 jest.mock('redux-modal', () => {
@@ -17,6 +17,9 @@ describe('Transactions', () => {
     const store = mockStore({
       app: {
         isCategoryGuessing: false,
+      },
+      accounts: {
+        data: []
       },
       transactions: {
         data: []
@@ -49,6 +52,9 @@ describe('Transactions', () => {
       app: {
         isCategoryGuessing: false,
       },
+      accounts: {
+        data: []
+      },
       transactions: {
         data: [{}]
       },
@@ -77,6 +83,9 @@ describe('Transactions', () => {
     const store = mockStore({
       app: {
         isCategoryGuessing: false,
+      },
+      accounts: {
+        data: []
       },
       transactions: {
         data: [
@@ -129,6 +138,9 @@ describe('Transactions', () => {
       app: {
         isCategoryGuessing: false,
       },
+      accounts: {
+        data: []
+      },
       transactions: {
         data: [
           {
@@ -176,6 +188,9 @@ describe('Transactions', () => {
     const store = mockStore({
       app: {
         isCategoryGuessing: true,
+      },
+      accounts: {
+        data: []
       },
       transactions: {
         data: [

@@ -3,21 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { show, hide } from 'redux-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as actions from '../actions';
-import Confirm from './modals/Confirm';
+import * as actions from '../../actions';
+import Confirm from '../modals/Confirm';
+import ConfirmDelete from './ConfirmDelete';
 
 const NEW_CATEGORY_NAME = 'New Category';
-
-const ConfirmDelete = props => {
-  return (
-    <React.Fragment>
-      {props.numTransactions > 0 && <div className="alert alert-danger">
-        Deleting &quot;{props.categoryName}&quot; will affect {props.numTransactions} transactions. Their category selection will be reset, and you will have to re-categorize them later.
-      </div>}
-      Are you sure you want to delete &quot;{props.categoryName}&quot;?
-    </React.Fragment>
-  );
-};
 
 const CategoryEdit = props => {
   return (
@@ -136,7 +126,7 @@ class Category extends React.Component {
     this.props.showModal(Confirm.modalName, {
       handleYes: this.handleDelete,
       body: <ConfirmDelete
-        categoryName={this.props.category.name}
+        nameToDelete={this.props.category.name}
         numTransactions={numTransactions}
       />
     });
@@ -188,6 +178,9 @@ Category.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   }).isRequired,
+  transactions: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string
+  })),
   parentCategories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired

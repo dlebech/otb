@@ -3,7 +3,7 @@ import moment from 'moment';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { shallow, mount } from 'enzyme';
-import Chart from './Chart';
+import Charts from './Charts';
 
 describe('Chart', () => {
   const mockStore = configureStore();
@@ -23,7 +23,7 @@ describe('Chart', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Chart store={store} />
+        <Charts store={store} />
       </MemoryRouter>
     );
     expect(container.render().text()).toEqual('No data yet. Add some.');
@@ -63,7 +63,7 @@ describe('Chart', () => {
       }
     });
 
-    const wrapper = mount(<Chart store={store} />);
+    const wrapper = mount(<Charts store={store} />);
     const lineChart = wrapper.find('LineChart');
     expect(lineChart.length).toEqual(1);
     expect(lineChart.props().data).toEqual([
@@ -108,7 +108,7 @@ describe('Chart', () => {
       }
     });
 
-    const wrapper = mount(<Chart store={store} />);
+    const wrapper = mount(<Charts store={store} />);
     const summary = wrapper.find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
@@ -151,7 +151,7 @@ describe('Chart', () => {
       }
     });
 
-    const wrapper = mount(<Chart store={store} />);
+    const wrapper = mount(<Charts store={store} />);
     const lineChart = wrapper.find('LineChart');
     expect(lineChart.length).toEqual(1);
     expect(lineChart.props().data).toEqual([

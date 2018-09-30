@@ -3,9 +3,10 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.0",
-    "@fortawesome/free-solid-svg-icons": "^5.1.0",
-    "@fortawesome/react-fontawesome": "^0.1.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.4",
+    "@fortawesome/free-solid-svg-icons": "^5.3.1",
+    "@fortawesome/react-fontawesome": "^0.1.2",
+    "axios": "^0.18.0",
     "bayes": "^0.0.7",
     "bootstrap": "^4.1.1",
     "d3-array": "^1.2.1",
@@ -14,14 +15,15 @@
     "immutability-helper": "^2.6.6",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
+    "netlify-lambda": "^0.4.0",
     "papaparse": "^4.3.7",
     "prop-types": "^15.6.1",
-    "react": "^16.3.1",
+    "react": "^16.4.2",
     "react-dates": "^17.1.1",
-    "react-dom": "^16.3.1",
+    "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.1.4",
+    "react-scripts": "1.1.5",
     "react-select": "^2.0.0",
     "react-tooltip": "^3.5.1",
     "recharts": "^1.1.0",
@@ -31,17 +33,30 @@
     "redux-persist": "^5.9.1",
     "redux-search": "^2.4.1",
     "redux-thunk": "^2.2.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "yauzl": "^2.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:lambda": "netlify-lambda serve src/lambda",
     "build": "react-scripts build",
+    "build:lambda": "netlify-lambda build src/lambda",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "jest-fetch-mock": "^1.6.6",
+    "moxios": "^0.4.0",
     "redux-mock-store": "^1.5.1"
+  },
+  "proxy": {
+    "/.netlify/functions": {
+      "target": "http://localhost:9000",
+      "pathRewrite": {
+        "^/\\.netlify/functions": ""
+      }
+    }
   }
 }

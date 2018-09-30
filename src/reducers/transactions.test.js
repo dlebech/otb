@@ -22,10 +22,6 @@ it('should set default data', () => {
 });
 
 describe('migrations', () => {
-  it('should not perform upgrade when the version is correct', () => {
-
-  });
-
   it('should perform v1 migration (description update)', () => {
     const state = reducers({
       transactions: {
@@ -71,7 +67,7 @@ describe('migrations', () => {
 describe('import', () => {
   describe('transaction end', () => {
     it('should store transactions and guess column indexes', () => {
-      const state = reducers({}, actions.parseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
+      const state = reducers({}, actions.importParseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
       expect(state.transactions.import).toEqual({
         data: [['2018-04-06', 'test row', 123, 456]],
         skipRows: 0,
@@ -85,7 +81,7 @@ describe('import', () => {
     });
 
     it('should handle columns in different positions', () => {
-      const state = reducers({}, actions.parseTransactionsEnd(null, [[123, 'test row', 456, '2018-04-06']]));
+      const state = reducers({}, actions.importParseTransactionsEnd(null, [[123, 'test row', 456, '2018-04-06']]));
       expect(state.transactions.import).toEqual({
         data: [[123, 'test row', 456, '2018-04-06']],
         skipRows: 0,
@@ -100,8 +96,13 @@ describe('import', () => {
   });
 
   it('should handle skip rows action', () => {
-    const state = reducers({}, actions.updateSkipRows(123));
+    const state = reducers({}, actions.importUpdateSkipRows(123));
     expect(state.transactions.import.skipRows).toEqual(123);
+  });
+
+  it('should handle set account name action', () => {
+    const state = reducers({}, actions.importUpdateAccount('abcd'));
+    expect(state.transactions.import.account).toEqual('abcd');
   });
 
   it('should handle column type updates', () => {
@@ -113,7 +114,7 @@ describe('import', () => {
           columnSpec: [{ type: '' }, { type: '' }]
         }
       }
-    }, actions.updateColumnType(1, 'description'));
+    }, actions.importUpdateColumnType(1, 'description'));
 
     expect(state.transactions.import).toEqual({
       data: [],
@@ -131,7 +132,7 @@ describe('import', () => {
           columnSpec: [{ type: '' }, { type: '' }]
         }
       }
-    }, actions.cancelTransactions());
+    }, actions.importCancelTransactions());
 
     expect(state.transactions.import).toEqual({
       data: [],
@@ -156,10 +157,11 @@ describe('import', () => {
             { type: 'description' },
             { type: 'amount' },
             { type: 'total' }
-          ]
+          ],
+          account: 'abcd'
         }
       }
-    }, actions.saveTransactions());
+    }, actions.importSaveTransactions());
 
     // Sets the data
     expect(state.transactions.data).toEqual([
@@ -170,6 +172,7 @@ describe('import', () => {
         descriptionCleaned: 'test row',
         amount: 123,
         total: 456,
+        account: 'abcd',
         category: {
           guess: '',
           confirmed: ''
@@ -182,6 +185,7 @@ describe('import', () => {
         descriptionCleaned: 'test row 2',
         amount: 123456.78,
         total: 456789.01,
+        account: 'abcd',
         category: {
           guess: '',
           confirmed: ''
@@ -225,7 +229,7 @@ describe('import', () => {
           ]
         }
       }
-    }, actions.saveTransactions());
+    }, actions.importSaveTransactions());
 
     // Sets the data
     expect(state.transactions.data).toEqual([
@@ -528,5 +532,21 @@ it('should create test data', () => {
   const state = reducers({}, actions.createTestData());
   expect(state.transactions.data.length).toBeGreaterThan(100);
   expect(state.transactions.data[0].total).toBeGreaterThan(state.transactions.data[1].total);
+  expect(state.transactions.data[0].account).toBeDefined();
   expect(state.transactions.categorizer.bayes.length).toBeGreaterThan(0);
+});
+
+it('should update empty account fields', () => {
+  const state = reducers({
+    transactions: {
+      data: [
+        { id: 'a', account: 'c' },
+        { id: 'b' }
+      ]
+    }
+  }, actions.setEmptyTransactionsAccount('d'));
+  expect(state.transactions.data).toEqual([
+    { id: 'a', account: 'c' },
+    { id: 'b', account: 'd' }
+  ]);
 });

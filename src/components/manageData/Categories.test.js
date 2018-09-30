@@ -1,7 +1,7 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import Categories from './Categories';
 
 jest.mock('redux-modal', () => {
@@ -13,7 +13,7 @@ jest.mock('redux-modal', () => {
 describe('Categories', () => {
   const mockStore = configureStore();
 
-  it('should only show new category button when there are no categories', () => {
+  it('should show new category button', () => {
     const store = mockStore({
       transactions: {
         data: []
