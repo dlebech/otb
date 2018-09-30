@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { mount } from 'enzyme';
 import * as actions from '../actions';
 import TransactionUpload from './TransactionUpload';
+import { defaultAccount } from '../data/accounts';
 
 describe('Transaction Upload', () => {
   const mockStore = configureStore();
@@ -28,6 +29,9 @@ describe('Transaction Upload', () => {
           ]
         }
       },
+      accounts: {
+        data: [defaultAccount]
+      }
     });
 
     const container = mount(
