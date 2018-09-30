@@ -9,7 +9,8 @@ const initialTransactions = {
   import: {
     data: [],
     skipRows: 0,
-    columnSpec: []
+    columnSpec: [],
+    dateFormat: ''
   },
   data: [],
   categorizer: {
@@ -32,7 +33,10 @@ const mapImportToTransactions = transactionsImport => {
     .map(transaction => {
       return {
         id: uuidv4(),
-        date: transaction[dateIndex],
+        // Normalize dates to ISO format
+        date: util
+          .momentParse(transaction[dateIndex], transactionsImport.dateFormat)
+          .format('YYYY-MM-DD'),
         description: transaction[descIndex],
         descriptionCleaned: util.cleanTransactionDescription(transaction[descIndex]),
         amount: util.cleanNumber(transaction[amountIndex]),
@@ -97,10 +101,12 @@ const transactionsReducer = (state = initialTransactions, action) => {
 
   switch (action.type) {
     case actions.IMPORT_PARSE_TRANSACTIONS_END:
+      const [columnSpec, dateFormat] = util.guessColumnSpec(action.transactions);
       return update(state, {
         import: {
           data: { $set: action.transactions },
-          columnSpec: { $set: util.guessColumnSpec(action.transactions) }
+          columnSpec: { $set: columnSpec },
+          dateFormat: { $set: dateFormat }
         }
       });
     case actions.IMPORT_UPDATE_SKIP_ROWS:
@@ -125,6 +131,12 @@ const transactionsReducer = (state = initialTransactions, action) => {
       return update(state, {
         import: {
           account: { $set: action.accountId }
+        }
+      });
+    case actions.IMPORT_SET_DATE_FORMAT:
+      return update(state, {
+        import: {
+          dateFormat: { $set: action.dateFormat }
         }
       });
     case actions.IMPORT_CANCEL_TRANSACTIONS:

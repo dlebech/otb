@@ -12,6 +12,7 @@ export const IMPORT_CANCEL_TRANSACTIONS = 'IMPORT_CANCEL_TRANSACTIONS';
 export const IMPORT_UPDATE_SKIP_ROWS = 'IMPORT_UPDATE_SKIP_ROWS';
 export const IMPORT_UPDATE_COLUMN_TYPE = 'IMPORT_UPDATE_COLUMN_TYPE';
 export const IMPORT_UPDATE_ACCOUNT = 'IMPORT_UPDATE_ACCOUNT';
+export const IMPORT_SET_DATE_FORMAT = 'IMPORT_SET_DATE_FORMAT';
 
 // Account actions
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
@@ -42,6 +43,7 @@ export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
 export const SET_TRANSACTION_LIST_PAGE_SIZE = 'SET_TRANSACTION_LIST_PAGE_SIZE';
 export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
 export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
+export const SET_TRANSACTION_LIST_ROUND_AMOUNT = 'SET_TRANSACTION_LIST_ROUND_AMOUNT';
 
 export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
@@ -84,6 +86,13 @@ export const importUpdateAccount = accountId => {
   return {
     type: IMPORT_UPDATE_ACCOUNT,
     accountId
+  };
+};
+
+export const importSetDateFormat = dateFormat => {
+  return {
+    type: IMPORT_SET_DATE_FORMAT,
+    dateFormat
   };
 };
 
@@ -240,6 +249,13 @@ export const setTransactionListFilterCategories = (filterCategories, numTransact
     type: SET_TRANSACTION_LIST_FILTER_CATEGORIES,
     filterCategories,
     numTransactions
+  };
+};
+
+export const setTransactionListRoundAmount = enabled => {
+  return {
+    type: SET_TRANSACTION_LIST_ROUND_AMOUNT,
+    enabled
   };
 };
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import * as actions from '../actions';
+import { detectFileEncoding } from '../util';
 import UploadForm from './transactionUpload/UploadForm';
 import PreviewTable from './transactionUpload/PreviewTable';
 
@@ -45,7 +46,9 @@ class TransactionUpload extends React.Component {
           transactions={this.props.transactions}
           skipRows={this.props.skipRows}
           columnSpec={this.props.columnSpec}
+          dateFormat={this.props.dateFormat}
           handleColumnTypeChange={this.props.handleColumnTypeChange}
+          handleDateFormatChange={this.props.handleDateFormatChange}
         />
       </React.Fragment>
     );
@@ -65,7 +68,8 @@ TransactionUpload.propTypes = {
   handleSkipRowsChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
-  handleColumnTypeChange: PropTypes.func.isRequired
+  handleColumnTypeChange: PropTypes.func.isRequired,
+  handleDateFormatChange: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => {
@@ -74,6 +78,7 @@ const mapStateToProps = state => {
     account: state.transactions.import.account,
     skipRows: state.transactions.import.skipRows,
     columnSpec: state.transactions.import.columnSpec,
+    dateFormat: state.transactions.import.dateFormat,
     accounts: state.accounts.data
   };
 };
@@ -87,9 +92,13 @@ const mapDispatchToProps = dispatch => {
 
       dispatch(actions.importParseTransactionsStart());
 
-      const Papa = await import('papaparse');
+      const [encodingResult, Papa] = await Promise.all([
+        detectFileEncoding(file),
+        import('papaparse')
+      ]);
+
       Papa.parse(file, {
-        dynamicTyping: true,
+        encoding: encodingResult.encoding, 
         skipEmptyLines: true,
         complete: results => dispatch(actions.importParseTransactionsEnd(results.errors, results.data))
       });
@@ -108,6 +117,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleAccountChange: accountId => {
       dispatch(actions.importUpdateAccount(accountId));
+    },
+    handleDateFormatChange: dateFormat => {
+      dispatch(actions.importSetDateFormat(dateFormat));
     }
   };
 };

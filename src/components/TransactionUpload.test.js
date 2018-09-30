@@ -11,9 +11,6 @@ describe('Transaction Upload', () => {
 
   it('should save the uploaded data', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: false,
-      },
       transactions: {
         import: {
           data: [
@@ -26,7 +23,8 @@ describe('Transaction Upload', () => {
             { type: 'description'},
             { type: 'amount'},
             { type: 'total'}
-          ]
+          ],
+          dateFormat: ''
         }
       },
       accounts: {
@@ -45,7 +43,7 @@ describe('Transaction Upload', () => {
     const push = jest.fn();
     container.instance().history.push = push;
 
-    // Calle the save function
+    // Call the save function
     const uploadWrapper = container.find('TransactionUpload').first();
     uploadWrapper.instance().handleSave();
 

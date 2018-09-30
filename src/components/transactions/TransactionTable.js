@@ -13,8 +13,7 @@ import SearchField from './SearchField';
 const filterData = (data, categories, dateSelect) => {
   let categoryFilter = t => true;
   let dateFilter = t => true;
-  if (Array.isArray(categories) && categories.length > 0) {
-    categories = new Set(categories);
+  if (categories && categories.size > 0) {
     categoryFilter = t => {
       return (!t.categoryConfirmed && categories.has(uncategorized.id)) ||
         (!!t.categoryConfirmed && categories.has(t.categoryConfirmed.id));
@@ -87,7 +86,7 @@ class TransactionTable extends React.Component {
       return;
     }
 
-    const filterCategories = options.map(o => o.value);
+    const filterCategories = new Set(options.map(o => o.value));
 
     // Since he category filter might reduce the number of transactions, we need
     // to know the new number of transactions here.
@@ -117,10 +116,15 @@ class TransactionTable extends React.Component {
       }
     ].concat(categoryOptions);
 
+    const selectedCategories = (this.props.filterCategories && this.props.filterCategories.size > 0) ?
+      categoryOptionsWithUncategorized
+        .filter(o => this.props.filterCategories.has(o.value))
+        : null;
+
     return (
       <React.Fragment>
-        <div className="row">
-          <div className="col-12">
+        <div className="row align-items-center">
+          <div className="col-12 col-md-auto">
             <Dates
               id={this.props.dateSelect.id}
               startDate={this.props.dateSelect.startDate}
@@ -132,6 +136,18 @@ class TransactionTable extends React.Component {
                 small: true
               }}
             />
+          </div>
+          <div className="col-12 col-md-auto">
+            <div className="form-check align-items-center">
+              <input
+                type="checkbox"
+                id="round-amounts"
+                className="form-check-input"
+                checked={this.props.roundAmount}
+                onChange={e => this.props.handleRoundAmount(e.target.checked)}
+              />
+              <label className="form-check-label" htmlFor="round-amounts">Round Amounts</label>
+            </div>
           </div>
         </div>
         <div className="mt-3 row align-items-center">
@@ -147,6 +163,7 @@ class TransactionTable extends React.Component {
                   className="category-select"
                   placeholder="Filter by category..."
                   onChange={this.handleCategorySelect}
+                  value={selectedCategories}
                   isMulti
                 />
               </div>
@@ -182,6 +199,7 @@ class TransactionTable extends React.Component {
                     handleSortChange={this.props.handleSortChange}
                   />
                   <SortHeader
+                    className="text-right"
                     label="Amount"
                     sortKey="amount"
                     sortAscending={this.props.sortAscending}
@@ -189,6 +207,7 @@ class TransactionTable extends React.Component {
                     handleSortChange={this.props.handleSortChange}
                   />
                   <SortHeader
+                    className="text-right"
                     label="Total"
                     sortKey="total"
                     sortAscending={this.props.sortAscending}
@@ -211,6 +230,7 @@ class TransactionTable extends React.Component {
                     handleIgnoreRow={this.props.handleIgnoreRow}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
+                    roundAmount={this.props.roundAmount}
                   />
                 })}
               </tbody>
@@ -246,7 +266,7 @@ TransactionTable.propTypes = {
   pageSize: PropTypes.number.isRequired,
   sortKey: PropTypes.string.isRequired,
   sortAscending: PropTypes.bool.isRequired,
-  filterCategories: PropTypes.arrayOf(PropTypes.string).isRequired,
+  filterCategories: PropTypes.instanceOf(Set).isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
@@ -258,7 +278,13 @@ TransactionTable.propTypes = {
   handlePageSizeChange: PropTypes.func.isRequired,
   handleSortChange: PropTypes.func.isRequired,
   handleFilterCategories: PropTypes.func.isRequired,
-  searchText: PropTypes.string
+  searchText: PropTypes.string,
+  handleRoundAmount: PropTypes.func.isRequired,
+  roundAmount: PropTypes.bool,
+};
+
+TransactionTable.defaultProps = {
+  roundAmount: true
 };
 
 export default TransactionTable;

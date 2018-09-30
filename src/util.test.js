@@ -1,5 +1,19 @@
 import * as util  from './util';
 
+describe('guessDateFormat', () => {
+  it('should guess ISO-format', () => {
+    expect(util.guessDateFormat('2018-01-31')).toEqual('YYYY-MM-DD');
+  });
+
+  it('should return ISO-format, even with non-hyphen characters', () => {
+    expect(util.guessDateFormat('2018/01/31')).toEqual('YYYY-MM-DD');
+  });
+
+  it('should use date first for non-iso format (sorry USA :-) )', () => {
+    expect(util.guessDateFormat('31-01-2018')).toEqual('DD-MM-YYYY');
+  });
+});
+
 describe('cleanNumber', () => {
   it('should return a number as-is', () => {
     expect(util.cleanNumber(123)).toEqual(123)

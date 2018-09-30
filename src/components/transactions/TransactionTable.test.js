@@ -74,7 +74,7 @@ const defaultProps = {
   pageSize: 50,
   sortKey: 'date',
   sortAscending: true,
-  filterCategories: [],
+  filterCategories: new Set([]),
   showModal: jest.fn(),
   hideModal: jest.fn(),
   handleIgnoreRow: jest.fn(),
@@ -157,7 +157,7 @@ it('should sort descending', () => {
 
 it('should show only uncategorized', () => {
   const props = Object.assign({}, defaultProps, {
-    filterCategories: [uncategorized.id]
+    filterCategories: new Set([uncategorized.id])
   });
 
   const container = shallow(
@@ -186,14 +186,14 @@ it('should call handleFilterCategories', () => {
   container.update();
   expect(defaultProps.handleFilterCategories.mock.calls.length).toEqual(1);
   expect(defaultProps.handleFilterCategories.mock.calls[0]).toEqual([
-    [uncategorized.id],
+    new Set([uncategorized.id]),
     1 // This is the new number of transactions after filtering the category
   ]);
 });
 
 it('should show a specific category', () => {
   const props = Object.assign({}, defaultProps, {
-    filterCategories: ['a'] // Fake category ID matching the transactions above
+    filterCategories: new Set(['a']) // Fake category ID matching the transactions above
   });
 
   const container = shallow(
