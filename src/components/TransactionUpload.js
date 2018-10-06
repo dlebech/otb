@@ -94,7 +94,7 @@ const mapDispatchToProps = dispatch => {
 
       const [encodingResult, Papa] = await Promise.all([
         detectFileEncoding(file),
-        import('papaparse')
+        import('papaparse').then(m => m.default)
       ]);
 
       Papa.parse(file, {

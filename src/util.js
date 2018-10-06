@@ -206,7 +206,7 @@ export const formatNumber = (num, options, locale = 'en-US') => {
 };
 
 export const detectFileEncoding = async file => {
-  const jschardet = await import('jschardet');
+  const jschardet = await import('jschardet').then(m => m.default);
 
   return new Promise(resolve => {
     const reader = new FileReader();

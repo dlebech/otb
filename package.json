@@ -12,6 +12,7 @@
     "d3-array": "^1.2.1",
     "d3-collection": "^1.0.4",
     "downloadjs": "^1.4.7",
+    "http-proxy-middleware": "^0.19.0",
     "immutability-helper": "^2.6.6",
     "jschardet": "^1.6.0",
     "lodash": "^4.17.10",
@@ -24,7 +25,7 @@
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.1.5",
+    "react-scripts": "2.0.4",
     "react-select": "^2.0.0",
     "react-tooltip": "^3.5.1",
     "recharts": "^1.1.0",
@@ -42,7 +43,7 @@
     "start:lambda": "netlify-lambda serve src/lambda",
     "build": "react-scripts build",
     "build:lambda": "netlify-lambda build src/lambda",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
@@ -52,12 +53,13 @@
     "moxios": "^0.4.0",
     "redux-mock-store": "^1.5.1"
   },
-  "proxy": {
-    "/.netlify/functions": {
-      "target": "http://localhost:9000",
-      "pathRewrite": {
-        "^/\\.netlify/functions": ""
-      }
-    }
-  }
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

@@ -19,7 +19,7 @@ class ManageData extends React.Component {
     const blob = new Blob([JSON.stringify(this.props.state)], {
       type: 'application/json'
     });
-    const download = await import('downloadjs');
+    const download = await import('downloadjs').then(m => m.default);
     download(blob, 'data.json', 'application/json');
   }
 

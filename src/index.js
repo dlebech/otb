@@ -6,7 +6,7 @@ import './css/index.css';
 import App from './components/App';
 import configureStore from './configureStore';
 import configureFa from './configureFa';
-import registerServiceWorker from './registerServiceWorker';
+import * as serviceWorker from './serviceWorker';
 
 import 'bootstrap/dist/css/bootstrap.css'; // Makes sure bootstrap is always available.
 
@@ -26,4 +26,4 @@ if (module.hot) {
   module.hot.accept();
 }
 
-registerServiceWorker();
+serviceWorker.unregister();
