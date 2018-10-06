@@ -56,8 +56,7 @@ const IntroWithoutData = props => {
           }}
         />
       </RestoreData>
-      <button
-        type="button"
+      <div
         className="btn btn-secondary btn-lg m-1"
         onClick={props.handleCreateData}
       >
@@ -72,7 +71,7 @@ const IntroWithoutData = props => {
             return false;
           }}
         />
-      </button>
+      </div>
       <ReactTooltip className="small-tip" />
     </div>
   );

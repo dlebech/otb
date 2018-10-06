@@ -34,21 +34,20 @@ class RestoreData extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <input
           ref={ref => this.fileInput = ref}
           type="file"
           style={{ display: 'none' }}
           onChange={this.handleRestoreFile}
         />
-        <button
-          type="button"
+        <div
           className={this.props.className}
           onClick={this.handleRestoreClick}
         >
           {this.props.children}
-        </button>
-      </React.Fragment>
+        </div>
+      </>
     );
   }
 };
