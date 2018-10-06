@@ -1,13 +1,47 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Intro from './Intro';
-import Menu from './Menu';
-import TransactionUpload from './TransactionUpload';
-import Charts from './Charts';
-import Transactions from './Transactions';
-import ManageData from './ManageData';
-import Privacy from './Privacy';
-import Footer from './Footer';
+import Loadable from 'react-loadable';
+import Loading from './shared/Loading';
+
+const Menu = Loadable({
+  loader: () => import('./Menu'),
+  loading: () => null
+});
+
+const Intro = Loadable({
+  loader: () => import('./Intro'),
+  loading: Loading
+});
+
+const TransactionUpload = Loadable({
+  loader: () => import('./TransactionUpload'),
+  loading: Loading
+});
+
+const Transactions = Loadable({
+  loader: () => import('./Transactions'),
+  loading: Loading
+});
+
+const Charts = Loadable({
+  loader: () => import('./Charts'),
+  loading: Loading
+});
+
+const ManageData = Loadable({
+  loader: () => import('./ManageData'),
+  loading: Loading
+});
+
+const Privacy = Loadable({
+  loader: () => import('./Privacy'),
+  loading: Loading
+});
+
+const Footer = Loadable({
+  loader: () => import('./Footer'),
+  loading: () => null
+});
 
 const App = props => {
   return (

@@ -29,7 +29,7 @@ class ManageData extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <div className="row">
           <div className="col">
             <dl className="row">
@@ -84,7 +84,7 @@ class ManageData extends React.Component {
           </div>
         </div>
         <ReactTooltip />
-      </React.Fragment>
+      </>
     );
   }
 };
