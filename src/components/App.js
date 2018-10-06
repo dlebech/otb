@@ -46,7 +46,7 @@ const Footer = Loadable({
 const App = props => {
   return (
     <Router>
-      <React.Fragment>
+      <>
         <Route path="/*" render={routeProps => <Menu persistor={props.persistor} {...routeProps} />} />
         <div className="container mt-4">
           <Route exact path="/" render={routeProps => <Intro persistor={props.persistor} {...routeProps} />} />
@@ -57,7 +57,7 @@ const App = props => {
           <Route exact path="/privacy" component={Privacy} />
         </div>
         <Route path="/*" component={Footer} />
-      </React.Fragment>
+      </>
     </Router>
   );
 }
