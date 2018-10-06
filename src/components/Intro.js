@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as actions from '../actions';
+import { createTestData } from '../actions';
 import RestoreData from './manageData/RestoreData';
 
 const IntroWithData = props => {
@@ -90,7 +90,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleCreateData: () => dispatch(actions.createTestData())
+    handleCreateData: () => dispatch(createTestData())
   };
 };
 

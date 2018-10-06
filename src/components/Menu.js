@@ -42,7 +42,7 @@ class Menu extends React.Component {
     }
 
     return (
-      <React.Fragment>
+      <>
         <nav className="navbar navbar-expand-md navbar-dark bg-dark">
           <div className="container">
             <Link className="navbar-brand" to="/">Off The Books</Link>
@@ -93,7 +93,7 @@ class Menu extends React.Component {
           </div>
         </nav>
         <SaveData />
-      </React.Fragment>
+      </>
     );
   }
 };

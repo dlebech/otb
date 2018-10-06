@@ -23,6 +23,7 @@
     "react": "^16.4.2",
     "react-dates": "^17.1.1",
     "react-dom": "^16.4.2",
+    "react-loadable": "^5.5.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "2.0.4",
@@ -44,14 +45,16 @@
     "build": "react-scripts build",
     "build:lambda": "netlify-lambda build src/lambda",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "analyze": "yarn build --stats && webpack-bundle-analyzer build/bundle-stats.json"
   },
   "devDependencies": {
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "jest-fetch-mock": "^1.6.6",
     "moxios": "^0.4.0",
-    "redux-mock-store": "^1.5.1"
+    "redux-mock-store": "^1.5.1",
+    "webpack-bundle-analyzer": "^3.0.2"
   },
   "eslintConfig": {
     "extends": "react-app"
