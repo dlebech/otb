@@ -9,7 +9,8 @@ const initialEditor = {
     sortKey: 'date',
     sortAscending: true,
     filterCategories: new Set()
-  }
+  },
+  charts: {}
 };
 
 const determinePage = (page, pageSize, numTransactions) => {
@@ -88,6 +89,14 @@ const editReducer = (state = initialEditor, action) => {
       return update(state, {
         currencies: {
           $set: action.currencies
+        }
+      });
+    case actions.SET_CHARTS_BASE_CURRENCY:
+      return update(state, {
+        charts: {
+          baseCurrency: {
+            $set: action.baseCurrency
+          }
         }
       });
     default:

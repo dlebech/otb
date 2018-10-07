@@ -45,6 +45,9 @@ export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
 export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
 export const SET_TRANSACTION_LIST_ROUND_AMOUNT = 'SET_TRANSACTION_LIST_ROUND_AMOUNT';
 
+// Charts edit changes
+export const SET_CHARTS_BASE_CURRENCY = 'SET_CHARTS_BASE_CURRENCY';
+
 export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
 export const toggleLocalStorage = enabled => {
@@ -256,6 +259,13 @@ export const setTransactionListRoundAmount = enabled => {
   return {
     type: SET_TRANSACTION_LIST_ROUND_AMOUNT,
     enabled
+  };
+};
+
+export const setChartsBaseCurrency = baseCurrency => {
+  return {
+    type: SET_CHARTS_BASE_CURRENCY,
+    baseCurrency
   };
 };
 

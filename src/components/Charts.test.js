@@ -8,6 +8,49 @@ import Charts from './Charts';
 describe('Chart', () => {
   const mockStore = configureStore();
 
+  const baseData = {
+    transactions: {
+      data: [
+        {
+          date: '2018-01-01',
+          amount: -1,
+          category: {},
+          account: 'a'
+        },
+        {
+          date: '2018-01-01',
+          amount: -1,
+          category: {},
+          account: 'b'
+        },
+        {
+          date: '2018-01-02',
+          amount: 3,
+          category: {},
+          account: 'a'
+        }
+      ]
+    },
+    categories: {
+      data: []
+    },
+    edit: {
+      charts: {},
+      dateSelect: {
+        'chart-dates': {
+          startDate: moment('2017-12-01'),
+          endDate: moment('2018-02-01'),
+        }
+      }
+    },
+    accounts: {
+      data: [
+        { id: 'a', name: 'Account 1', currency: 'SEK' },
+        { id: 'b', name: 'Account 2', currency: 'DKK' }
+      ]
+    }
+  };
+
   it('should render nothing when there are no transactions', () => {
     const store = mockStore({
       transactions: {
@@ -17,7 +60,11 @@ describe('Chart', () => {
         data: []
       },
       edit: {
-        dateSelect: {}
+        dateSelect: {},
+        charts: {}
+      },
+      accounts: {
+        data: []
       }
     });
 
@@ -30,38 +77,7 @@ describe('Chart', () => {
   });
 
   it('should render transactions graph when there are transactions', () => {
-    const store = mockStore({
-      transactions: {
-        data: [
-          {
-            date: '2018-01-01',
-            amount: -1,
-            category: {}
-          },
-          {
-            date: '2018-01-01',
-            amount: -1,
-            category: {}
-          },
-          {
-            date: '2018-01-02',
-            amount: 3,
-            category: {}
-          }
-        ]
-      },
-      categories: {
-        data: []
-      },
-      edit: {
-        dateSelect: {
-          'chart-dates': {
-            startDate: moment('2017-12-01'),
-            endDate: moment('2018-02-01'),
-          }
-        }
-      }
-    });
+    const store = mockStore(baseData);
 
     const wrapper = mount(<Charts store={store} />);
     const lineChart = wrapper.find('LineChart');
@@ -85,28 +101,17 @@ describe('Chart', () => {
   });
 
   it('should render nothing when outside daterange', () => {
-    const store = mockStore({
-      transactions: {
-        data: [
-          {
-            date: '2018-01-01',
-            amount: -1,
-            category: {}
-          }
-        ]
-      },
-      categories: {
-        data: []
-      },
-      edit: {
-        dateSelect: {
-          'chart-dates': {
-            startDate: moment('2017-12-01'),
-            endDate: moment('2017-12-24'),
-          }
+    const data = Object.assign({}, baseData);
+    data.edit = {
+      charts: {},
+      dateSelect: {
+        'chart-dates': {
+          startDate: moment('2017-12-01'),
+          endDate: moment('2017-12-24'),
         }
       }
-    });
+    };
+    const store = mockStore(data);
 
     const wrapper = mount(<Charts store={store} />);
     const summary = wrapper.find('Summary');
@@ -117,39 +122,28 @@ describe('Chart', () => {
   });
 
   it('should exclude ignored transactions', () => {
-    const store = mockStore({
-      transactions: {
-        data: [
-          {
-            date: '2018-01-01',
-            amount: -1,
-            category: {},
-            ignore: true
-          },
-          {
-            date: '2018-01-01',
-            amount: -1,
-            category: {}
-          },
-          {
-            date: '2018-01-02',
-            amount: 3,
-            category: {}
-          }
-        ]
-      },
-      categories: {
-        data: []
-      },
-      edit: {
-        dateSelect: {
-          'chart-dates': {
-            startDate: moment('2017-12-01'),
-            endDate: moment('2018-02-01'),
-          }
+    const data = Object.assign({}, baseData);
+    data.transactions = {
+      data: [
+        {
+          date: '2018-01-01',
+          amount: -1,
+          category: {},
+          ignore: true
+        },
+        {
+          date: '2018-01-01',
+          amount: -1,
+          category: {}
+        },
+        {
+          date: '2018-01-02',
+          amount: 3,
+          category: {}
         }
-      }
-    });
+      ]
+    };
+    const store = mockStore(data);
 
     const wrapper = mount(<Charts store={store} />);
     const lineChart = wrapper.find('LineChart');
@@ -171,4 +165,31 @@ describe('Chart', () => {
     expect(rendered.find('.card').eq(0).text()).toEqual('1Expenses');
     expect(rendered.find('.card').eq(1).text()).toEqual('3Income')
   });
+
+  describe('base currency dropdown', () => {
+    it('should show base currency dropdown', () => {
+      const store = mockStore(baseData);
+      const wrapper = shallow(<Charts store={store} />);
+      const rendered = wrapper.render();
+      const options = rendered.find('select > option');
+      expect(options.length).toEqual(2);
+      expect(options.eq(0).text()).toEqual('SEK');
+      expect(options.eq(1).text()).toEqual('DKK');
+    });
+
+    it('should not show base currency when there are less than two currencies', () => {
+      const data = Object.assign({}, baseData);
+      data.accounts = {
+        data: [
+          { id: 'a', name: 'Account 1', currency: 'SEK'}
+        ]
+      }
+      const store = mockStore(data);
+      const wrapper = shallow(<Charts store={store} />);
+      const rendered = wrapper.render();
+      const options = rendered.find('select > option');
+      expect(options.length).toEqual(0);
+    });
+  })
+
 });

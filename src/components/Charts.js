@@ -86,9 +86,13 @@ const Charts = props => {
       moment(t.date).isBetween(props.startDate, props.endDate, 'day', '[]');
   });
 
+  const currencies = props.accounts
+    .filter(a => !!a.currency)
+    .map(a => a.currency);
+
   return (
     <React.Fragment>
-      <div className="row">
+      <div className="row align-items-center">
         <div className="col">
           <Dates
             id={props.dateSelectId}
@@ -99,6 +103,25 @@ const Charts = props => {
             }}
           />
         </div>
+        {currencies.length > 1 && <div className="col-auto">
+          <div className="form-row align-items-center">
+            <div className="col-auto">
+              <label className="my-0" htmlFor="base-currency">Base Currency</label>
+            </div>
+            <div className="col">
+              <select
+                id="base-currency"
+                className="form-control"
+                value={props.baseCurrency}
+                onChange={e => props.handleBaseCurrencyChange(e.target.value)}
+              >
+                {currencies.map(c => {
+                  return <option key={`base-currency-${c}`} value={c}>{c}</option>
+                })}
+              </select>
+            </div>
+          </div>
+        </div>}
       </div>
       <Summary
         transactions={filteredTransactions}
@@ -128,10 +151,16 @@ const mapStateToProps = state => {
     endDate: moment()
   };
 
+  const baseCurrency = state.edit.charts.baseCurrency ||
+    (state.accounts.data.find(a => !!a.currency) || {}).currency ||
+    null;
+
   return {
     dateSelectId,
+    baseCurrency,
     transactions: state.transactions.data,
     categories: state.categories.data,
+    accounts: state.accounts.data,
     startDate: dateSelect.startDate,
     endDate: dateSelect.endDate
   };
@@ -141,6 +170,9 @@ const mapDispatchToProps = dispatch => {
   return {
     handleDatesChange: (dateSelectId, startDate, endDate) => {
       dispatch(actions.editDates(dateSelectId, startDate, endDate));
+    },
+    handleBaseCurrencyChange: baseCurrency => {
+      dispatch(actions.setChartsBaseCurrency(baseCurrency));
     }
   };
 };

@@ -108,3 +108,13 @@ it('should handle round amounts', () => {
 
   expect(state.edit.transactionList.roundAmount).toEqual(true);
 });
+
+it('should set base currency for charts', () => {
+  const state = reducers({
+    edit: {
+      charts: {}
+    }
+  }, actions.setChartsBaseCurrency('DKK'));
+
+  expect(state.edit.charts.baseCurrency).toEqual('DKK');
+});
