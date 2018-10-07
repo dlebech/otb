@@ -99,6 +99,17 @@ it('should handle currencies', () => {
   expect(state.edit.currencies).toEqual(['USD', 'JPY']);
 })
 
+it('should handle currency rates', () => {
+  const rates = {
+    '2018-01-01': {
+      SEK: 9.5,
+      DKK: 7.5
+    }
+  };
+  const state = reducers({}, actions.setCurrencyRates(rates));
+  expect(state.edit.currencyRates).toEqual(rates);
+})
+
 it('should handle round amounts', () => {
   const state = reducers({
     edit: {

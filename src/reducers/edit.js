@@ -91,6 +91,12 @@ const editReducer = (state = initialEditor, action) => {
           $set: action.currencies
         }
       });
+    case actions.SET_CURRENCY_RATES:
+      return update(state, {
+        currencyRates: {
+          $set: action.currencyRates
+        }
+      });
     case actions.SET_CHARTS_BASE_CURRENCY:
       return update(state, {
         charts: {

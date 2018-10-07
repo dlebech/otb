@@ -35,6 +35,7 @@ export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
 export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
 export const SET_CURRENCIES = 'SET_CURRENCIES';
+export const SET_CURRENCY_RATES = 'SET_CURRENCY_RATES';
 export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
 export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
 
@@ -291,6 +292,13 @@ export const setCurrencies = currencies => {
   };
 };
 
+export const setCurrencyRates = currencyRates => {
+  return {
+    type: SET_CURRENCY_RATES,
+    currencyRates
+  };
+};
+
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
     while (getState().app.isCategoryGuessing) {
@@ -327,6 +335,15 @@ export const fetchCurrencies = () => {
     dispatch(startFetchCurrencies());
     const currencies = await fetch(`${lambdaBase}/currencies`).then(res => res.json());
     dispatch(setCurrencies(currencies));
+    dispatch(endFetchCurrencies());
+  };
+};
+
+export const fetchCurrencyRates = () => {
+  return async dispatch => {
+    dispatch(startFetchCurrencies());
+    const currencyRates = await fetch(`${lambdaBase}/currencyRates`).then(res => res.json());
+    dispatch(setCurrencyRates(currencyRates));
     dispatch(endFetchCurrencies());
   };
 };

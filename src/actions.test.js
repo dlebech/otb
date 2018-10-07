@@ -53,3 +53,33 @@ describe('fetchCurrencies', () => {
     ]);
   });
 });
+
+describe('fetchCurrencyRates', () => {
+  afterEach(() => fetch.resetMocks());
+
+  it('should fetch and set currency rates', async () => {
+    const store = mockStore({});
+    const rates = {
+      '2018-01-01': {
+        DKK: 7.5,
+        SEK: 9.5
+      }
+    };
+    fetch.once(JSON.stringify(rates));
+
+    await store.dispatch(actions.fetchCurrencyRates());
+
+    expect(store.getActions()).toEqual([
+      {
+        type: actions.START_FETCH_CURRENCIES
+      },
+      {
+        type: actions.SET_CURRENCY_RATES,
+        currencyRates: rates
+      },
+      {
+        type: actions.END_FETCH_CURRENCIES
+      },
+    ]);
+  });
+});
