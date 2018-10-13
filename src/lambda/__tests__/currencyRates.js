@@ -25,9 +25,20 @@ describe('currencyRates', () => {
 
   it('should return daily rates', async () => {
     const res = await handler();
+    const rates = {
+      '2018-09-13': {
+        USD: 1.1689,
+        JPY: 130.75
+      },
+      '2018-09-14': {
+        USD: 1.1689,
+        JPY: 130.75
+      }
+    };
+
     expect(res).toEqual({
       statusCode: 200,
-      body: JSON.stringify([{ Date: '14 September 2018', USD: 1.1689, JPY: 130.75 }])
+      body: JSON.stringify(rates)
     });
   });
 
@@ -37,9 +48,18 @@ describe('currencyRates', () => {
         currencies: ['USD']
       }
     });
+    const rates = {
+      '2018-09-13': {
+        USD: 1.1689
+      },
+      '2018-09-14': {
+        USD: 1.1689
+      }
+    };
+
     expect(res).toEqual({
       statusCode: 200,
-      body: JSON.stringify([{ Date: '14 September 2018', USD: 1.1689 }])
-    })
+      body: JSON.stringify(rates)
+    });
   });
 });
