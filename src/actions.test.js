@@ -53,3 +53,63 @@ describe('fetchCurrencies', () => {
     ]);
   });
 });
+
+describe('fetchCurrencyRates', () => {
+  afterEach(() => fetch.resetMocks());
+
+  it('should fetch and set currency rates', async () => {
+    const store = mockStore({ edit: {} });
+    const rates = {
+      '2018-01-01': {
+        DKK: 7.5,
+        SEK: 9.5
+      }
+    };
+    fetch.once(JSON.stringify(rates));
+
+    await store.dispatch(actions.fetchCurrencyRates());
+
+    expect(store.getActions()).toEqual([
+      {
+        type: actions.START_FETCH_CURRENCY_RATES
+      },
+      {
+        type: actions.SET_CURRENCY_RATES,
+        currencyRates: rates
+      },
+      {
+        type: actions.END_FETCH_CURRENCY_RATES
+      },
+    ]);
+  });
+
+  it('should fetch specific currencies', async () => {
+    const store = mockStore({ edit: {} });
+    const rates = {
+      '2018-01-01': {
+        DKK: 7.5,
+        SEK: 9.5
+      }
+    };
+    fetch.once(JSON.stringify(rates));
+
+    await store.dispatch(actions.fetchCurrencyRates(['DKK', 'SEK']));
+
+    expect(fetch.mock.calls.length).toEqual(1);
+    expect(String(fetch.mock.calls[0][0]))
+      .toEqual('http://localhost/.netlify/functions/currencyRates?currencies=DKK&currencies=SEK');
+
+    expect(store.getActions()).toEqual([
+      {
+        type: actions.START_FETCH_CURRENCY_RATES
+      },
+      {
+        type: actions.SET_CURRENCY_RATES,
+        currencyRates: rates
+      },
+      {
+        type: actions.END_FETCH_CURRENCY_RATES
+      },
+    ]);
+  });
+});

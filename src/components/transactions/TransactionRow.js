@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactTooltip from 'react-tooltip';
 import Confirm from '../modals/Confirm';
 import RowCategorizer from './RowCategorizer';
 import IgnoreTransaction from './IgnoreTransaction';
@@ -17,19 +18,28 @@ const Amount = props => {
     maximumFractionDigits: 2
   });
 
-  const amountTip =
-    (props.roundAmount ? `Full amount: ${fullAmount}<br>` : '') +
-    `Currency: ${props.account.currency}<br>` +
-    `Account: ${props.account.name}`;
+  const amountTip = <ReactTooltip
+    id={`amount-tip-${props.transactionId}`}
+    className="text-left"
+  >
+    {props.roundAmount && <span>
+        Full amount: {fullAmount}<br />
+      </span>}
+    Currency: {props.account.currency}<br />
+    Account: {props.account.name}
+  </ReactTooltip>;
 
   return (
-    <span
-      className="cursor-help"
-      data-tip={amountTip}
-      data-html
-    >
-      {roundedAmount}
-    </span>
+    <>
+      <span
+        className="cursor-help"
+        data-tip=""
+        data-for={`amount-tip-${props.transactionId}`}
+      >
+        {roundedAmount}
+      </span>
+      {amountTip}
+    </>
   );
 };
 
@@ -73,6 +83,7 @@ const TransactionRow = props => {
       </td>
       <td className="text-right">
         <Amount
+          transactionId={props.transaction.id}
           amount={props.transaction.amount}
           account={account}
           hasMultipleAccounts={hasMultipleAccounts}

@@ -2,6 +2,10 @@ import update from 'immutability-helper';
 import * as actions from '../actions';
 
 const initialEditor = {
+  isCategoryGuessing: false,
+  isParsing: false,
+  isFetchingCurrencies: false,
+  isFetchingCurrencyRates: false,
   dateSelect: {},
   transactionList: {
     page: 1,
@@ -9,7 +13,8 @@ const initialEditor = {
     sortKey: 'date',
     sortAscending: true,
     filterCategories: new Set()
-  }
+  },
+  charts: {}
 };
 
 const determinePage = (page, pageSize, numTransactions) => {
@@ -89,6 +94,52 @@ const editReducer = (state = initialEditor, action) => {
         currencies: {
           $set: action.currencies
         }
+      });
+    case actions.SET_CURRENCY_RATES:
+      return update(state, {
+        currencyRates: {
+          $set: action.currencyRates
+        }
+      });
+    case actions.SET_CHARTS_BASE_CURRENCY:
+      return update(state, {
+        charts: {
+          baseCurrency: {
+            $set: action.baseCurrency
+          }
+        }
+      });
+    case actions.START_GUESS_ALL_CATEGORIES:
+      return update(state, {
+        isCategoryGuessing: { $set: true }
+      });
+    case actions.END_GUESS_ALL_CATEGORIES:
+      return update(state, {
+        isCategoryGuessing: { $set: false }
+      });
+    case actions.START_FETCH_CURRENCIES:
+      return update(state, {
+        isFetchingCurrencies: { $set: true }
+      });
+    case actions.START_FETCH_CURRENCY_RATES:
+      return update(state, {
+        isFetchingCurrencyRates: { $set: true }
+      });
+    case actions.END_FETCH_CURRENCIES:
+      return update(state, {
+        isFetchingCurrencies: { $set: false }
+      });
+    case actions.END_FETCH_CURRENCY_RATES:
+      return update(state, {
+        isFetchingCurrencyRates: { $set: false }
+      });
+    case actions.IMPORT_PARSE_TRANSACTIONS_START:
+      return update(state, {
+        isParsing: { $set: true }
+      });
+    case actions.IMPORT_PARSE_TRANSACTIONS_END:
+      return update(state, {
+        isParsing: { $set: false }
       });
     default:
       return state;

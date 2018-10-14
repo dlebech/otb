@@ -15,9 +15,6 @@ describe('Transactions', () => {
 
   it('should render nothing when there are no transactions', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: false,
-      },
       accounts: {
         data: []
       },
@@ -49,9 +46,6 @@ describe('Transactions', () => {
 
   it('should show table when there are transactions, even when search is empty', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: false,
-      },
       accounts: {
         data: []
       },
@@ -81,9 +75,6 @@ describe('Transactions', () => {
 
   it('should render a table of transactions', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: false,
-      },
       accounts: {
         data: []
       },
@@ -128,16 +119,13 @@ describe('Transactions', () => {
 
     const row = container.find('tr').eq(1);
     expect(row.find('td').eq(1).text()).toEqual('test');
-    expect(row.find('td').eq(2).text()).toEqual('1');
+    expect(row.find('td').eq(2).text()).toMatch('1');
     expect(row.find('td').eq(3).text()).toEqual('2');
     expect(row.find('td').eq(4).text()).toEqual('Food');
   });
 
   it('should show guess confirm and edit buttons', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: false,
-      },
       accounts: {
         data: []
       },
@@ -186,9 +174,6 @@ describe('Transactions', () => {
 
   it('should render a spinner when guessing categories', () => {
     const store = mockStore({
-      app: {
-        isCategoryGuessing: true,
-      },
       accounts: {
         data: []
       },
@@ -216,7 +201,8 @@ describe('Transactions', () => {
         }
       },
       edit: {
-        dateSelect: {}
+        dateSelect: {},
+        isCategoryGuessing: true
       }
     });
 

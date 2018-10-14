@@ -142,7 +142,7 @@ const mapStateToProps = state => {
     transactions,
     categories,
     accounts,
-    isCategoryGuessing: state.app.isCategoryGuessing,
+    isCategoryGuessing: state.edit.isCategoryGuessing,
     hasTransactions: state.transactions.data.length > 0,
     transactionListSettings: {
       searchText: state.search.transactions.text,

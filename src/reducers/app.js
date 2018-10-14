@@ -2,8 +2,6 @@ import update from 'immutability-helper';
 import * as actions from '../actions';
 
 const initialApp = {
-  isParsing: false,
-  isCategoryGuessing: false,
   storage: {
     localStorage: false
   }
@@ -11,14 +9,6 @@ const initialApp = {
 
 const appReducer = (state = initialApp, action) => {
   switch (action.type) {
-    case actions.IMPORT_PARSE_TRANSACTIONS_START:
-      return update(state, {
-        isParsing: { $set: true }
-      });
-    case actions.IMPORT_PARSE_TRANSACTIONS_END:
-      return update(state, {
-        isParsing: { $set: false }
-      });
     case actions.TOGGLE_LOCAL_STORAGE:
       return update(state, {
         storage: {
@@ -31,22 +21,6 @@ const appReducer = (state = initialApp, action) => {
       if (!action.newState.app) return state;
       return update(state, {
         $set: action.newState.app
-      });
-    case actions.START_GUESS_ALL_CATEGORIES:
-      return update(state, {
-        isCategoryGuessing: { $set: true }
-      });
-    case actions.END_GUESS_ALL_CATEGORIES:
-      return update(state, {
-        isCategoryGuessing: { $set: false }
-      });
-    case actions.START_FETCH_CURRENCIES:
-      return update(state, {
-        isFetchingCurrencies: { $set: true }
-      });
-    case actions.END_FETCH_CURRENCIES:
-      return update(state, {
-        isFetchingCurrencies: { $set: false }
       });
     default:
       return state;

@@ -35,8 +35,11 @@ export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
 export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
 export const SET_CURRENCIES = 'SET_CURRENCIES';
+export const SET_CURRENCY_RATES = 'SET_CURRENCY_RATES';
 export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
 export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
+export const START_FETCH_CURRENCY_RATES = 'START_FETCH_CURRENCY_RATES';
+export const END_FETCH_CURRENCY_RATES = 'END_FETCH_CURRENCY_RATES';
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -44,6 +47,9 @@ export const SET_TRANSACTION_LIST_PAGE_SIZE = 'SET_TRANSACTION_LIST_PAGE_SIZE';
 export const SET_TRANSACTION_LIST_SORT = 'SET_TRANSACTION_LIST_SORT';
 export const SET_TRANSACTION_LIST_FILTER_CATEGORIES = 'SET_TRANSACTION_LIST_FILTER_CATEGORIES';
 export const SET_TRANSACTION_LIST_ROUND_AMOUNT = 'SET_TRANSACTION_LIST_ROUND_AMOUNT';
+
+// Charts edit changes
+export const SET_CHARTS_BASE_CURRENCY = 'SET_CHARTS_BASE_CURRENCY';
 
 export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
@@ -259,6 +265,13 @@ export const setTransactionListRoundAmount = enabled => {
   };
 };
 
+export const setChartsBaseCurrency = baseCurrency => {
+  return {
+    type: SET_CHARTS_BASE_CURRENCY,
+    baseCurrency
+  };
+};
+
 export const setEmptyTransactionsAccount = accountId => {
   return {
     type: SET_EMPTY_TRANSACTIONS_ACCOUNT,
@@ -274,6 +287,9 @@ export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
 export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
 export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
 
+export const startFetchCurrencyRates = () => ({ type: START_FETCH_CURRENCY_RATES });
+export const endFetchCurrencyRates = () => ({ type: END_FETCH_CURRENCY_RATES });
+
 export const setCurrencies = currencies => {
   return {
     type: SET_CURRENCIES,
@@ -281,9 +297,16 @@ export const setCurrencies = currencies => {
   };
 };
 
+export const setCurrencyRates = currencyRates => {
+  return {
+    type: SET_CURRENCY_RATES,
+    currencyRates
+  };
+};
+
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
-    while (getState().app.isCategoryGuessing) {
+    while (getState().edit.isCategoryGuessing) {
       await sleep(100);
     }
     // Determine the diversity of currently guessed categories
@@ -318,5 +341,26 @@ export const fetchCurrencies = () => {
     const currencies = await fetch(`${lambdaBase}/currencies`).then(res => res.json());
     dispatch(setCurrencies(currencies));
     dispatch(endFetchCurrencies());
+  };
+};
+
+export const fetchCurrencyRates = currencies => {
+  return async (dispatch, getState) => {
+    if (getState().edit.isFetchingCurrencyRates) return;
+    dispatch(startFetchCurrencyRates());
+    try {
+      const url = new URL(`${lambdaBase}/currencyRates`, window.location.origin);
+      if (currencies) {
+        const params = new URLSearchParams();
+        for (let currency of currencies) {
+          params.append('currencies', currency);
+        }
+        url.search = params;
+      }
+      const currencyRates = await fetch(url).then(res => res.json());
+      dispatch(setCurrencyRates(currencyRates));
+    } finally {
+      dispatch(endFetchCurrencyRates());
+    }
   };
 };

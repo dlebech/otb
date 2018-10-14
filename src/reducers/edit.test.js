@@ -99,6 +99,17 @@ it('should handle currencies', () => {
   expect(state.edit.currencies).toEqual(['USD', 'JPY']);
 })
 
+it('should handle currency rates', () => {
+  const rates = {
+    '2018-01-01': {
+      SEK: 9.5,
+      DKK: 7.5
+    }
+  };
+  const state = reducers({}, actions.setCurrencyRates(rates));
+  expect(state.edit.currencyRates).toEqual(rates);
+})
+
 it('should handle round amounts', () => {
   const state = reducers({
     edit: {
@@ -107,4 +118,47 @@ it('should handle round amounts', () => {
   }, actions.setTransactionListRoundAmount(true));
 
   expect(state.edit.transactionList.roundAmount).toEqual(true);
+});
+
+it('should set base currency for charts', () => {
+  const state = reducers({
+    edit: {
+      charts: {}
+    }
+  }, actions.setChartsBaseCurrency('DKK'));
+
+  expect(state.edit.charts.baseCurrency).toEqual('DKK');
+});
+
+it('should handle the parsing start action', () => {
+  expect(reducers({}, actions.importParseTransactionsStart()).edit.isParsing).toEqual(true);
+});
+
+it('should set parsing to false on parse transaction ending', () => {
+  const state = reducers({ edit: { isParsing: true } }, actions.importParseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
+  expect(state.edit.isParsing).toEqual(false);
+});
+
+it('should handle the guess start action', () => {
+  expect(reducers({}, actions.startGuessAllCategories()).edit.isCategoryGuessing).toEqual(true);
+});
+
+it('should handle the guess end action', () => {
+  expect(reducers({ edit: { isCategoryGuessing: true } }, actions.endGuessAllCategories()).edit.isCategoryGuessing).toEqual(false);
+});
+
+it('should handle fetch currencies start action', () => {
+  expect(reducers({}, actions.startFetchCurrencies()).edit.isFetchingCurrencies).toEqual(true);
+});
+
+it('should handle fetch currencies end action', () => {
+  expect(reducers({ edit: { isFetchingCurrencies: true } }, actions.endFetchCurrencies()).edit.isFetchingCurrencies).toEqual(false);
+});
+
+it('should handle fetch currency rates start action', () => {
+  expect(reducers({}, actions.startFetchCurrencyRates()).edit.isFetchingCurrencyRates).toEqual(true);
+});
+
+it('should handle fetch currency rates end action', () => {
+  expect(reducers({ edit: { isFetchingCurrencyRates: true } }, actions.endFetchCurrencyRates()).edit.isFetchingCurrencyRates).toEqual(false);
 });

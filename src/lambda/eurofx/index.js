@@ -1,19 +1,23 @@
 import axios from 'axios';
 import Papa from 'papaparse';
+import LRU from 'lru-cache';
 import { unzip } from './zip';
 
 const rateDailyUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip';
-const rateHistUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip';
+const rateHistoricalUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip';
 
 // Simple global cache for storing the unzipped versions of the rates. This is
 // of course not going to work a lot of the time, since this is Lambda, but it
 // should help a little bit, especially during testing.
-const cache = {};
+const cache = LRU({
+  max: 10,
+  maxAge: 1000 * 60 * 60 // 1 hour cache
+});
 
 const fetchRatesCsv = async url => {
-  if (url in cache) {
+  if (cache.has(url)) {
     console.log('Using cached CSV file');
-    return cache[url];
+    return cache.get(url);
   }
 
   console.log(`Fetching CSV from ${url}`)
@@ -29,7 +33,7 @@ const fetchRatesCsv = async url => {
     skipEmptyLines: true
   });
 
-  cache[url] = csvFile;
+  cache.set(url, csvFile);
 
   return csvFile;
 };
@@ -44,8 +48,7 @@ export const fetchRates = async options => {
 
   console.log('Got options', options);
 
-  // TODO: Change to historical when date is requested
-  const url = rateDailyUrl;
+  const url = options.historical ? rateHistoricalUrl : rateDailyUrl;
 
   const csvFile = await fetchRatesCsv(url);
 

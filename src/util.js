@@ -2,6 +2,7 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import * as categories from './data/categories';
 import { defaultAccount }  from './data/accounts';
+import { Exception } from 'handlebars';
 
 /**
  * Guess the date format for a string that could potentially be a date. Makes a
@@ -213,4 +214,23 @@ export const detectFileEncoding = async file => {
     reader.onload = () => resolve(jschardet.detect(reader.result));
     reader.readAsBinaryString(file);
   });
+};
+
+/**
+ * Convert an amount from one currency to another. Simple as that
+ * @param {Number} amount - The amount to convery
+ * @param {String} from - Source currency
+ * @param {String} to - Destination currency
+ * @param {String} date - The date to convert for
+ * @param {Object} rates - Historical daily currency rates
+ * @param {Strign} base - The base currency for the rates
+ */
+export const convertCurrency = (amount, from, to, date, rates, base = 'EUR') => {
+  if (from === to) return amount;
+  const rate = rates[date];
+  if (!rate) throw new Exception(`Rates for ${date} do not exist`);
+  const baseAmount = from === base ? amount : amount / rate[from];
+  amount = to === base ? baseAmount : baseAmount * rate[to];
+  if (!amount) throw new Exception(`Cannot convert from ${from} to ${to}`);
+  return amount;
 };
