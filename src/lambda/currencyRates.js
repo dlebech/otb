@@ -1,6 +1,6 @@
 import { fetchRates } from './eurofx';
 
-exports.handler = async (event, context) => {
+exports.handler = async event => {
   event = event || {};
 
   const options = event.queryStringParameters || {};
@@ -9,10 +9,9 @@ exports.handler = async (event, context) => {
 
   // Convert the array into an object with date -> currencies mapping
   rates = rates.reduce((prev, cur) => {
-    const rate = Object.assign({}, cur);
-    const date = cur['Date'];
-    delete rate['Date'];
-    return Object.assign({ [date]: rate }, prev);
+    prev[cur['Date']] = cur;
+    delete prev[cur['Date']].Date;
+    return prev;
   }, {});
 
   return {

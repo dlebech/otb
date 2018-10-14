@@ -80,3 +80,44 @@ describe('formatNumber', () => {
     expect(util.formatNumber(1234.56, { style: 'currency', currency: 'USD' })).toEqual('$1,234.56');
   });
 });
+
+describe('convertCurrency', () => {
+  const rates = {
+    '2018-01-01': {
+      DKK: 7.5,
+      SEK: 10
+    }
+  };
+
+  it('should convert to itself', () => {
+    expect(util.convertCurrency(7.5, 'DKK', 'DKK', '2018-01-01', rates))
+      .toEqual(7.5);
+  });
+
+  it('should convert from two non-EUR currencies', () => {
+    expect(util.convertCurrency(7.5, 'DKK', 'SEK', '2018-01-01', rates))
+      .toEqual(10);
+  });
+
+  it('should convert to EUR', () => {
+    expect(util.convertCurrency(7.5, 'DKK', 'EUR', '2018-01-01', rates))
+      .toEqual(1);
+  });
+
+  it('should convert from EUR', () => {
+    expect(util.convertCurrency(1, 'EUR', 'DKK', '2018-01-01', rates))
+      .toEqual(7.5);
+  });
+
+  it('should throw for dates that do not exist', () => {
+    expect(() => util.convertCurrency(7.5, 'DKK', 'SEK', '2018-01-02', rates)).toThrow(
+      'Rates for 2018-01-02 do not exist'
+    );
+  });
+
+  it('should throw for invalid amounts (e.g. from currencies that do not have a value', () => {
+    expect(() => util.convertCurrency(7.5, 'DKK', 'BLAH', '2018-01-01', rates)).toThrow(
+      'Cannot convert from DKK to BLAH'
+    );
+  });
+});

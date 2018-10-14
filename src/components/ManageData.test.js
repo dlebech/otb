@@ -17,7 +17,7 @@ describe('Manage Data', () => {
 
   const defaultStore = () => {
     return {
-      app: {
+      edit: {
         isCategoryGuessing: false,
       },
       accounts: {

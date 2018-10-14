@@ -38,6 +38,8 @@ export const SET_CURRENCIES = 'SET_CURRENCIES';
 export const SET_CURRENCY_RATES = 'SET_CURRENCY_RATES';
 export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
 export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
+export const START_FETCH_CURRENCY_RATES = 'START_FETCH_CURRENCY_RATES';
+export const END_FETCH_CURRENCY_RATES = 'END_FETCH_CURRENCY_RATES';
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -285,6 +287,9 @@ export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
 export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
 export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
 
+export const startFetchCurrencyRates = () => ({ type: START_FETCH_CURRENCY_RATES });
+export const endFetchCurrencyRates = () => ({ type: END_FETCH_CURRENCY_RATES });
+
 export const setCurrencies = currencies => {
   return {
     type: SET_CURRENCIES,
@@ -301,7 +306,7 @@ export const setCurrencyRates = currencyRates => {
 
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
-    while (getState().app.isCategoryGuessing) {
+    while (getState().edit.isCategoryGuessing) {
       await sleep(100);
     }
     // Determine the diversity of currently guessed categories
@@ -339,11 +344,23 @@ export const fetchCurrencies = () => {
   };
 };
 
-export const fetchCurrencyRates = () => {
-  return async dispatch => {
-    dispatch(startFetchCurrencies());
-    const currencyRates = await fetch(`${lambdaBase}/currencyRates`).then(res => res.json());
-    dispatch(setCurrencyRates(currencyRates));
-    dispatch(endFetchCurrencies());
+export const fetchCurrencyRates = currencies => {
+  return async (dispatch, getState) => {
+    if (getState().edit.isFetchingCurrencyRates) return;
+    dispatch(startFetchCurrencyRates());
+    try {
+      const url = new URL(`${lambdaBase}/currencyRates`, window.location.origin);
+      if (currencies) {
+        const params = new URLSearchParams();
+        for (let currency of currencies) {
+          params.append('currencies', currency);
+        }
+        url.search = params;
+      }
+      const currencyRates = await fetch(url).then(res => res.json());
+      dispatch(setCurrencyRates(currencyRates));
+    } finally {
+      dispatch(endFetchCurrencyRates());
+    }
   };
 };

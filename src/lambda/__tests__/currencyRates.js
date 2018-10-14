@@ -26,11 +26,11 @@ describe('currencyRates', () => {
   it('should return daily rates', async () => {
     const res = await handler();
     const rates = {
-      '2018-09-13': {
+      '2018-09-14': {
         USD: 1.1689,
         JPY: 130.75
       },
-      '2018-09-14': {
+      '2018-09-13': {
         USD: 1.1689,
         JPY: 130.75
       }
@@ -49,10 +49,10 @@ describe('currencyRates', () => {
       }
     });
     const rates = {
-      '2018-09-13': {
+      '2018-09-14': {
         USD: 1.1689
       },
-      '2018-09-14': {
+      '2018-09-13': {
         USD: 1.1689
       }
     };
