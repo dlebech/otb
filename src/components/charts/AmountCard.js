@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { formatNumber } from '../../util';
 
 const AmountTip = props => {
-  if (!props.amounts.length) return null;
+  if (props.amounts.length <= 1) return null;
 
   const id = `amount-tip-${Math.random()}`;
   return (
