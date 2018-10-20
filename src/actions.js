@@ -66,7 +66,7 @@ export const importParseTransactionsStart = () => {
   };
 };
 
-export const importParseTransactionsEnd = (error, transactions) => {
+export const importParseTransactionsEnd = transactions => {
   return {
     type: IMPORT_PARSE_TRANSACTIONS_END,
     transactions

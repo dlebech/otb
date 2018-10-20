@@ -78,8 +78,7 @@ ColumnHeader.propTypes = {
 const PreviewTable = props => {
   if (props.transactions.length === 0) return null;
 
-  const data = props.transactions.slice(props.skipRows);
-  const numColumns = data[0].length;
+  const numColumns = props.transactions[0].length;
 
   const headers = [];
   for (let i = 0; i < numColumns; i++) {
@@ -103,7 +102,7 @@ const PreviewTable = props => {
             </tr>
           </thead>
           <tbody>
-            {data.map((transaction, i) => {
+            {props.transactions.map((transaction, i) => {
               return <tr key={`row-${i}`}>
                 {transaction.map((column, j) => {
                   return <td key={`col-${i}-${j}`}>{column}</td>
@@ -120,7 +119,6 @@ const PreviewTable = props => {
 PreviewTable.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.array).isRequired,
   columnSpec: PropTypes.arrayOf(PropTypes.object).isRequired,
-  skipRows: PropTypes.number.isRequired,
   dateFormat: PropTypes.string.isRequired,
   handleColumnTypeChange: PropTypes.func.isRequired,
   handleDateFormatChange: PropTypes.func.isRequired

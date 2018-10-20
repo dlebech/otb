@@ -22,12 +22,12 @@ export const guessDateFormat = s => {
  * A thin wrapper around moment's parse function that replaces periods and
  * forward slashes with hyphens before parsing with moment and the given date
  * format.
- * @param {String} val - A date (hopefully) as a string
+ * @param {String} val - A date as a string
  * @param {String} dateFormat - A moment date format, using hyphens, e.g. 'YYYY-MM-DD'.
  * @returns {Moment} A moment instance
  */
 export const momentParse = (val, dateFormat) => {
-  return moment(val.replace(/[.-]/g, '-'), dateFormat);
+  return moment(val.replace(/[.-/ ]/g, '-'), dateFormat, true);
 };
 
 /**
@@ -48,18 +48,22 @@ export const guessColumnSpec = transactions => {
     // If the type is a string, use it as date or description.
     // If the type is a number, use as amount or total, depending on whether we
     // found one of these already.
-    if (typeof val === 'string' && val) {
-      if (!hasColumnType('date') ) {
+    if (typeof val === 'number') {
+      if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
+      else if (!hasColumnType('total')) columnSpec[i].type = 'total';
+    } else if (typeof val === 'string' && val) {
+      if (!hasColumnType('date')) {
         dateFormat = guessDateFormat(val);
         if (dateFormat && momentParse(val, dateFormat).isValid()) {
           columnSpec[i].type = 'date';
           continue;
         }
       }
-      if (!hasColumnType('description')) columnSpec[i].type = 'description';
-    } else if (typeof val === 'number') {
-      if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
-      else columnSpec[i].type = 'total';
+      
+      if (cleanNumber(val)) {
+        if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
+        else if (!hasColumnType('total')) columnSpec[i].type = 'total';
+      } else if (!hasColumnType('description')) columnSpec[i].type = 'description';
     }
   }
 
