@@ -68,7 +68,7 @@ describe('migrations', () => {
 describe('import', () => {
   describe('transaction end', () => {
     it('should store transactions and guess column indexes', () => {
-      const state = reducers({}, actions.importParseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
+      const state = reducers({}, actions.importParseTransactionsEnd([['2018-04-06', 'test row', 123, 456]]));
       expect(state.transactions.import).toEqual({
         data: [['2018-04-06', 'test row', 123, 456]],
         skipRows: 0,
@@ -83,7 +83,7 @@ describe('import', () => {
     });
 
     it('should guess different date formats', () => {
-      const state = reducers({}, actions.importParseTransactionsEnd(null, [['06.04.2018', 'test row', 123, 456]]));
+      const state = reducers({}, actions.importParseTransactionsEnd([['06.04.2018', 'test row', 123, 456]]));
       expect(state.transactions.import).toEqual({
         data: [['06.04.2018', 'test row', 123, 456]],
         skipRows: 0,
@@ -98,9 +98,24 @@ describe('import', () => {
     });
 
     it('should handle columns in different positions', () => {
-      const state = reducers({}, actions.importParseTransactionsEnd(null, [[123, 'test row', 456, '2018-04-06']]));
+      const state = reducers({}, actions.importParseTransactionsEnd([[123, 'test row', 456, '2018-04-06']]));
       expect(state.transactions.import).toEqual({
         data: [[123, 'test row', 456, '2018-04-06']],
+        skipRows: 0,
+        columnSpec: [
+          { type: 'amount' },
+          { type: 'description' },
+          { type: 'total' },
+          { type: 'date' }
+        ],
+        dateFormat: 'YYYY-MM-DD'
+      });
+    });
+
+    it('should handle string amounts', () => {
+      const state = reducers({}, actions.importParseTransactionsEnd([['1 234', 'test row', '4,568', '2018-04-06']]));
+      expect(state.transactions.import).toEqual({
+        data: [['1 234', 'test row', '4,568', '2018-04-06']],
         skipRows: 0,
         columnSpec: [
           { type: 'amount' },

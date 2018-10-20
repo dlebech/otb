@@ -121,3 +121,18 @@ describe('convertCurrency', () => {
     );
   });
 });
+
+describe('momentParse', () => {
+  it('should support various date inputs, as long as they have the correct date format', () => {
+    expect(util.momentParse('13.12.2011', 'DD-MM-YYYY').format('YYYY-MM-DD')).toEqual('2011-12-13');
+    expect(util.momentParse('13-12-2011', 'DD-MM-YYYY').format('YYYY-MM-DD')).toEqual('2011-12-13');
+    expect(util.momentParse('13/12/2011', 'DD-MM-YYYY').format('YYYY-MM-DD')).toEqual('2011-12-13');
+    expect(util.momentParse('12/13/2011', 'MM-DD-YYYY').format('YYYY-MM-DD')).toEqual('2011-12-13');
+    expect(util.momentParse('2011-12-13', 'YYYY-MM-DD').format('YYYY-MM-DD')).toEqual('2011-12-13');
+    expect(util.momentParse('13 12 2011', 'DD-MM-YYYY').format('YYYY-MM-DD')).toEqual('2011-12-13');
+  });
+
+  it('should say that incompatible formats are invalid dates', () => {
+    expect(util.momentParse('13/12/2011', 'YYYY-MM-DD').isValid()).toBeFalsy();
+  });
+});

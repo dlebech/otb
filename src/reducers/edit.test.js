@@ -135,7 +135,7 @@ it('should handle the parsing start action', () => {
 });
 
 it('should set parsing to false on parse transaction ending', () => {
-  const state = reducers({ edit: { isParsing: true } }, actions.importParseTransactionsEnd(null, [['2018-04-06', 'test row', 123, 456]]));
+  const state = reducers({ edit: { isParsing: true } }, actions.importParseTransactionsEnd([['2018-04-06', 'test row', 123, 456]]));
   expect(state.edit.isParsing).toEqual(false);
 });
 
