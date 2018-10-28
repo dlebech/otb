@@ -13,6 +13,7 @@ export const IMPORT_UPDATE_SKIP_ROWS = 'IMPORT_UPDATE_SKIP_ROWS';
 export const IMPORT_UPDATE_COLUMN_TYPE = 'IMPORT_UPDATE_COLUMN_TYPE';
 export const IMPORT_UPDATE_ACCOUNT = 'IMPORT_UPDATE_ACCOUNT';
 export const IMPORT_SET_DATE_FORMAT = 'IMPORT_SET_DATE_FORMAT';
+export const IMPORT_SET_SKIP_DUPLICATES = 'IMPORT_SET_SKIP_DUPLICATES';
 
 // Account actions
 export const ADD_ACCOUNT = 'ADD_ACCOUNT';
@@ -99,6 +100,13 @@ export const importSetDateFormat = dateFormat => {
   return {
     type: IMPORT_SET_DATE_FORMAT,
     dateFormat
+  };
+};
+
+export const importSetSkipDuplicates = enabled => {
+  return {
+    type: IMPORT_SET_SKIP_DUPLICATES,
+    enabled
   };
 };
 

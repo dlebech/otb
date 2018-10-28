@@ -12,7 +12,7 @@ const ConfirmDelete = props => {
       <div className="alert alert-info">
         If you do not want the transaction to show up in charts and graphs,
         it is recommended to use the ignore function instead of deleting.
-        This preserve the correct account balance.
+        This preserves the correct account balance.
       </div>
       Are you sure you want to delete the transaction from {props.transactionDate} with description &quot;{props.transactionDescription}&quot;?
     </React.Fragment>

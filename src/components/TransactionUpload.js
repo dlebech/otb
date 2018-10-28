@@ -99,10 +99,12 @@ class TransactionUpload extends React.Component {
         <UploadForm
           handleFileChange={this.props.handleFileChange}
           handleSkipRowsChange={this.handleFormChange.bind(this, this.props.handleSkipRowsChange)}
+          handleSkipDuplicatesChange={this.props.handleSkipDuplicatesChange}
           handleSave={this.handleSave}
           handleCancel={this.props.handleCancel}
           hasTransactions={!!this.props.transactions && this.props.transactions.length > 0}
           skipRows={this.props.skipRows}
+          skipDuplicates={this.props.skipDuplicates}
           handleAccountChange={this.handleFormChange.bind(this, this.props.handleAccountChange)}
           accounts={this.props.accounts}
           selectedAccount={this.props.account}
@@ -127,9 +129,11 @@ TransactionUpload.propTypes = {
     currency: PropTypes.string
   })).isRequired,
   skipRows: PropTypes.number.isRequired,
+  skipDuplicates: PropTypes.bool.isRequired,
   columnSpec: PropTypes.arrayOf(PropTypes.object),
   handleFileChange: PropTypes.func.isRequired,
   handleSkipRowsChange: PropTypes.func.isRequired,
+  handleSkipDuplicatesChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   handleColumnTypeChange: PropTypes.func.isRequired,
@@ -146,6 +150,7 @@ const mapStateToProps = state => {
     transactions,
     account: state.transactions.import.account,
     skipRows: state.transactions.import.skipRows,
+    skipDuplicates: state.transactions.import.skipDuplicates,
     columnSpec: state.transactions.import.columnSpec,
     dateFormat: state.transactions.import.dateFormat,
     accounts: state.accounts.data
@@ -192,6 +197,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleDateFormatChange: dateFormat => {
       return dispatch(actions.importSetDateFormat(dateFormat));
+    },
+    handleSkipDuplicatesChange: enabled => {
+      return dispatch(actions.importSetSkipDuplicates(enabled));
     }
   };
 };
