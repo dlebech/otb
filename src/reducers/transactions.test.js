@@ -13,6 +13,7 @@ it('should set default data', () => {
     import: {
       data: [],
       skipRows: 0,
+      skipDuplicates: true,
       columnSpec: [],
       dateFormat: ''
     },
@@ -72,6 +73,7 @@ describe('import', () => {
       expect(state.transactions.import).toEqual({
         data: [['2018-04-06', 'test row', 123, 456]],
         skipRows: 0,
+        skipDuplicates: true,
         columnSpec: [
           { type: 'date' },
           { type: 'description' },
@@ -87,6 +89,7 @@ describe('import', () => {
       expect(state.transactions.import).toEqual({
         data: [['06.04.2018', 'test row', 123, 456]],
         skipRows: 0,
+        skipDuplicates: true,
         columnSpec: [
           { type: 'date' },
           { type: 'description' },
@@ -102,6 +105,7 @@ describe('import', () => {
       expect(state.transactions.import).toEqual({
         data: [[123, 'test row', 456, '2018-04-06']],
         skipRows: 0,
+        skipDuplicates: true,
         columnSpec: [
           { type: 'amount' },
           { type: 'description' },
@@ -117,6 +121,7 @@ describe('import', () => {
       expect(state.transactions.import).toEqual({
         data: [['1 234', 'test row', '4,568', '2018-04-06']],
         skipRows: 0,
+        skipDuplicates: true,
         columnSpec: [
           { type: 'amount' },
           { type: 'description' },
@@ -143,6 +148,11 @@ describe('import', () => {
     expect(state.transactions.import.dateFormat).toEqual('YYYY-MM-DD');
   });
 
+  it('should handle set skip duplicates action', () => {
+    const state = reducers({}, actions.importSetSkipDuplicates(true));
+    expect(state.transactions.import.skipDuplicates).toEqual(true);
+  });
+
   it('should handle column type updates', () => {
     const state = reducers({
       transactions: {
@@ -167,7 +177,8 @@ describe('import', () => {
         import: {
           data: [[0, 1]],
           skipRows: 0,
-          columnSpec: [{ type: '' }, { type: '' }]
+          columnSpec: [{ type: '' }, { type: '' }],
+          skipDuplicates: false
         }
       }
     }, actions.importCancelTransactions());
@@ -175,6 +186,7 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
+      skipDuplicates: true,
       columnSpec: [],
       dateFormat: ''
     });
@@ -250,6 +262,7 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
+      skipDuplicates: true,
       columnSpec: [],
       dateFormat: ''
     });
@@ -318,9 +331,58 @@ describe('import', () => {
     expect(state.transactions.import).toEqual({
       data: [],
       skipRows: 0,
+      skipDuplicates: true,
       columnSpec: [],
       dateFormat: ''
     });
+  });
+
+  it('should skip duplicate rows', () => {
+    const state = reducers({
+      transactions: {
+        data: [{
+          id: 'abcd',
+          date: '2018-04-06',
+          description: 'test row',
+          descriptionCleaned: 'test row',
+          amount: 123,
+          total: 123,
+          category: {
+            guess: '',
+            confirmed: ''
+          }
+        }],
+        import: {
+          data: [
+            ['06/04/2018', 'test row', 123, 123]
+          ],
+          skipRows: 0,
+          skipDuplicates: true,
+          columnSpec: [
+            { type: 'date' },
+            { type: 'description' },
+            { type: 'amount' },
+            { type: 'total' }
+          ],
+          dateFormat: 'DD-MM-YYYY'
+        }
+      }
+    }, actions.importSaveTransactions());
+
+    expect(state.transactions.data).toEqual([
+      {
+        id: 'abcd',
+        date: '2018-04-06',
+        description: 'test row',
+        descriptionCleaned: 'test row',
+        amount: 123,
+        total: 123,
+        category: {
+          guess: '',
+          confirmed: ''
+        }
+      }
+    ]);
   });
 });
 

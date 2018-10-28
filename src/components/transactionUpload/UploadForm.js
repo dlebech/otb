@@ -9,7 +9,9 @@ const UploadForm = props => {
       {!props.hasTransactions && <FileUpload handleFileChange={props.handleFileChange} />}
       {props.hasTransactions && <ImportControls
         skipRows={props.skipRows}
+        skipDuplicates={props.skipDuplicates}
         handleSkipRowsChange={props.handleSkipRowsChange}
+        handleSkipDuplicatesChange={props.handleSkipDuplicatesChange}
         handleSave={props.handleSave}
         handleCancel={props.handleCancel}
         handleAccountChange={props.handleAccountChange}
@@ -23,8 +25,10 @@ const UploadForm = props => {
 UploadForm.propTypes = {
   hasTransactions: PropTypes.bool.isRequired,
   skipRows: PropTypes.number.isRequired,
+  skipDuplicates: PropTypes.bool.isRequired,
   handleFileChange: PropTypes.func.isRequired,
   handleSkipRowsChange: PropTypes.func.isRequired,
+  handleSkipDuplicatesChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   handleAccountChange: PropTypes.func.isRequired,

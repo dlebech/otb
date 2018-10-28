@@ -9,6 +9,7 @@ const initialTransactions = {
   import: {
     data: [],
     skipRows: 0,
+    skipDuplicates: true,
     columnSpec: [],
     dateFormat: ''
   },
@@ -22,11 +23,23 @@ const initialTransactions = {
   }
 }
 
-const mapImportToTransactions = transactionsImport => {
+const mapImportToTransactions = (transactionsImport, existingTransactions) => {
   const dateIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'date');
   const descIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'description');
   const amountIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'amount');
   const totalIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'total');
+
+  // If the import is set to skip duplicates make a set of strings with the
+  // primary attributes of all existing transactions (date, description, amount,
+  // total) and check the new transactions against that set. This will work best
+  // if the "total" column has valid amounts, as that should definitely
+  // determine the order of transactions on a bank statement.
+  let filter = () => true;
+  if (transactionsImport.skipDuplicates) {
+    const mapTransaction = t => `${t.date}_${t.description}_${t.amount}_${t.total}`;
+    const bagOfTransactions = new Set(existingTransactions.map(mapTransaction));
+    filter = t => !bagOfTransactions.has(mapTransaction(t));
+  }
 
   return transactionsImport.data
     .slice(transactionsImport.skipRows)
@@ -47,7 +60,8 @@ const mapImportToTransactions = transactionsImport => {
           confirmed: ''
         }
       };
-    });
+    })
+    .filter(filter);
 };
 
 const retrainBayes = transactions => {
@@ -139,6 +153,12 @@ const transactionsReducer = (state = initialTransactions, action) => {
           dateFormat: { $set: action.dateFormat }
         }
       });
+    case actions.IMPORT_SET_SKIP_DUPLICATES:
+      return update(state, {
+        import: {
+          skipDuplicates: { $set: action.enabled }
+        }
+      });
     case actions.IMPORT_CANCEL_TRANSACTIONS:
       return update(state, {
         import: {
@@ -151,7 +171,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
           $set: initialTransactions.import
         },
         data: {
-          $push: mapImportToTransactions(state.import)
+          $push: mapImportToTransactions(state.import, state.data)
         }
       });
     case actions.GUESS_CATEGORY_FOR_ROW:

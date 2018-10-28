@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ImportControls = props => {
   return (
@@ -30,6 +32,34 @@ const ImportControls = props => {
         </select>
       </div>
       <div className="col-auto">
+        <div className="form-check">
+          <input
+            type="checkbox"
+            id="skip-duplicates-check"
+            className="form-check-input"
+            checked={props.skipDuplicates}
+            onChange={e => props.handleSkipDuplicatesChange(e.target.checked)}
+          />
+          <label className="form-check-label" htmlFor="skip-duplicates-check">
+            Skip duplicates
+            <FontAwesomeIcon
+              icon="question-circle"
+              className="ml-1 cursor-help"
+              data-tip=""
+              data-for="skip-duplicates-tt"
+            />
+          </label>
+          <ReactTooltip
+            id="skip-duplicates-tt"
+            className="small-tip"
+          >
+            If enabled, imported transactions will be skipped if they match
+            an existing transaction with exactly the same date, description,
+            amount and total.
+          </ReactTooltip>
+        </div>
+      </div>
+      <div className="col-auto">
         <button type="button" className="btn btn-primary" onClick={props.handleSave}>
           Save
         </button>
@@ -43,7 +73,9 @@ const ImportControls = props => {
 
 ImportControls.propTypes = {
   skipRows: PropTypes.number.isRequired,
+  skipDuplicates: PropTypes.bool.isRequired,
   handleSkipRowsChange: PropTypes.func.isRequired,
+  handleSkipDuplicatesChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   handleAccountChange: PropTypes.func.isRequired,
