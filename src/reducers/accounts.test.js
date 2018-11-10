@@ -36,3 +36,15 @@ it('should delete an account ', () => {
   const state = reducers({}, actions.deleteAccount('abcd'));
   expect(state.accounts.data).toEqual([]);
 });
+
+it('should restore from file', () => {
+  const state = reducers({}, actions.restoreStateFromFile({
+    accounts: {
+      data: [{ id: 'abcd', name: 'My account', currency: 'DKK' }]
+    }
+  }));
+
+  expect(state.accounts.data).toEqual([
+    { id: 'abcd', name: 'My account', currency: 'DKK' }
+  ])
+});
