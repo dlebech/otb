@@ -22,11 +22,11 @@ const AmountTip = props => {
           return (
             <div className={`${i >= 1 ? 'mt-2' : ''}`}>
               <div>
-                {formatNumber(Math.abs(a.amounts.originalAmount))}&nbsp;
+                {formatNumber(Math.round(Math.abs(a.amounts.originalAmount)))}&nbsp;
                 {a.account.currency} ({a.account.name})
               </div>
               {a.amounts.originalAmount !== a.amounts.amount && <div>
-                Converted to {formatNumber(Math.abs(a.amounts.amount))} {props.baseCurrency}
+                Converted to {formatNumber(Math.round(Math.abs(a.amounts.amount)))} {props.baseCurrency}
               </div>}
             </div>
           );
