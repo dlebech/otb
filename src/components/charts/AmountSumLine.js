@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   ResponsiveContainer,
   LineChart,
@@ -35,6 +36,13 @@ const AmountSumLine = props => {
       </ResponsiveContainer>
     </div>
   );
+};
+
+AmountSumLine.propTypes = {
+  transactions: PropTypes.arrayOf(PropTypes.shape({
+    date: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired
+  })).isRequired
 };
 
 export default AmountSumLine;
