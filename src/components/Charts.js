@@ -6,7 +6,8 @@ import { convertCurrency } from '../util';
 import NoData from './NoData';
 import Dates from './Dates';
 import Summary from './charts/Summary';
-import AmountSumLine from './charts/AmountSumLine';
+import AmountSumArea from './charts/AmountSumArea';
+import IncomesExpensesLine from './charts/IncomeExpensesLine';
 import CategoryTreeMap from './charts/CategoryTreeMap';
 import Loading from './shared/Loading';
 
@@ -90,14 +91,17 @@ const Charts = props => {
       />
       <div className="row justify-content-center">
         <div className="col-6">
-          <h3 className="text-center">Sum of Transactions over time</h3>
-          <AmountSumLine
-            transactions={filteredTransactions}
-            baseCurrency={props.baseCurrency}
-          />
+          <h4 className="text-center">Income and expenses over time</h4>
+          <IncomesExpensesLine transactions={filteredTransactions} />
         </div>
         <div className="col-6">
-          <h3 className="text-center">Categories where money is spent</h3>
+          <h4 className="text-center">Sum of income and expenses over time</h4>
+          <AmountSumArea transactions={filteredTransactions} />
+        </div>
+      </div>
+      <div className="row justify-content-center">
+        <div className="col">
+          <h4 className="text-center">Categories where money is spent</h4>
           <CategoryTreeMap
             transactions={filteredTransactions}
             categories={props.categories}

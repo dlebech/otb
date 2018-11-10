@@ -13,12 +13,23 @@ import { sum, ascending } from 'd3-array';
 import color from '../../data/color'
 import { formatNumber } from '../../util';
 
-const AmountSumLine = props => {
+const IncomeExpensesLine = props => {
   const data = nest()
     .key(d => d.date)
     .sortKeys(ascending)
-    .rollup(a => sum(a, d => d.amount))
+    .rollup(a => {
+      return {
+        expenses: sum(a, d => (d.amount < 0 ? d.amount : 0)),
+        income: sum(a, d => (d.amount >= 0 ? d.amount : 0))
+      }
+    })
     .entries(props.transactions);
+
+  data.forEach(d => {
+    d.Expenses = d.value.expenses;
+    d.Income = d.value.income;
+    delete d.value;
+  });
 
   return (
     <div className="chart">
@@ -26,11 +37,20 @@ const AmountSumLine = props => {
         <LineChart data={data}>
           <XAxis dataKey="key" />
           <YAxis />
-          <Tooltip formatter={v => formatNumber(v, { maximumFractionDigits: 2 })} />
+          <Tooltip formatter={v => formatNumber(v, { maximumFractionDigits: 0 })} />
           <Line
             type="monotone"
-            dataKey="value"
-            stroke={color.bootstrap.dark}
+            dataKey="Expenses"
+            fill={color.bootstrap.danger}
+            stroke={color.bootstrap.danger}
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="Income"
+            fill={color.bootstrap.success}
+            stroke={color.bootstrap.success}
+            dot={false}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -38,11 +58,11 @@ const AmountSumLine = props => {
   );
 };
 
-AmountSumLine.propTypes = {
+IncomeExpensesLine.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.shape({
     date: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired
   })).isRequired
 };
 
-export default AmountSumLine;
+export default IncomeExpensesLine;

@@ -89,20 +89,35 @@ describe('Chart', () => {
     expect(container.render().text()).toEqual('No data yet. Add some.');
   });
 
-  it('should render transactions graph when there are transactions', () => {
+  it('should render expenses/incomes graph when there are transactions', () => {
     const store = mockStore(baseData);
 
     const wrapper = mount(<Charts store={store} />);
+    const areaChart = wrapper.find('AreaChart');
+    expect(areaChart.length).toEqual(1);
+    expect(areaChart.props().data).toEqual([
+      {
+        key: '2018-01-01',
+        value: -2.25 // The -1 DKK is converted to 1.25 SEK
+      },
+      {
+        key: '2018-01-02',
+        value: 3
+      }
+    ]);
+
     const lineChart = wrapper.find('LineChart');
     expect(lineChart.length).toEqual(1);
     expect(lineChart.props().data).toEqual([
       {
         key: '2018-01-01',
-        value: -2.25, // The -1 DKK is converted to 1.25 SEK
+        Income: 0,
+        Expenses: -2.25 // The -1 DKK is converted to 1.25 SEK
       },
       {
         key: '2018-01-02',
-        value: 3,
+        Income: 3,
+        Expenses: 0
       }
     ]);
 
@@ -162,16 +177,16 @@ describe('Chart', () => {
     const store = mockStore(data);
 
     const wrapper = mount(<Charts store={store} />);
-    const lineChart = wrapper.find('LineChart');
-    expect(lineChart.length).toEqual(1);
-    expect(lineChart.props().data).toEqual([
+    const areaChart = wrapper.find('AreaChart');
+    expect(areaChart.length).toEqual(1);
+    expect(areaChart.props().data).toEqual([
       {
         key: '2018-01-01',
-        value: -1,
+        value: -1
       },
       {
         key: '2018-01-02',
-        value: 3,
+        value: 3
       }
     ]);
 
