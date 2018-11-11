@@ -13,6 +13,8 @@ class RowCategorizer extends React.Component {
     };
 
     this.handleEditCategory = this.handleEditCategory.bind(this);
+    this.handleCategoryChange = this.handleCategoryChange.bind(this);
+    this.handleCreateCategory = this.handleCreateCategory.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -33,7 +35,15 @@ class RowCategorizer extends React.Component {
 
   handleEditCategory() {
     // We start editing a category by resetting it's category ID.
-    this.props.handleRowCategory(this.props.transaction.id, '');
+    this.props.handleRowCategoryChange(this.props.transaction.id, '');
+  }
+
+  handleCategoryChange(categoryOption) {
+    this.props.handleRowCategoryChange(this.props.transaction.id, categoryOption.value);
+  }
+
+  handleCreateCategory(name) {
+    this.props.showCreateCategoryModal(name, this.props.transaction.id);
   }
 
   render() {
@@ -51,14 +61,15 @@ class RowCategorizer extends React.Component {
           transactionId={this.props.transaction.id}
           categoryGuess={this.props.transaction.categoryGuess}
           categoryConfirmed={this.props.transaction.categoryConfirmed}
-          handleRowCategory={this.props.handleRowCategory}
+          handleRowCategoryChange={this.props.handleRowCategoryChange}
           handleEditCategoryForRow={this.handleEditCategory}
         />}
         {this.state.editing && <CategorySelect
           transactionId={this.props.transaction.id}
           selectedValue={categoryConfirmedAsOption}
           options={this.props.categoryOptions}
-          handleRowCategory={this.props.handleRowCategory}
+          handleCategoryChange={this.handleCategoryChange}
+          handleCreateCategory={this.handleCreateCategory}
           focus={this.state.focus}
         />}
       </React.Fragment>
@@ -67,7 +78,8 @@ class RowCategorizer extends React.Component {
 }
 
 RowCategorizer.propTypes = {
-  handleRowCategory: PropTypes.func.isRequired,
+  handleRowCategoryChange: PropTypes.func.isRequired,
+  showCreateCategoryModal: PropTypes.func.isRequired,
   transaction: PropTypes.shape({
     categoryGuess: PropTypes.shape({
       id: PropTypes.string.isRequired,

@@ -27,6 +27,7 @@ export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
+export const CATEGORIZE_ROWS = 'CATEGORIZE_ROWS';
 export const IGNORE_ROW = 'IGNORE_ROW';
 export const DELETE_ROW = 'DELETE_ROW';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
@@ -158,6 +159,13 @@ export const categorizeRow = (rowId, categoryId) => {
     type: CATEGORIZE_ROW,
     rowId,
     categoryId
+  };
+};
+
+export const categorizeRows = rowCategoryMapping => {
+  return {
+    type: CATEGORIZE_ROWS,
+    rowCategoryMapping
   };
 };
 
@@ -314,23 +322,36 @@ export const setCurrencyRates = currencyRates => {
 
 export const guessAllCategories = () => {
   return async (dispatch, getState) => {
+    // Do not start guessing until the previous guessing is done.
+    // Note: This can potentially queue up a lot of guessing, but in practice
+    // this seems to be OK for now.
     while (getState().edit.isCategoryGuessing) {
       await sleep(100);
     }
-    // Determine the diversity of currently guessed categories
-    const guessedCategories = new Set(
+    // Determine the diversity of currently confirmed categories.
+    // Do not start guessing if we have less than 3 confirmed categories.
+    const confirmedCategories = new Set(
       getState().transactions.data
         .filter(t => !!t.category.confirmed)
         .map(t => t.category.confirmed)
     );
-    if (guessedCategories.size < 3) return;
+    if (confirmedCategories.size < 3) return;
 
+    // Signal to everyone that we are starting the guessing game.
     dispatch(startGuessAllCategories());
 
+    // Guess 100 transactions at a time with a bit of sleeping in between to
+    // avoid locking the UI completely.
     const transactionsToGuess = chunk(
       getState().transactions.data
-        .filter(t => !t.category.confirmed && !t.ignore)
-        .map(t => t.id),
+        .reduce((arr, t, i) => {
+          // Store the index of the transaction rather than the ID.
+          // XXX: This is going to cause race conditions if transactions are
+          // somehow changed between sleeping (see below), but this will not
+          // happen in practice, and it is necessary optimization.
+          if (!t.category.confirmed && !t.ignore) arr.push(i);
+          return arr;
+        }, []),
       100
     );
 
@@ -339,6 +360,7 @@ export const guessAllCategories = () => {
       await sleep(10);
     }
 
+    // Signal that we are done
     dispatch(endGuessAllCategories());
   };
 };

@@ -67,18 +67,21 @@ const TransactionRow = props => {
     });
   }
 
+  const handleRowSelect = () => props.handleRowSelect(props.transaction.id);
+
   let className = '';
-  if (props.transaction.ignore) className = 'table-warning';
+  if (props.isSelected) className = 'table-primary';
+  else if (props.transaction.ignore) className = 'table-warning';
 
   const account = props.accounts[props.transaction.account] || { name: 'N/A' };
   const hasMultipleAccounts = Object.keys(props.accounts).length >= 2;
 
   return (
     <tr className={className}>
-      <td className="text-nowrap">
+      <td className="text-nowrap" onClick={handleRowSelect}>
         {props.transaction.date.format('L')}
       </td>
-      <td>
+      <td onClick={handleRowSelect}>
         {props.transaction.description}
       </td>
       <td className="text-right">
@@ -102,7 +105,8 @@ const TransactionRow = props => {
         <RowCategorizer
           transaction={props.transaction}
           categoryOptions={props.categoryOptions}
-          handleRowCategory={props.handleRowCategory}
+          handleRowCategoryChange={props.handleRowCategoryChange}
+          showCreateCategoryModal={props.showCreateCategoryModal}
         />
       </td>
       <td className="text-nowrap">
@@ -144,11 +148,13 @@ TransactionRow.propTypes = {
     value: PropTypes.string.isRequired
   })).isRequired,
   accounts: PropTypes.object.isRequired,
+  showCreateCategoryModal: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired,
+  handleRowCategoryChange: PropTypes.func.isRequired,
+  handleRowSelect: PropTypes.func.isRequired,
   roundAmount: PropTypes.bool.isRequired
 };
 

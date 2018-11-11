@@ -107,13 +107,13 @@ class _NewCategoryForRow extends React.Component {
 }
 
 _NewCategoryForRow.propTypes = {
-  rowId: PropTypes.string.isRequired,
   categoryName: PropTypes.string.isRequired,
   parentCategories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   })).isRequired,
-  handleNewRowCategory: PropTypes.func.isRequired
+  handleNewRowCategory: PropTypes.func.isRequired,
+  rowId: PropTypes.string,
 }
 
 const NewCategoryForRow = connectModal({

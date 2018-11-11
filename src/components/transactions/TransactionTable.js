@@ -9,6 +9,7 @@ import Dates from '../Dates';
 import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
 import SearchField from './SearchField';
+import BulkActions from './BulkActions';
 
 const filterData = (data, categories, dateSelect) => {
   let categoryFilter = t => true;
@@ -31,7 +32,7 @@ const filterData = (data, categories, dateSelect) => {
 };
 
 const sortData = (data, sortKey, sortAscending) => {
-  return [].concat(data) // Concat to avoid inplace sort of original array.
+  return [...data] // Create new array to avoid inplace sort of original array.
     .sort((a, b) => {
       const [val1, val2] = [a[sortKey], b[sortKey]];
       if (typeof val1 === 'string') {
@@ -47,29 +48,39 @@ class TransactionTable extends React.Component {
 
     // The data from props is actually being stored in state as well, but they
     // are set further down.
-    this.state = {};
+    this.state = { selectedRows: new Set(), isSelectedRowsUpdate: false };
 
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleCategorySelect = this.handleCategorySelect.bind(this);
     this.handleDatesChange = this.handleDatesChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleRowSelect = this.handleRowSelect.bind(this);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
+    this.handleSelectNone = this.handleSelectNone.bind(this);
   }
 
   componentDidUpdate() {
     ReactTooltip.rebuild();
   }
 
-  static getDerivedStateFromProps(props) {
-    // Only called when receiving new props or on the first render. So this is
-    // where we should just set all the raw transactions into local state so we
-    // can easier sort, filter, etc. later
-    const data = [].concat(props.transactions);
+  static getDerivedStateFromProps(props, state) {
+    // Hack: This is to ensure that when a row is selected, it will not sort and
+    // filter the data below. But yeah, it's a hack. See the note below.
+    if (state.isSelectedRowsUpdate) return { isSelectedRowsUpdate: false };
+
+    // Only called when receiving new props/state or on the first render. So
+    // this is where we should just set all the raw transactions into local
+    // state so we can easier sort, filter, etc. later
+    // XXX: This is most likely an anti-pattern. And it could probably be moved
+    // to the reducers instead.
+    // https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
+    const data = [...props.transactions];
     const dataView = sortData(
       filterData(data, props.filterCategories, props.dateSelect),
       props.sortKey,
       props.sortAscending
     );
-    return { data, dataView };
+    return { data, dataView, selectedRows: new Set() };
   }
 
   handleDatesChange({ startDate, endDate }) {
@@ -89,14 +100,35 @@ class TransactionTable extends React.Component {
 
     const filterCategories = new Set(options.map(o => o.value));
 
-    // Since he category filter might reduce the number of transactions, we need
-    // to know the new number of transactions here.
+    // Since the category filter might reduce the number of transactions, we
+    // need to know the new number of transactions here.
     const newData = filterData(this.state.data, filterCategories, this.props.dateSelect)
     this.props.handleFilterCategories(filterCategories, newData.length);
   }
 
   handleSearch(text) {
     this.props.handleSearch(text, this.props.page);
+  }
+
+  handleRowSelect(transactionId, forceInclusion=false) {
+    this.setState(prevState => {
+      const selectedRows = new Set([...prevState.selectedRows.values()]);
+      if (!Array.isArray(transactionId)) transactionId = [transactionId];
+      transactionId.forEach(tId => {
+        // We are de-selecting if the transaction exists in the row list already, unless forceInclusion is true
+        if (!forceInclusion && selectedRows.has(tId)) selectedRows.delete(tId);
+        else (selectedRows.add(tId));
+      });
+      return { selectedRows, isSelectedRowsUpdate: true };
+    })
+  }
+
+  handleSelectAll(rowIds) {
+    this.handleRowSelect(rowIds, true);
+  }
+
+  handleSelectNone() {
+    this.setState({ selectedRows: new Set(), isSelectedRowsUpdate: true });
   }
 
   render() {
@@ -127,7 +159,7 @@ class TransactionTable extends React.Component {
         : null;
 
     return (
-      <React.Fragment>
+      <>
         <div className="row align-items-center">
           <div className="col-12 col-md-auto">
             <Dates
@@ -186,7 +218,19 @@ class TransactionTable extends React.Component {
         </div>
         <div className="row">
           <div className="col">
-            <table className="table table-striped table-responsive-md mt-3">
+            <BulkActions
+              selectedTransactions={dataPage.filter(t => this.state.selectedRows.has(t.id))}
+              handleRowCategoryChange={this.props.handleRowCategoryChange}
+              handleSelectAll={() => this.handleSelectAll(dataPage.map(t => t.id))}
+              handleSelectNone={this.handleSelectNone}
+              categoryOptions={categoryOptions}
+              showCreateCategoryModal={this.props.showCreateCategoryModal}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <table className="table table-striped table-hover table-responsive-md mt-1">
               <thead className="thead-dark">
                 <tr>
                   <SortHeader
@@ -224,18 +268,21 @@ class TransactionTable extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {dataPage.map((transaction, i) => {
+                {dataPage.map(transaction => {
                   return <TransactionRow
                     key={`row-${transaction.id}`}
                     transaction={transaction}
                     categoryOptions={categoryOptions}
                     accounts={this.props.accounts}
-                    handleRowCategory={this.props.handleRowCategory}
+                    handleRowCategoryChange={this.props.handleRowCategoryChange}
                     handleDeleteRow={this.props.handleDeleteRow}
                     handleIgnoreRow={this.props.handleIgnoreRow}
+                    handleRowSelect={this.handleRowSelect}
+                    showCreateCategoryModal={this.props.showCreateCategoryModal}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
                     roundAmount={this.props.roundAmount}
+                    isSelected={this.state.selectedRows.has(transaction.id)}
                   />
                 })}
               </tbody>
@@ -243,7 +290,7 @@ class TransactionTable extends React.Component {
           </div>
         </div>
         <ReactTooltip />
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -272,11 +319,12 @@ TransactionTable.propTypes = {
   sortKey: PropTypes.string.isRequired,
   sortAscending: PropTypes.bool.isRequired,
   filterCategories: PropTypes.instanceOf(Set).isRequired,
+  showCreateCategoryModal: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
-  handleRowCategory: PropTypes.func.isRequired,
+  handleRowCategoryChange: PropTypes.func.isRequired,
   handleSearch: PropTypes.func.isRequired,
   handleDatesChange: PropTypes.func.isRequired,
   handlePageChange: PropTypes.func.isRequired,

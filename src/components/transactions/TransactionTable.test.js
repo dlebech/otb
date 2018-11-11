@@ -81,6 +81,7 @@ const defaultProps = {
   handleDeleteRow: jest.fn(),
   handleRowCategory: jest.fn(),
   handleFilterCategories: jest.fn(),
+  handlePageChange: jest.fn(),
   handlePageSizeChange: jest.fn()
 };
 
@@ -223,4 +224,25 @@ it('should filter by date', () => {
   expect(container.find('TransactionRow').length).toEqual(1);
   const rendered = container.render();
   expect(rendered.find('td').first().text()).toEqual('2018-01-03');
+});
+
+it('should handle a row select', () => {
+  const container = shallow(
+    <TransactionTable
+      {...defaultProps}
+    />
+  );
+
+  // Not contained before
+  expect(container.state('selectedRows').has('b')).toBeFalsy();
+
+  // Toggle on
+  container.instance().handleRowSelect('b');
+  expect(container.state('selectedRows').has('b')).toBeTruthy();
+  expect(container.render().find('tr').eq(1).attr('class')).toEqual('table-primary');
+
+  // Toggle off
+  container.instance().handleRowSelect('b');
+  expect(container.state('selectedRows').has('b')).toBeFalsy();
+  expect(container.render().find('tr').eq(1).attr('class')).toEqual('');
 });
