@@ -112,7 +112,7 @@ const mapStateToProps = state => {
   }, {});
 
   let transactions = state.transactions.data;
-  if (state.search.transactions.result.length !== state.transactions.data) {
+  if (state.search.transactions.result.length !== transactions.length) {
     const ids = new Set(state.search.transactions.result);
     transactions = transactions.filter(t => ids.has(t.id));
   }
@@ -178,7 +178,10 @@ const mapDispatchToProps = dispatch => {
     hideModal: (...args) => {
       dispatch(hide(...args));
     },
-    handleSearch: debounce(text => {
+    handleSearch: debounce((text, currentPage) => {
+      // This is the simplest version for making sure that we don't get stuck on
+      // a non-existant page.
+      if (currentPage !== 1) dispatch(actions.setTransactionListPage(1));
       dispatch(searchTransactions(text));
     }, 250),
     handleDatesChange: (dateSelectId, startDate, endDate) => {

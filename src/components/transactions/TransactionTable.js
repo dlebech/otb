@@ -52,6 +52,7 @@ class TransactionTable extends React.Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleCategorySelect = this.handleCategorySelect.bind(this);
     this.handleDatesChange = this.handleDatesChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
   componentDidUpdate() {
@@ -92,6 +93,10 @@ class TransactionTable extends React.Component {
     // to know the new number of transactions here.
     const newData = filterData(this.state.data, filterCategories, this.props.dateSelect)
     this.props.handleFilterCategories(filterCategories, newData.length);
+  }
+
+  handleSearch(text) {
+    this.props.handleSearch(text, this.props.page);
   }
 
   render() {
@@ -154,7 +159,7 @@ class TransactionTable extends React.Component {
           <div className="col-lg-6">
             <div className="row align-items-center">
               <div className="col-auto">
-                <SearchField handleSearch={this.props.handleSearch} searchText={this.props.searchText} />
+                <SearchField handleSearch={this.handleSearch} searchText={this.props.searchText} />
               </div>
               <div className="col">
                 <Select
