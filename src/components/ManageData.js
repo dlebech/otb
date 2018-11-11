@@ -16,10 +16,19 @@ class ManageData extends React.Component {
   }
 
   async handleDownload() {
-    const blob = new Blob([JSON.stringify(this.props.state)], {
+    const [whitelist, download] = await Promise.all([
+      import('../configureStore').then(m => m.persistConfig.whitelist),
+      import('downloadjs').then(m => m.default)
+    ]);
+
+    // Include only whitelisted store items.
+    const stateToDownload = {};
+    whitelist.forEach(w => stateToDownload[w] = this.props.state[w]);
+
+    // Create a data blog and download it.
+    const blob = new Blob([JSON.stringify(stateToDownload)], {
       type: 'application/json'
     });
-    const download = await import('downloadjs').then(m => m.default);
     download(blob, 'data.json', 'application/json');
   }
 

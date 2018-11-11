@@ -11,10 +11,15 @@ if (process.env.NODE_ENV === 'development') {
   middlewares.push(createLogger());
 }
 
-const persistConfig = {
+export const persistConfig = {
   key: 'otb',
   storage: storage,
-  blacklist: ['edit', 'modal', 'search']
+  whitelist: [
+    'app',
+    'accounts',
+    'transactions',
+    'categories'
+  ]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
