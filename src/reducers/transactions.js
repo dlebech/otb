@@ -108,6 +108,85 @@ const migrate = state => {
   return state;
 };
 
+/**
+ * Update the confirmed category for one or more transactions.
+ * @param {Object} state - The existing state to update
+ * @param {Object} transactionCategoryMapping - A mapping of transaction IDs to category IDs
+ * @returns {Object} The new State
+ */
+const categorizeTransactions = (state, transactionCategoryMapping) => {
+  const rowIds = Object.keys(transactionCategoryMapping);
+  const rowsToCategorizeAsSet = new Set(rowIds);
+
+  // This wouldn't be necessary if the transactions were not stored in an array.
+  const reverseIndexLookup = state.data.reduce((obj, t, i) => {
+    obj[t.id] = i;
+    return obj;
+  }, {});
+  // Find the indexes to update.
+  const rowIndexes = rowIds
+    .map(rowId => reverseIndexLookup[rowId])
+    .filter(rowIndex => rowIndex !== null && rowIndex >= 0);
+
+  // Exit early if we can't find the transactions. This shouldn't really
+  // happen...
+  if (rowIndexes.length === 0) return state;
+
+  // If the bayes classifier exists and none of the new rows previously had
+  // a confirmed category, just instantiate the classifier.
+  // Otherwise if there's currently no bayes classifier or if the category changed
+  // from a non-empty category, create a new one.
+  // XXX: This is complicated and should be simplified...
+  let classifier;
+  const anyTransactionHasCategory = !!state.data
+    .find(t => rowsToCategorizeAsSet.has(t.id) && t.category.confirmed);
+
+  if (state.categorizer.bayes && !anyTransactionHasCategory) {
+    classifier = bayes.fromJson(state.categorizer.bayes);
+  } else {
+    // Reset the classifier and re-train on all transactions, except the ones
+    // we are changing here.
+    classifier = retrainBayes(state.data.filter(t => !rowsToCategorizeAsSet.has(t.id)));
+  }
+
+  let newState = state;
+
+  // Atomically update the state
+  rowIndexes.forEach(i => {
+    const newCategoryId = transactionCategoryMapping[newState.data[i].id];
+
+    // Train on the new category we are about to add.
+    // Note: The category can be the empty string, if it's a reset of the
+    // category. In those cases, we shouldn't train on it...
+    if (newCategoryId && newState.data[i].descriptionCleaned) {
+      classifier.learn(newState.data[i].descriptionCleaned, newCategoryId);
+    }
+
+    // Update the category for each transaction.
+    newState = update(newState, {
+      data: {
+        [i]: {
+          category: {
+            confirmed: {
+              $set: newCategoryId
+            },
+            $unset: ['guess']
+          }
+        }
+      }
+    });
+  });
+
+  // Finally, save the classifier
+  return update(newState, {
+    categorizer: {
+      bayes: {
+        $set: classifier.toJson()
+      }
+    }
+  });
+};
+
 const transactionsReducer = (state = initialTransactions, action) => {
   // Perform migrations first.
   // Note: Also do migrations after restoring a file!
@@ -179,9 +258,18 @@ const transactionsReducer = (state = initialTransactions, action) => {
       if (!Array.isArray(rowsToGuess)) {
         rowsToGuess = [rowsToGuess];
       }
-      const rowIndexes = rowsToGuess
-        .map(rowId => state.data.findIndex(row => row.id === rowId))
-        .filter(rowIndex => rowIndex >= 0);
+
+      let rowIndexes = rowsToGuess;
+      if (typeof rowIndexes[0] !== 'number') {
+        // This wouldn't be necessary if the transactions were not stored in an array.
+        const reverseIndexLookup = state.data.reduce((obj, t, i) => {
+          obj[t.id] = i;
+          return obj;
+        }, {});
+        rowIndexes = rowIndexes
+          .map(rowId => reverseIndexLookup[rowId])
+          .filter(rowIndex => rowIndex !== null && rowIndex >= 0);
+      }
       if (rowIndexes.length === 0) return state;
       if (!state.categorizer.bayes) return state;
 
@@ -204,41 +292,9 @@ const transactionsReducer = (state = initialTransactions, action) => {
       });
       return newState;
     case actions.CATEGORIZE_ROW:
-      const rowIndexCategorize = state.data.findIndex(row => row.id === action.rowId);
-      if (rowIndexCategorize < 0) return state;
-      // If there's currently no bayes classifier or if the category changed
-      // from non-empty, create a new one.
-      let classifier;
-      if (state.categorizer.bayes && !state.data[rowIndexCategorize].category.confirmed) {
-        classifier = bayes.fromJson(state.categorizer.bayes)
-      } else {
-        // Reset the classifier and re-train on all transactions, except the one
-        // we are editing..
-        classifier = retrainBayes(state.data.filter(t => t.id !== action.rowId));
-      }
-
-      // Train on the new category we are about to add
-      if (action.categoryId && state.data[rowIndexCategorize].descriptionCleaned) {
-        classifier.learn(state.data[rowIndexCategorize].descriptionCleaned, action.categoryId);
-      }
-
-      return update(state, {
-        categorizer: {
-          bayes: {
-            $set: classifier.toJson()
-          }
-        },
-        data: {
-          [rowIndexCategorize]: {
-            category: {
-              confirmed: {
-                $set: action.categoryId
-              },
-              $unset: ['guess']
-            }
-          }
-        }
-      });
+      return categorizeTransactions(state, { [action.rowId]: action.categoryId });
+    case actions.CATEGORIZE_ROWS:
+      return categorizeTransactions(state, action.rowCategoryMapping);
     case actions.RESTORE_STATE_FROM_FILE:
       if (!action.newState.transactions) return state;
       state = update(state, {

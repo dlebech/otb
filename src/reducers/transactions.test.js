@@ -387,28 +387,30 @@ describe('import', () => {
 });
 
 describe('guess category', () => {
-  it('should guess the category of a single row', () => {
-    const state = reducers({
-      transactions: {
-        categorizer: {
-          // A bayes classifier, trained on apple and origami
-          bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
-        },
-        data: [
-          {
-            id: 'abcd',
-            date: '2018-04-06',
-            description: 'more origami',
-            amount: 123,
-            total: 456,
-            category: {
-              guess: '',
-              confirmed: ''
-            }
+  const baseData = {
+    transactions: {
+      categorizer: {
+        // A bayes classifier, trained on apple and origami
+        bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
+      },
+      data: [
+        {
+          id: 'abcd',
+          date: '2018-04-06',
+          description: 'more origami',
+          amount: 123,
+          total: 456,
+          category: {
+            guess: '',
+            confirmed: ''
           }
-        ]
-      }
-    }, actions.guessCategoryForRow('abcd'));
+        }
+      ]
+    }
+  };
+
+  it('should guess the category of a single row', () => {
+    const state = reducers(baseData, actions.guessCategoryForRow('abcd'));
 
     // Sets the data
     expect(state.transactions.data[0].category).toEqual({
@@ -417,7 +419,19 @@ describe('guess category', () => {
     });
   });
 
-  it('should guess the category of a multiple rows', () => {
+  it('should guess the category of a single row where the index is known', () => {
+    // XXX: This test becomes obsolete if we change the transaction data into an
+    // object indexes on the ID of the transaction.
+    const state = reducers(baseData, actions.guessCategoryForRow(0));
+
+    // Sets the data
+    expect(state.transactions.data[0].category).toEqual({
+      guess: 'hobby',
+      confirmed: ''
+    });
+  });
+
+  it('should guess the category of multiple rows', () => {
     const state = reducers({
       transactions: {
         categorizer: {
@@ -453,7 +467,9 @@ describe('guess category', () => {
     });
     expect(state.transactions.data[2].category).toEqual({});
   });
+});
 
+describe('categorizeRow', () => {
   it('should add a confirmed category to the classifier', () => {
     const state = reducers({
       transactions: {
@@ -556,6 +572,54 @@ describe('guess category', () => {
     expect(state.transactions.categorizer.bayes).toEqual(
       '{"categories":{},"docCount":{},"totalDocuments":0,"vocabulary":{},"vocabularySize":0,"wordCount":{},"wordFrequencyCount":{},"options":{}}'
     );
+  });
+});
+
+describe('categorizeRows', () => {
+  const baseData = {
+    transactions: {
+      categorizer: {
+        bayes: ''
+      },
+      data: [
+        {
+          id: 'abcd',
+          description: 'origami',
+          descriptionCleaned: 'origami',
+          category: {
+            guess: 'travel',
+            confirmed: ''
+          }
+        },
+        {
+          id: 'efgh',
+          description: 'hotel',
+          category: {
+            guess: 'travel',
+            confirmed: ''
+          }
+        }
+      ]
+    }
+  };
+
+  it('should add a confirmed category to multiple rows', () => {
+    const state = reducers(baseData, actions.categorizeRows({
+      'abcd': 'hobby',
+      'efgh': 'travel'
+    }));
+
+    expect(state.transactions.categorizer.bayes).toEqual(
+      '{"categories":{"hobby":true,"travel":true},"docCount":{"hobby":1,"travel":1},"totalDocuments":2,"vocabulary":{"origami":true,"hotel":true},"vocabularySize":2,"wordCount":{"hobby":1,"travel":1},"wordFrequencyCount":{"hobby":{"origami":1},"travel":{"hotel":1}},"options":{}}'
+    );
+
+    // Sets the data
+    expect(state.transactions.data[0].category).toEqual({
+      confirmed: 'hobby'
+    });
+    expect(state.transactions.data[1].category).toEqual({
+      confirmed: 'travel'
+    });
   });
 });
 

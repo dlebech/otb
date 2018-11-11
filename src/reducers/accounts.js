@@ -41,6 +41,11 @@ const accountsReducer = (state = initialAccounts, action) => {
           $splice: [[indexToDelete, 1]]
         }
       });
+    case actions.RESTORE_STATE_FROM_FILE:
+      if (!action.newState.accounts) return state;
+      return update(state, {
+        $set: action.newState.accounts
+      });
     default:
       return state;
   }

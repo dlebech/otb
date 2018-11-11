@@ -15,7 +15,7 @@ const Category = props => {
     return <CategoryGuessConfirm
       transactionId={props.transactionId}
       categoryGuess={props.categoryGuess}
-      handleRowCategory={props.handleRowCategory}
+      handleRowCategoryChange={props.handleRowCategoryChange}
     />;
   }
 
@@ -35,7 +35,7 @@ const Category = props => {
 };
 
 Category.propTypes = {
-  handleRowCategory: PropTypes.func.isRequired,
+  handleRowCategoryChange: PropTypes.func.isRequired,
   handleEditCategoryForRow: PropTypes.func.isRequired,
   transactionId: PropTypes.string.isRequired,
   categoryGuess: PropTypes.shape({

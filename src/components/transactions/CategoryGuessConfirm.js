@@ -1,17 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Controls for confirming or rejecting a category guess.
  */
 const CategoryGuessConfirm = props => {
+  const confirm = () => {
+    props.handleRowCategoryChange(props.transactionId, props.categoryGuess.id);
+    ReactTooltip.hide();
+  };
+
+  const reject = () => {
+    props.handleRowCategoryChange(props.transactionId, '');
+    ReactTooltip.hide();
+  };
+
   return (
     <React.Fragment>
       <FontAwesomeIcon
         icon="thumbs-up"
         className="text-success mx-1 cursor-pointer"
-        onClick={() => props.handleRowCategory(props.transactionId, props.categoryGuess.id)}
+        onClick={confirm}
         aria-label={`Confirm Guess (${props.categoryGuess.name})`}
         data-tip={`Confirm Guess (${props.categoryGuess.name})`}
         fixedWidth
@@ -19,7 +30,7 @@ const CategoryGuessConfirm = props => {
       <FontAwesomeIcon
         icon="thumbs-down"
         className="text-danger mx-1 cursor-pointer"
-        onClick={() => props.handleRowCategory(props.transactionId, '')}
+        onClick={reject}
         aria-label={`Reject Guess (${props.categoryGuess.name})`}
         data-tip={`Reject Guess (${props.categoryGuess.name})`}
         fixedWidth
@@ -41,7 +52,7 @@ CategoryGuessConfirm.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   }).isRequired,
-  handleRowCategory: PropTypes.func.isRequired
+  handleRowCategoryChange: PropTypes.func.isRequired
 };
 
 export default CategoryGuessConfirm;

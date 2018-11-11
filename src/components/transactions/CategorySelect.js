@@ -8,37 +8,47 @@ import Creatable from 'react-select/lib/Creatable';
 const CategorySelect = props => {
   const onChange = (option, action) => {
     if (action.action === 'select-option') {
-      props.handleRowCategory(props.transactionId, option.value)
+      props.handleCategoryChange(option);
     }
   };
 
   const onCreateOption = name => {
-    props.handleRowCategory(props.transactionId, null, name);
+    props.handleCreateCategory(name);
   };
+
+  let value = props.selectedValue;
+  if (typeof value === 'string') value = props.options.find(o => o.value === props.selectedValue);
 
   return (
     <Creatable
       className="category-select"
-      value={props.selectedValue}
+      placeholder={props.placeholder}
       options={props.options}
+      value={value}
       onChange={onChange}
-      autoFocus={props.focus}
       onCreateOption={onCreateOption}
+      autoFocus={props.focus}
     />
   );
 };
 
 CategorySelect.propTypes = {
-  handleRowCategory: PropTypes.func.isRequired,
-  transactionId: PropTypes.string.isRequired,
+  handleCategoryChange: PropTypes.func.isRequired,
+  handleCreateCategory: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
   })).isRequired,
+  selectedValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({ value: PropTypes.string.isRequired })
+  ]),
+  placeholder: PropTypes.string,
   focus: PropTypes.bool
 };
 
 CategorySelect.defaultProps = {
+  placeholder: 'Select category...',
   focus: false
 };
 

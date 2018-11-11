@@ -17,28 +17,39 @@ class Transactions extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleRowCategory = this.handleRowCategory.bind(this);
+    this.handleRowCategoryChange = this.handleRowCategoryChange.bind(this);
     this.handleNewRowCategory = this.handleNewRowCategory.bind(this);
+    this.showCreateCategoryModal = this.showCreateCategoryModal.bind(this);
   }
 
-  async handleNewRowCategory(...args) {
+  async handleNewRowCategory(rowId, name, parentId) {
     await this.props.hideModal(NewCategoryForRow.modalName);
-    this.props.handleNewRowCategory(...args);
+    this.props.handleNewRowCategory(rowId, name, parentId);
   }
 
-  handleRowCategory(rowId, categoryId, categoryName) {
+  handleRowCategoryChange(rowIdOrMapping, categoryId, categoryName) {
+    // A mapping of rows to categories.
+    if (typeof rowIdOrMapping === 'object') {
+      return this.props.handleRowCategoriesChange(rowIdOrMapping);
+    };
+
     // A confirmed/rejected category ID or selection in dropdown
     if (categoryId !== null) {
-      return this.props.handleRowCategory(rowId, categoryId);
+      return this.props.handleRowCategoryChange(rowIdOrMapping, categoryId);
     }
 
     // A brand new category
+    // TODO: Remove from here.
+    this.showCreateCategoryModal(categoryName, rowIdOrMapping);
+  }
+
+  showCreateCategoryModal(categoryName, rowId = null) {
     const parentCategories = Object.values(this.props.categories)
       .filter(category => !category.parent);
 
     this.props.showModal(NewCategoryForRow.modalName, {
-      rowId,
       categoryName,
+      rowId,
       parentCategories,
       handleNewRowCategory: this.handleNewRowCategory
     });
@@ -48,7 +59,7 @@ class Transactions extends React.Component {
     if (!this.props.hasTransactions) return <NoData />;
 
     return (
-      <React.Fragment>
+      <>
         <div className="row align-items-center">
           <div className="col-auto">
             <Link to="/transactions/upload" className="btn btn-outline-primary">
@@ -77,7 +88,7 @@ class Transactions extends React.Component {
           transactions={this.props.transactions}
           categories={this.props.categories}
           accounts={this.props.accounts}
-          handleRowCategory={this.handleRowCategory}
+          handleRowCategoryChange={this.handleRowCategoryChange}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
           handleSearch={this.props.handleSearch}
@@ -87,13 +98,14 @@ class Transactions extends React.Component {
           handleSortChange={this.props.handleSortChange}
           handleFilterCategories={this.props.handleFilterCategories}
           handleRoundAmount={this.props.handleRoundAmount}
+          showCreateCategoryModal={this.showCreateCategoryModal}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
           {...this.props.transactionListSettings}
         />
         <Confirm />
         <NewCategoryForRow />
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -112,7 +124,7 @@ const mapStateToProps = state => {
   }, {});
 
   let transactions = state.transactions.data;
-  if (state.search.transactions.result.length !== state.transactions.data) {
+  if (state.search.transactions.result.length !== transactions.length) {
     const ids = new Set(state.search.transactions.result);
     transactions = transactions.filter(t => ids.has(t.id));
   }
@@ -156,12 +168,17 @@ const searchTransactions = createSearchAction('transactions');
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleRowCategory: (rowId, categoryId) => {
+    handleRowCategoryChange: (rowId, categoryId) => {
       dispatch(actions.categorizeRow(rowId, categoryId));
       if (categoryId) dispatch(actions.guessAllCategories());
     },
+    handleRowCategoriesChange: rowCategoryMapping => {
+      dispatch(actions.categorizeRows(rowCategoryMapping));
+      if (Object.values(rowCategoryMapping).filter(c => !!c).length > 0) dispatch(actions.guessAllCategories());
+    },
     handleNewRowCategory: (rowId, categoryName, parentId) => {
-      dispatch(actions.addCategoryWithRow(categoryName, parentId, rowId));
+      if (rowId) dispatch(actions.addCategoryWithRow(categoryName, parentId, rowId));
+      else dispatch(actions.addCategory(categoryName, parentId));
     },
     handleGuessCategories: () => {
       dispatch(actions.guessAllCategories())
@@ -178,7 +195,10 @@ const mapDispatchToProps = dispatch => {
     hideModal: (...args) => {
       dispatch(hide(...args));
     },
-    handleSearch: debounce(text => {
+    handleSearch: debounce((text, currentPage) => {
+      // This is the simplest version for making sure that we don't get stuck on
+      // a non-existant page.
+      if (currentPage !== 1) dispatch(actions.setTransactionListPage(1));
       dispatch(searchTransactions(text));
     }, 250),
     handleDatesChange: (dateSelectId, startDate, endDate) => {

@@ -20,13 +20,13 @@ const AmountTip = props => {
       <ReactTooltip id={id}>
         {props.amounts.map((a, i) => {
           return (
-            <div className={`${i >= 1 ? 'mt-2' : ''}`}>
+            <div key={`id-${i}`} className={`${i >= 1 ? 'mt-2' : ''}`}>
               <div>
-                {formatNumber(Math.abs(a.amounts.originalAmount))}&nbsp;
+                {formatNumber(Math.round(Math.abs(a.amounts.originalAmount)))}&nbsp;
                 {a.account.currency} ({a.account.name})
               </div>
               {a.amounts.originalAmount !== a.amounts.amount && <div>
-                Converted to {formatNumber(Math.abs(a.amounts.amount))} {props.baseCurrency}
+                Converted to {formatNumber(Math.round(Math.abs(a.amounts.amount)))} {props.baseCurrency}
               </div>}
             </div>
           );
