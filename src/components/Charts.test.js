@@ -40,7 +40,7 @@ describe('Chart', () => {
       charts: {},
       dateSelect: {
         'chart-dates': {
-          startDate: moment('2017-12-01'),
+          startDate: moment('2017-12-31'),
           endDate: moment('2018-02-01'),
         }
       },
@@ -93,17 +93,13 @@ describe('Chart', () => {
     const store = mockStore(baseData);
 
     const wrapper = mount(<Charts store={store} />);
-    const areaChart = wrapper.find('AreaChart');
-    expect(areaChart.length).toEqual(1);
-    expect(areaChart.props().data).toEqual([
+    const barChart = wrapper.find('BarChart');
+    expect(barChart.length).toEqual(1);
+    expect(barChart.props().data).toEqual([
       {
-        key: '2018-01-01',
-        value: -2.25 // The -1 DKK is converted to 1.25 SEK
+        key: '2018-01',
+        value: 0.75 // The -1 DKK is converted to -1.25 SEK
       },
-      {
-        key: '2018-01-02',
-        value: 3
-      }
     ]);
 
     const lineChart = wrapper.find('LineChart');
@@ -111,13 +107,13 @@ describe('Chart', () => {
     expect(lineChart.props().data).toEqual([
       {
         key: '2018-01-01',
-        Income: 0,
-        Expenses: -2.25 // The -1 DKK is converted to 1.25 SEK
+        income: 0,
+        expenses: 2.25 // The -1 DKK is converted to -1.25 SEK and the absolute value is used
       },
       {
         key: '2018-01-02',
-        Income: 3,
-        Expenses: 0
+        income: 3,
+        expenses: 0
       }
     ]);
 
@@ -177,16 +173,12 @@ describe('Chart', () => {
     const store = mockStore(data);
 
     const wrapper = mount(<Charts store={store} />);
-    const areaChart = wrapper.find('AreaChart');
+    const areaChart = wrapper.find('BarChart');
     expect(areaChart.length).toEqual(1);
     expect(areaChart.props().data).toEqual([
       {
-        key: '2018-01-01',
-        value: -1
-      },
-      {
-        key: '2018-01-02',
-        value: 3
+        key: '2018-01',
+        value: 2
       }
     ]);
 

@@ -231,6 +231,7 @@ export const detectFileEncoding = async file => {
  */
 export const convertCurrency = (amount, from, to, date, rates, base = 'EUR') => {
   if (from === to) return amount;
+  if (amount === 0) return 0;
   const rate = rates[date];
   if (!rate) throw new Exception(`Rates for ${date} do not exist`);
   const baseAmount = from === base ? amount : amount / rate[from];

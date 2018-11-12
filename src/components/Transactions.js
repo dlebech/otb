@@ -37,10 +37,6 @@ class Transactions extends React.Component {
     if (categoryId !== null) {
       return this.props.handleRowCategoryChange(rowIdOrMapping, categoryId);
     }
-
-    // A brand new category
-    // TODO: Remove from here.
-    this.showCreateCategoryModal(categoryName, rowIdOrMapping);
   }
 
   showCreateCategoryModal(categoryName, rowId = null) {

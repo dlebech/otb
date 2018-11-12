@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'react-dates/initialize';
 import { DateRangePicker, START_DATE } from 'react-dates';
+import Select from 'react-select';
 
 import 'react-dates/lib/css/_datepicker.css';
 import '../css/datepicker.css';
@@ -37,25 +38,38 @@ DatePreset.propTypes = {
   handleDatesChange: PropTypes.func.isRequired
 };
 
-const presets = [3, 2, 1].map(i => {
-  const month = moment().subtract(i, 'month');
-  return {
-    label: month.format('MMM'),
-    startDate: month.clone().startOf('month'),
-    endDate: month.clone().endOf('month')
-  };
-}).concat([
+const presets = [
   {
-    label: `This month so far`,
+    label: 'This month so far',
+    value: 'thisMonth',
     startDate: moment().startOf('month'),
     endDate: moment()
   },
   {
-    label: `${moment().subtract(3, 'month').format('MMM')} - Now`,
-    startDate: moment().subtract(3, 'month').startOf('month'),
-    endDate: moment()
+    label: 'Last month',
+    value: 'lastMonth',
+    startDate: moment().subtract(1, 'month').startOf('month'),
+    endDate: moment().subtract(1, 'month').endOf('month')
   },
-]);
+  {
+    label: 'Last 3 Months (excluding current)',
+    value: 'last3Months',
+    startDate: moment().subtract(3, 'month').startOf('month'),
+    endDate: moment().subtract(1, 'month').endOf('month')
+  },
+  {
+    label: 'Last 6 Months (excluding current)',
+    value: 'last6Months',
+    startDate: moment().subtract(6, 'month').startOf('month'),
+    endDate: moment().subtract(1, 'month').endOf('month')
+  },
+  {
+    label: 'Last 12 Months (excluding current)',
+    value: 'last12Months',
+    startDate: moment().subtract(12, 'month').startOf('month'),
+    endDate: moment().subtract(1, 'month').endOf('month')
+  }
+];
 
 class Dates extends React.Component {
   constructor(props) {
@@ -64,13 +78,28 @@ class Dates extends React.Component {
     this.state = { focusedInput: START_DATE };
 
     this.handleFocusChange = this.handleFocusChange.bind(this);
+    this.handlePresetChange = this.handlePresetChange.bind(this);
   }
 
   handleFocusChange(focusedInput) {
     this.setState({ focusedInput });
   }
 
+  handlePresetChange(option, action) {
+    if (action.action !== 'select-option') return;
+    this.props.handleDatesChange({
+      startDate: option.startDate,
+      endDate: option.endDate
+    });
+  }
+
   render() {
+    const isActive = preset => preset.startDate &&
+      preset.endDate &&
+      preset.startDate.isSame(this.props.startDate, 'day') &&
+      preset.endDate.isSame(this.props.endDate, 'day');
+    const selectedOption = presets.find(preset => isActive(preset)) || '';
+
     return (
       <div className="row align-items-center">
         <div className="col-lg-auto">
@@ -87,19 +116,13 @@ class Dates extends React.Component {
           />
         </div>
         {this.props.showPresets && <div className="col-lg-6 mt-3 mt-lg-0">
-          <div className="btn-group">
-            {presets.map(preset => {
-              return <DatePreset 
-                key={preset.label}
-                label={preset.label}
-                startDate={preset.startDate}
-                endDate={preset.endDate}
-                handleDatesChange={this.props.handleDatesChange}
-                currentStartDate={this.props.startDate}
-                currentEndDate={this.props.endDate}
-              />
-            })}
-          </div>
+          <Select
+            name="date-preset"
+            options={presets}
+            onChange={this.handlePresetChange}
+            //value={this.state.selectedPreset}
+            value={selectedOption}
+          />
         </div>}
       </div>
     );
