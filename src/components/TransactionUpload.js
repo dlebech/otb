@@ -75,7 +75,6 @@ class TransactionUpload extends React.Component {
   }
 
   handleSave() {
-    // TODO: add validation
     if (!this.validateForm()) return;
     this.props.handleSave();
     this.props.history.push('/transactions');
