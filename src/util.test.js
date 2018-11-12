@@ -120,6 +120,11 @@ describe('convertCurrency', () => {
       'Cannot convert from DKK to BLAH'
     );
   });
+
+  it('should convert 0 to 0', () => {
+    expect(util.convertCurrency(0, 'EUR', 'DKK', '2018-01-01', rates))
+      .toEqual(0);
+  });
 });
 
 describe('momentParse', () => {
