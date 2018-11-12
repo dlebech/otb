@@ -92,11 +92,17 @@ const Charts = props => {
       <div className="row justify-content-center">
         <div className="col-6">
           <h4 className="text-center">Income and expenses over time</h4>
-          <IncomesExpensesLine transactions={filteredTransactions} />
+          <IncomesExpensesLine
+            transactions={filteredTransactions}
+            startDate={props.startDate}
+            endDate={props.endDate}
+          />
         </div>
         <div className="col-6">
           <h4 className="text-center">Sum of income and expenses over time</h4>
-          <AmountSumArea transactions={filteredTransactions} />
+          <AmountSumArea
+            transactions={filteredTransactions}
+          />
         </div>
       </div>
       <div className="row justify-content-center">
@@ -115,8 +121,8 @@ const Charts = props => {
 const mapStateToProps = state => {
   const dateSelectId = 'chart-dates';
   const dateSelect = state.edit.dateSelect[dateSelectId] || {
-    startDate: moment().startOf('month'),
-    endDate: moment()
+    startDate: moment().subtract(3, 'month').startOf('month'),
+    endDate: moment().subtract(1, 'month').endOf('month')
   };
 
   // If not explicitly set, the base currency is just the currency of the first
