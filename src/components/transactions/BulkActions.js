@@ -31,7 +31,6 @@ const BulkActions = props => {
       <BulkActionSelection
         selectedTransactions={props.selectedTransactions}
         handleRowCategoryChange={props.handleRowCategoryChange}
-        categoryOptions={props.categoryOptions}
         showCreateCategoryModal={props.showCreateCategoryModal}
       />
     </>
@@ -49,10 +48,6 @@ BulkActions.propTypes = {
   handleRowCategoryChange: PropTypes.func.isRequired,
   handleSelectAll: PropTypes.func.isRequired,
   handleSelectNone: PropTypes.func.isRequired,
-  categoryOptions: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })).isRequired,
   showCreateCategoryModal: PropTypes.func.isRequired
 };
 

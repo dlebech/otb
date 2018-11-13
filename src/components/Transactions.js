@@ -27,7 +27,7 @@ class Transactions extends React.Component {
     this.props.handleNewRowCategory(rowId, name, parentId);
   }
 
-  handleRowCategoryChange(rowIdOrMapping, categoryId, categoryName) {
+  handleRowCategoryChange(rowIdOrMapping, categoryId) {
     // A mapping of rows to categories.
     if (typeof rowIdOrMapping === 'object') {
       return this.props.handleRowCategoriesChange(rowIdOrMapping);

@@ -10,6 +10,7 @@ import AmountSumArea from './charts/AmountSumArea';
 import IncomesExpensesLine from './charts/IncomeExpensesLine';
 import CategoryTreeMap from './charts/CategoryTreeMap';
 import Loading from './shared/Loading';
+import CategorySelect from './shared/CategorySelect';
 
 const Charts = props => {
   if (props.transactions.length === 0) return <NoData />;
@@ -105,9 +106,17 @@ const Charts = props => {
           />
         </div>
       </div>
-      <div className="row justify-content-center">
+      <div className="row">
         <div className="col">
           <h4 className="text-center">Categories where money is spent</h4>
+          {
+            // <CategorySelect onChange={console.log} />
+          }
+        </div>
+        <div className="col"></div>
+      </div>
+      <div className="row justify-content-center">
+        <div className="col">
           <CategoryTreeMap
             transactions={filteredTransactions}
             categories={props.categories}

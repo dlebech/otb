@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import CategorySelect from './CategorySelect';
+import CategorySelect from '../shared/CategorySelect';
 
 const CONFIRM_CATEGORY_GUESSES = 'confirmCategoryGuesses';
 const SET_CATEGORIES = 'setCategories';
@@ -91,10 +91,10 @@ class BulkActionSelection extends React.Component {
         {this.state.selectedAction && this.state.selectedAction.value === SET_CATEGORIES &&
           <div className="col-lg-3 col-md-4">
             <CategorySelect
-              options={this.props.categoryOptions}
-              handleCategoryChange={this.handleCategorySelect}
-              handleCreateCategory={this.props.showCreateCategoryModal}
-              selectedValue={this.state.selectedCategory}
+              onChange={this.handleCategorySelect}
+              onCreate={this.props.showCreateCategoryModal}
+              selectedCategory={this.state.selectedCategory}
+              isMulti={false}
             />
           </div>
         }
@@ -123,10 +123,6 @@ BulkActionSelection.propTypes = {
     }),
   })).isRequired,
   handleRowCategoryChange: PropTypes.func.isRequired,
-  categoryOptions: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })).isRequired,
   showCreateCategoryModal: PropTypes.func.isRequired
 };
 

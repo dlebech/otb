@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
-import Select from 'react-select';
 import moment from 'moment';
 import { uncategorized } from '../../data/categories';
 import Pagination from '../shared/Pagination';
+import CategorySelect from '../shared/CategorySelect';
 import Dates from '../Dates';
 import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
@@ -91,13 +91,7 @@ class TransactionTable extends React.Component {
     this.props.handlePageSizeChange(pageSize, this.state.dataView.length);
   }
 
-  handleCategorySelect(options, action) {
-    if (action.action !== 'select-option' &&
-      action.action !== 'remove-value' &&
-      action.action !== 'clear') {
-      return;
-    }
-
+  handleCategorySelect(options) {
     const filterCategories = new Set(options.map(o => o.value));
 
     // Since the category filter might reduce the number of transactions, we
@@ -135,29 +129,6 @@ class TransactionTable extends React.Component {
     const dataPage = this.state.dataView
       .slice((this.props.page-1) * this.props.pageSize, this.props.page * this.props.pageSize);
 
-    // Map category options here to avoid having children re-map these for every
-    // row.
-    const categoryOptions = Object.values(this.props.categories)
-      .map(category => ({
-        label: category.parent ?
-          `${this.props.categories[category.parent].name} - ${category.name}` :
-          category.name,
-        value: category.id
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-
-    const categoryOptionsWithUncategorized = [
-      {
-        label: uncategorized.name,
-        value: uncategorized.id
-      }
-    ].concat(categoryOptions);
-
-    const selectedCategories = (this.props.filterCategories && this.props.filterCategories.size > 0) ?
-      categoryOptionsWithUncategorized
-        .filter(o => this.props.filterCategories.has(o.value))
-        : null;
-
     return (
       <>
         <div className="row align-items-center">
@@ -194,14 +165,10 @@ class TransactionTable extends React.Component {
                 <SearchField handleSearch={this.handleSearch} searchText={this.props.searchText} />
               </div>
               <div className="col">
-                <Select
-                  options={categoryOptionsWithUncategorized}
-                  name="category-filter"
-                  className="category-select"
+                <CategorySelect
                   placeholder="Filter by category..."
                   onChange={this.handleCategorySelect}
-                  value={selectedCategories}
-                  isMulti
+                  selectedCategory={Array.from(this.props.filterCategories)}
                 />
               </div>
             </div>
@@ -223,7 +190,6 @@ class TransactionTable extends React.Component {
               handleRowCategoryChange={this.props.handleRowCategoryChange}
               handleSelectAll={() => this.handleSelectAll(dataPage.map(t => t.id))}
               handleSelectNone={this.handleSelectNone}
-              categoryOptions={categoryOptions}
               showCreateCategoryModal={this.props.showCreateCategoryModal}
             />
           </div>
@@ -272,7 +238,6 @@ class TransactionTable extends React.Component {
                   return <TransactionRow
                     key={`row-${transaction.id}`}
                     transaction={transaction}
-                    categoryOptions={categoryOptions}
                     accounts={this.props.accounts}
                     handleRowCategoryChange={this.props.handleRowCategoryChange}
                     handleDeleteRow={this.props.handleDeleteRow}
