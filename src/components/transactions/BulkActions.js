@@ -7,10 +7,15 @@ const SelectionIntro = props => {
     <div className="d-inline-flex">
       <small>Bulk actions:</small>
       <small className="text-muted cursor-pointer ml-2" onClick={props.handleSelectAll}><u>Select all rows</u></small>
-      {props.selectedTransactions.length >= 1 && 
-        <small className="text-muted cursor-pointer ml-2" onClick={props.handleSelectNone}><u>Clear selection</u></small>}
       {props.selectedTransactions.length === 0 && 
         <small className="text-muted ml-2">(or click on a row&#39;s date or description to select it)</small>}
+      {props.selectedTransactions.length >= 1 &&
+        <>
+          <small className="text-muted cursor-pointer ml-2" onClick={props.handleSelectNone}><u>Clear selection</u></small>
+          <small className="text-muted ml-2" >
+            ({props.selectedTransactions.length} transaction{props.selectedTransactions.length > 1 ? 's': ''} selected)
+          </small>
+        </>}
     </div>
   );
 };
