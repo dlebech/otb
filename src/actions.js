@@ -52,6 +52,7 @@ export const SET_TRANSACTION_LIST_ROUND_AMOUNT = 'SET_TRANSACTION_LIST_ROUND_AMO
 
 // Charts edit changes
 export const SET_CHARTS_BASE_CURRENCY = 'SET_CHARTS_BASE_CURRENCY';
+export const SET_CHARTS_FILTER_CATEGORIES = 'SET_CHARTS_FILTER_CATEGORIES';
 
 export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
@@ -285,6 +286,13 @@ export const setChartsBaseCurrency = baseCurrency => {
   return {
     type: SET_CHARTS_BASE_CURRENCY,
     baseCurrency
+  };
+};
+
+export const setChartsFilterCategories = filterCategories => {
+  return {
+    type: SET_CHARTS_FILTER_CATEGORIES,
+    filterCategories
   };
 };
 

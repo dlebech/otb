@@ -6,11 +6,14 @@ import Creatable from 'react-select/lib/Creatable';
 import { uncategorized } from '../../data/categories';
 
 const findValue = (value, options) => {
+  if (value instanceof Set) value = Array.from(value);
+
   // If we are given an array of strings, select the options with the value of
   // those strings.
   if (Array.isArray(value) && value.length && typeof value[0] === 'string') {
     return options.filter(o => !!value.find(c => c === o.value));
-  } else if (typeof value === 'string') {
+  }
+  if (typeof value === 'string') {
     return options.find(o => o.value === value);
   }
   return value;

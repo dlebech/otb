@@ -15,7 +15,7 @@ import { sum, ascending } from 'd3-array';
 import color from '../../data/color'
 import { formatNumber } from '../../util';
 
-const AmountSumArea = props => {
+const AmountSumBar = props => {
   const data = nest()
     .key(d => d.date.substring(0, 7))
     .sortKeys(ascending)
@@ -53,11 +53,11 @@ const AmountSumArea = props => {
   );
 };
 
-AmountSumArea.propTypes = {
+AmountSumBar.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.shape({
     date: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired
   })).isRequired
 };
 
-export default AmountSumArea;
+export default AmountSumBar;

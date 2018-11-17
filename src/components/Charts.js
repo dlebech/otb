@@ -1,14 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { nest } from 'd3-collection';
+import { sum } from 'd3-array';
+import { uncategorized } from '../data/categories';
 import * as actions from '../actions';
-import { convertCurrency } from '../util';
+import { convertCurrency, findCategory } from '../util';
 import NoData from './NoData';
 import Dates from './Dates';
 import Summary from './charts/Summary';
-import AmountSumArea from './charts/AmountSumArea';
-import IncomesExpensesLine from './charts/IncomeExpensesLine';
+import AmountSumBar from './charts/AmountSumBar';
+import IncomeExpensesLine from './charts/IncomeExpensesLine';
 import CategoryTreeMap from './charts/CategoryTreeMap';
+import CategoryLine from './charts/CategoryLine';
 import Loading from './shared/Loading';
 import CategorySelect from './shared/CategorySelect';
 
@@ -51,6 +55,26 @@ const Charts = props => {
     });
   }
 
+  // Calculate some commonly used subsets of the filtered data.
+  const expenses = filteredTransactions.filter(t => t.amount < 0);
+  const income = filteredTransactions.filter(t => t.amount >= 0);
+  const sortedCategoryExpenses = nest()
+    .key(d => d.category.confirmed || uncategorized.id)
+    .rollup(transactions => ({
+      transactions,
+      category: findCategory(
+        props.categories,
+        transactions[0].category.confirmed || uncategorized.id
+      ),
+      amount: Math.abs(sum(transactions, d => d.amount))
+    }))
+    .entries(expenses)
+    .sort((a, b) => b.value.amount - a.value.amount);
+
+  const handleCategoryChange = options => {
+    props.handleCategoryChange(options.map(o => o.value));
+  };
+
   return (
     <>
       <div className="row align-items-center">
@@ -85,42 +109,48 @@ const Charts = props => {
         </div>}
       </div>
       <Summary
-        transactions={filteredTransactions}
-        categories={props.categories}
+        expenses={expenses}
+        income={income}
+        sortedCategoryExpenses={sortedCategoryExpenses}
         accounts={props.accounts}
         baseCurrency={props.baseCurrency}
       />
       <div className="row justify-content-center">
-        <div className="col-6">
+        <div className="col-lg-6">
           <h4 className="text-center">Income and expenses over time</h4>
-          <IncomesExpensesLine
+          <IncomeExpensesLine
             transactions={filteredTransactions}
             startDate={props.startDate}
             endDate={props.endDate}
           />
         </div>
-        <div className="col-6">
+        <div className="col-lg-6">
           <h4 className="text-center">Sum of income and expenses over time</h4>
-          <AmountSumArea
+          <AmountSumBar
             transactions={filteredTransactions}
           />
         </div>
       </div>
       <div className="row">
-        <div className="col">
+        <div className="col-md-5">
           <h4 className="text-center">Categories where money is spent</h4>
-          {
-            // <CategorySelect onChange={console.log} />
-          }
+          <CategorySelect
+            selectedCategory={props.filterCategories}
+            onChange={handleCategoryChange}
+          />
         </div>
-        <div className="col"></div>
       </div>
       <div className="row justify-content-center">
-        <div className="col">
-          <CategoryTreeMap
-            transactions={filteredTransactions}
-            categories={props.categories}
+        <div className="col-lg-6">
+          <CategoryLine
+            filterCategories={props.filterCategories}
+            sortedCategoryExpenses={sortedCategoryExpenses}
+            startDate={props.startDate}
+            endDate={props.endDate}
           />
+        </div>
+        <div className="col-lg-6">
+          <CategoryTreeMap sortedCategoryExpenses={sortedCategoryExpenses} />
         </div>
       </div>
     </>
@@ -140,11 +170,19 @@ const mapStateToProps = state => {
     (state.accounts.data.find(a => !!a.currency) || {}).currency ||
     null;
 
+  const filterCategories = state.edit.charts.filterCategories || new Set();
+
+  const categories = state.categories.data.reduce((obj, category) => {
+    obj[category.id] = category;
+    return obj;
+  }, {});
+
   return {
     dateSelectId,
     baseCurrency,
+    categories,
+    filterCategories,
     transactions: state.transactions.data,
-    categories: state.categories.data,
     accounts: state.accounts.data,
     startDate: dateSelect.startDate,
     endDate: dateSelect.endDate,
@@ -162,6 +200,9 @@ const mapDispatchToProps = dispatch => {
     },
     ensureCurrencyRates: currencies => {
       dispatch(actions.fetchCurrencyRates(currencies));
+    },
+    handleCategoryChange: categoryIds => {
+      dispatch(actions.setChartsFilterCategories(categoryIds));
     }
   };
 };

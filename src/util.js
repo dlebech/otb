@@ -77,7 +77,9 @@ export const guessColumnSpec = transactions => {
  * @param {Boolean} [returnFallback] - Optionally return a fallback category, default is true
  */
 export const findCategory = (categories, categoryId, returnFallback = true) => {
-  const category = categories.find(c => c.id === categoryId);
+  let category;
+  if (Array.isArray(categories)) category = categories.find(c => c.id === categoryId);
+  else category = categories[categoryId]; // Assume it's an object
   if (!category && returnFallback) return { name: 'Uncategorized' };
   return category;
 };

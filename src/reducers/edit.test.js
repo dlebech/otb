@@ -130,6 +130,16 @@ it('should set base currency for charts', () => {
   expect(state.edit.charts.baseCurrency).toEqual('DKK');
 });
 
+it('should handle filter categories change for charts', () => {
+  const state = reducers({
+    edit: {
+      charts: {}
+    }
+  }, actions.setChartsFilterCategories(['abcd']));
+
+  expect(state.edit.charts.filterCategories).toEqual(new Set(['abcd']));
+});
+
 it('should handle the parsing start action', () => {
   expect(reducers({}, actions.importParseTransactionsStart()).edit.isParsing).toEqual(true);
 });

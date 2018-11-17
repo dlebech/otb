@@ -1,107 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend
-} from 'recharts';
 import { nest } from 'd3-collection';
 import { sum, ascending } from 'd3-array';
 import color from '../../data/color'
-import { formatNumber } from '../../util';
+import CustomLineChart from '../shared/CustomLineChart';
 
-const EXPENSES_NAME = 'Expenses';
-const INCOME_NAME = 'Income';
-
-class IncomeExpensesLine extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      enabledLines: {
-        [INCOME_NAME]: true,
-        [EXPENSES_NAME]: true
-      }
-    };
-
-    this.handleLegendClick = this.handleLegendClick.bind(this);
-  }
-
-  handleLegendClick(o) {
-    this.setState(prevState => {
+const IncomeExpensesLine = props => {
+  const keySelector = props.endDate.diff(props.startDate, 'month', true) < 2 ?
+    d => d.date :
+    d => d.date.substring(0, 7)
+  const data = nest()
+    .key(keySelector)
+    .sortKeys(ascending)
+    .rollup(a => {
       return {
-        enabledLines: {
-          ...prevState.enabledLines,
-          [o.value]: !prevState.enabledLines[o.value]
-        }
+        expenses: Math.abs(sum(a, d => (d.amount < 0 ? d.amount : 0))),
+        income: sum(a, d => (d.amount >= 0 ? d.amount : 0))
       }
-    });
-  }
+    })
+    .entries(props.transactions);
 
-  render() {
-    const keySelector = this.props.endDate.diff(this.props.startDate, 'month', true) < 2 ?
-      d => d.date :
-      d => d.date.substring(0, 7)
-    const data = nest()
-      .key(keySelector)
-      .sortKeys(ascending)
-      .rollup(a => {
-        return {
-          expenses: Math.abs(sum(a, d => (d.amount < 0 ? d.amount : 0))),
-          income: sum(a, d => (d.amount >= 0 ? d.amount : 0))
-        }
-      })
-      .entries(this.props.transactions);
+  data.forEach(d => {
+    d.expenses = d.value.expenses;
+    d.income = d.value.income;
+    delete d.value;
+  });
 
-    data.forEach(d => {
-      d.expenses = d.value.expenses;
-      d.income = d.value.income;
-      delete d.value;
-    });
+  const series = [
+    {
+      name: 'Expenses',
+      dataKey: 'expenses',
+      fill: color.bootstrap.danger,
+      stroke: color.bootstrap.danger
+    },
+    {
+      name: 'Income',
+      dataKey: 'income',
+      fill: color.bootstrap.success,
+      stroke: color.bootstrap.success
+    }
+  ];
 
-    return (
-      <div className="chart">
-        <ResponsiveContainer>
-          <LineChart data={data}>
-            <XAxis dataKey="key" />
-            <YAxis />
-            <Legend
-              verticalAlign="top"
-              onClick={this.handleLegendClick}
-            />
-            <Tooltip formatter={v => formatNumber(v, { maximumFractionDigits: 0 })} />
-            <Line
-              type="monotone"
-              name={EXPENSES_NAME}
-              dataKey={this.state.enabledLines[EXPENSES_NAME] ? 'expenses' : ''}
-              fill={color.bootstrap.danger}
-              stroke={color.bootstrap.danger}
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              name={INCOME_NAME}
-              dataKey={this.state.enabledLines[INCOME_NAME] ? 'income' : ''}
-              fill={color.bootstrap.success}
-              stroke={color.bootstrap.success}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-}
+  return (
+    <CustomLineChart
+      data={data}
+      series={series}
+    />
+  );
+};
 
 IncomeExpensesLine.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.shape({
     date: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired
-  })).isRequired
+  })).isRequired,
+  startDate: PropTypes.object.isRequired,
+  endDate: PropTypes.object.isRequired
 };
 
 export default IncomeExpensesLine;

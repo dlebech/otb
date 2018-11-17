@@ -109,6 +109,14 @@ const editReducer = (state = initialEditor, action) => {
           }
         }
       });
+    case actions.SET_CHARTS_FILTER_CATEGORIES:
+      return update(state, {
+        charts: {
+          filterCategories: {
+            $set: new Set(action.filterCategories)
+          }
+        }
+      });
     case actions.START_GUESS_ALL_CATEGORIES:
       return update(state, {
         isCategoryGuessing: { $set: true }
