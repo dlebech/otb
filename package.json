@@ -1,6 +1,6 @@
 {
   "name": "off-the-books",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.4",
