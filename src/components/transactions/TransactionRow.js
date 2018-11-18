@@ -104,7 +104,6 @@ const TransactionRow = props => {
       <td className="text-nowrap">
         <RowCategorizer
           transaction={props.transaction}
-          categoryOptions={props.categoryOptions}
           handleRowCategoryChange={props.handleRowCategoryChange}
           showCreateCategoryModal={props.showCreateCategoryModal}
         />
@@ -143,10 +142,6 @@ TransactionRow.propTypes = {
       name: PropTypes.string.isRequired
     })
   }).isRequired,
-  categoryOptions: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })).isRequired,
   accounts: PropTypes.object.isRequired,
   showCreateCategoryModal: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,

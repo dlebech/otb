@@ -85,12 +85,13 @@ const defaultProps = {
   handlePageSizeChange: jest.fn()
 };
 
-it('should show all transaction rows', () => {
+it('should show all transaction rows with default sorting', () => {
   const container = shallow(<TransactionTable {...defaultProps} />);
   expect(container.find('TransactionRow').length).toEqual(3);
-  const rendered = container.render();
-  expect(rendered.find('tbody > tr').eq(0).find('td').first().text()).toEqual('2018-01-01');
-  expect(rendered.find('tbody > tr').eq(1).find('td').first().text()).toEqual('2018-01-02');
+
+  expect(container.find('TransactionRow').at(0).dive().find('td').first().text()).toEqual('2018-01-01');
+  expect(container.find('TransactionRow').at(1).dive().find('td').first().text()).toEqual('2018-01-02');
+  expect(container.find('TransactionRow').at(2).dive().find('td').first().text()).toEqual('2018-01-03');
 });
 
 it('should show less rows when page size is smaller', () => {
@@ -105,10 +106,13 @@ it('should show less rows when page size is smaller', () => {
   );
 
   expect(container.find('TransactionRow').length).toEqual(1);
-  const rendered = container.render();
-  expect(rendered.find('td').first().text()).toEqual('2018-01-01');
-  expect(rendered.find('.page-item').first().hasClass('disabled')).toEqual(true);
-  expect(rendered.find('.page-item').last().hasClass('disabled')).toEqual(false);
+  expect(container.find('TransactionRow').at(0).dive().find('td').first().text()).toEqual('2018-01-01');
+  // First page item should be disabled
+  expect(container.find('Pagination').dive().find('.page-item').first().prop('className'))
+    .toEqual(expect.stringContaining('disabled'));
+  // Last page item should be clickable
+  expect(container.find('Pagination').dive().find('.page-item').last().prop('className'))
+    .toEqual(expect.not.stringContaining('disabled'));
 });
 
 it('should call handlePageSizeChange', () => {
@@ -135,10 +139,14 @@ it('should show page three', () => {
     />
   );
   expect(container.find('TransactionRow').length).toEqual(1);
-  const rendered = container.render();
-  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
-  expect(rendered.find('.page-item').first().hasClass('disabled')).toEqual(false);
-  expect(rendered.find('.page-item').last().hasClass('disabled')).toEqual(true);
+  expect(container.find('TransactionRow').dive().find('td').first().text()).toEqual('2018-01-03');
+
+  // First page item should be clickable
+  expect(container.find('Pagination').dive().find('.page-item').first().prop('className'))
+    .toEqual(expect.not.stringContaining('disabled'));
+  // Last page item should be disabled
+  expect(container.find('Pagination').dive().find('.page-item').last().prop('className'))
+    .toEqual(expect.stringContaining('disabled'));
 });
 
 it('should sort descending', () => {
@@ -151,9 +159,8 @@ it('should sort descending', () => {
       {...props}
     />
   );
-  const rendered = container.render();
-  expect(rendered.find('tbody > tr').first().find('td').first().text()).toEqual('2018-01-03');
-  expect(rendered.find('tbody > tr').last().find('td').first().text()).toEqual('2018-01-01');
+  expect(container.find('TransactionRow').first().dive().find('td').first().text()).toEqual('2018-01-03');
+  expect(container.find('TransactionRow').last().dive().find('td').first().text()).toEqual('2018-01-01');
 });
 
 it('should show only uncategorized', () => {
@@ -168,8 +175,7 @@ it('should show only uncategorized', () => {
   );
 
   expect(container.find('TransactionRow').length).toEqual(1);
-  const rendered = container.render();
-  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
+  expect(container.find('TransactionRow').dive().find('td').first().text()).toEqual('2018-01-03');
 });
 
 it('should call handleFilterCategories', () => {
@@ -222,8 +228,7 @@ it('should filter by date', () => {
   );
 
   expect(container.find('TransactionRow').length).toEqual(1);
-  const rendered = container.render();
-  expect(rendered.find('td').first().text()).toEqual('2018-01-03');
+  expect(container.find('TransactionRow').dive().find('td').first().text()).toEqual('2018-01-03');
 });
 
 it('should handle a row select', () => {
@@ -239,10 +244,10 @@ it('should handle a row select', () => {
   // Toggle on
   container.instance().handleRowSelect('b');
   expect(container.state('selectedRows').has('b')).toBeTruthy();
-  expect(container.render().find('tr').eq(1).attr('class')).toEqual('table-primary');
+  expect(container.find('TransactionRow').at(0).dive().find('tr').prop('className')).toEqual('table-primary')
 
   // Toggle off
   container.instance().handleRowSelect('b');
   expect(container.state('selectedRows').has('b')).toBeFalsy();
-  expect(container.render().find('tr').eq(1).attr('class')).toEqual('');
+  expect(container.find('TransactionRow').at(0).dive().find('tr').prop('className')).toEqual('')
 });

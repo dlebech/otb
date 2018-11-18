@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
-import { uncategorized } from '../../data/categories';
-import { findCategory, formatNumber } from '../../util';
+import { formatNumber } from '../../util';
 import AmountCard from './AmountCard';
 
 const groupAmounts = (transactions, accounts) => {
@@ -18,27 +17,23 @@ const groupAmounts = (transactions, accounts) => {
 };
 
 const Summary = props => {
-  const expenses = props.transactions.filter(d => d.amount < 0);
-  const incomes = props.transactions.filter(d => d.amount >= 0);
+  const expenses = props.expenses;
+  const income = props.income;
 
   const expenseTotal = formatNumber(Math.round(Math.abs(sum(expenses, d => d.amount))));
   const expenseAmounts = groupAmounts(expenses, props.accounts);
-  const incomeTotal = formatNumber(Math.round(sum(incomes, d => d.amount)));
-  const incomeAmounts = groupAmounts(incomes, props.accounts);
+  const incomeTotal = formatNumber(Math.round(sum(income, d => d.amount)));
+  const incomeAmounts = groupAmounts(income, props.accounts);
 
-  const largestCategory = nest()
-    .key(d => d.category.confirmed || uncategorized.id)
-    .rollup(t => ({ amount: sum(t, d => d.amount), transactions: t }))
-    .entries(expenses)
-    .sort((a, b) => a.value.amount - b.value.amount)[0];
+  const largestCategoryExpenses = props.sortedCategoryExpenses[0];
 
   let categorySpend;
-  if (largestCategory) {
-    const category = findCategory(props.categories, largestCategory.key);
+  if (largestCategoryExpenses) {
+    const category = largestCategoryExpenses.value.category;
     categorySpend = {
       title: `Spent on "${category.name}"`,
-      amount: formatNumber(Math.round(Math.abs(largestCategory.value.amount))),
-      amounts: groupAmounts(largestCategory.value.transactions, props.accounts)
+      amount: formatNumber(Math.round(largestCategoryExpenses.value.amount)),
+      amounts: groupAmounts(largestCategoryExpenses.value.transactions, props.accounts)
     };
   }
 
@@ -58,15 +53,33 @@ const Summary = props => {
 };
 
 Summary.propTypes = {
-  transactions: PropTypes.arrayOf(PropTypes.shape({
+  expenses: PropTypes.arrayOf(PropTypes.shape({
     amount: PropTypes.number.isRequired,
     category: PropTypes.shape({
       confirmed: PropTypes.string
     }).isRequired
   })).isRequired,
-  categories: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
+  income: PropTypes.arrayOf(PropTypes.shape({
+    amount: PropTypes.number.isRequired,
+    category: PropTypes.shape({
+      confirmed: PropTypes.string
+    }).isRequired
+  })).isRequired,
+  sortedCategoryExpenses: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    value: PropTypes.shape({
+      amount: PropTypes.number.isRequired,
+      transactions: PropTypes.arrayOf(PropTypes.shape({
+        amount: PropTypes.number.isRequired,
+        category: PropTypes.shape({
+          confirmed: PropTypes.string
+        }).isRequired
+      })).isRequired,
+      category: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired
+      }).isRequired
+    })
   })).isRequired,
   accounts: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,

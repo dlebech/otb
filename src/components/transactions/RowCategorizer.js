@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Category from './Category';
-import CategorySelect from './CategorySelect';
+import CategorySelect from '../shared/CategorySelect';
 
 class RowCategorizer extends React.Component {
   constructor(props) {
@@ -65,12 +65,11 @@ class RowCategorizer extends React.Component {
           handleEditCategoryForRow={this.handleEditCategory}
         />}
         {this.state.editing && <CategorySelect
-          transactionId={this.props.transaction.id}
           selectedValue={categoryConfirmedAsOption}
-          options={this.props.categoryOptions}
-          handleCategoryChange={this.handleCategoryChange}
-          handleCreateCategory={this.handleCreateCategory}
+          onChange={this.handleCategoryChange}
+          onCreate={this.handleCreateCategory}
           focus={this.state.focus}
+          isMulti={false}
         />}
       </React.Fragment>
     );
@@ -89,11 +88,7 @@ RowCategorizer.propTypes = {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired
     })
-  }).isRequired,
-  categoryOptions: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })).isRequired
+  }).isRequired
 };
 
 export default RowCategorizer;

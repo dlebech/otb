@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
@@ -92,8 +93,8 @@ describe('Chart', () => {
   it('should render expenses/incomes graph when there are transactions', () => {
     const store = mockStore(baseData);
 
-    const wrapper = mount(<Charts store={store} />);
-    const barChart = wrapper.find('BarChart');
+    const wrapper = shallow(<Charts store={store} />);
+    const barChart = wrapper.dive().find('AmountSumBar').dive().find('BarChart');
     expect(barChart.length).toEqual(1);
     expect(barChart.props().data).toEqual([
       {
@@ -102,7 +103,7 @@ describe('Chart', () => {
       },
     ]);
 
-    const lineChart = wrapper.find('LineChart');
+    const lineChart = wrapper.dive().find('IncomeExpensesLine').dive().find('CustomLineChart');
     expect(lineChart.length).toEqual(1);
     expect(lineChart.props().data).toEqual([
       {
@@ -117,7 +118,7 @@ describe('Chart', () => {
       }
     ]);
 
-    const summary = wrapper.find('Summary');
+    const summary = wrapper.dive().find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('2Expenses');
@@ -138,8 +139,8 @@ describe('Chart', () => {
     };
     const store = mockStore(data);
 
-    const wrapper = mount(<Charts store={store} />);
-    const summary = wrapper.find('Summary');
+    const wrapper = shallow(<Charts store={store} />);
+    const summary = wrapper.dive().find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('0Expenses');
@@ -172,17 +173,17 @@ describe('Chart', () => {
     };
     const store = mockStore(data);
 
-    const wrapper = mount(<Charts store={store} />);
-    const areaChart = wrapper.find('BarChart');
-    expect(areaChart.length).toEqual(1);
-    expect(areaChart.props().data).toEqual([
+    const wrapper = shallow(<Charts store={store} />);
+    const barChart = wrapper.dive().find('AmountSumBar').dive().find('BarChart');
+    expect(barChart.length).toEqual(1);
+    expect(barChart.props().data).toEqual([
       {
         key: '2018-01',
         value: 2
       }
     ]);
 
-    const summary = wrapper.find('Summary');
+    const summary = wrapper.dive().find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('1Expenses');
@@ -193,11 +194,11 @@ describe('Chart', () => {
     it('should show base currency dropdown', () => {
       const store = mockStore(baseData);
       const wrapper = shallow(<Charts store={store} />);
-      const rendered = wrapper.render();
-      const options = rendered.find('select > option');
+      //const rendered = wrapper.render();
+      const options = wrapper.dive().find('#base-currency > option');
       expect(options.length).toEqual(2);
-      expect(options.eq(0).text()).toEqual('SEK');
-      expect(options.eq(1).text()).toEqual('DKK');
+      expect(options.at(0).text()).toEqual('SEK');
+      expect(options.at(1).text()).toEqual('DKK');
     });
 
     it('should not show base currency when there are less than two currencies', () => {
@@ -217,8 +218,7 @@ describe('Chart', () => {
       };
       const store = mockStore(data);
       const wrapper = shallow(<Charts store={store} />);
-      const rendered = wrapper.render();
-      const options = rendered.find('select > option');
+      const options = wrapper.dive().find('#base-currency > option');
       expect(options.length).toEqual(0);
     });
   });
@@ -238,7 +238,11 @@ describe('Chart', () => {
       const data = Object.assign({}, baseData);
       data.edit = { dateSelect: {}, charts: {} };
       const store = mockStore(data);
-      mount(<Charts store={store} />);
+      mount(
+        <Provider store={store}>
+          <Charts />
+        </Provider>
+      );
       expect(store.getActions()).toEqual([
         { type: actions.START_FETCH_CURRENCY_RATES }
       ]);
@@ -247,7 +251,12 @@ describe('Chart', () => {
 
     it('should not fetch currency rates if they are defined', () => {
       const store = mockStore(baseData);
-      mount(<Charts store={store} />);
+      // Needs to fully mount to ensure componentDidMount is called
+      mount(
+        <Provider store={store}>
+          <Charts />
+        </Provider>
+      );
       expect(store.getActions()).toEqual([]);
     });
   });

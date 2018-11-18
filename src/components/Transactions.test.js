@@ -1,4 +1,5 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { shallow } from 'enzyme';
@@ -11,28 +12,33 @@ jest.mock('redux-modal', () => {
 });
 
 describe('Transactions', () => {
+  const defaultData = {
+    accounts: {
+      data: []
+    },
+    transactions: {
+      data: []
+    },
+    categories: {
+      data: []
+    },
+    search: {
+      transactions: {
+        result: []
+      }
+    },
+    edit: {
+      dateSelect: {},
+      transactionList: {
+        filterCategories: new Set()
+      }
+    }
+  };
+
   const mockStore = configureStore();
 
   it('should render nothing when there are no transactions', () => {
-    const store = mockStore({
-      accounts: {
-        data: []
-      },
-      transactions: {
-        data: []
-      },
-      categories: {
-        data: []
-      },
-      search: {
-        transactions: {
-          result: []
-        }
-      },
-      edit: {
-        dateSelect: {}
-      }
-    });
+    const store = mockStore(defaultData);
 
     const container = shallow(
       <MemoryRouter>
@@ -45,31 +51,21 @@ describe('Transactions', () => {
   });
 
   it('should show table when there are transactions, even when search is empty', () => {
-    const store = mockStore({
-      accounts: {
-        data: []
-      },
+    const store = mockStore(Object.assign({}, defaultData, {
       transactions: {
         data: [{}]
-      },
-      categories: {
-        data: []
-      },
-      search: {
-        transactions: {
-          result: []
-        }
-      },
-      edit: {
-        dateSelect: {}
       }
-    });
+    }));
 
     const container = shallow(
       <MemoryRouter>
-        <Transactions store={store} />
+        <Provider store={store}>
+          <Transactions />
+        </Provider>
       </MemoryRouter>
     );
+
+    // The check is performed by simply checking for the first button
     expect(container.render().find('a').text()).toEqual('Add More Transactions');
   });
 
@@ -105,19 +101,23 @@ describe('Transactions', () => {
         dateSelect: {},
         transactionList: {
           page: 1,
-          pageSize: 50
+          pageSize: 50,
+          filterCategories: new Set()
         }
       }
     });
 
     const container = shallow(
       <MemoryRouter>
-        <Transactions store={store} />
+        <Provider store={store}>
+          <Transactions />
+        </Provider>
       </MemoryRouter>
-    ).render();
-    expect(container.find('table').length).toEqual(1);
+    );
+    const rendered = container.render();
+    expect(rendered.find('table').length).toEqual(1);
 
-    const row = container.find('tr').eq(1);
+    const row = rendered.find('tr').eq(1);
     expect(row.find('td').eq(1).text()).toEqual('test');
     expect(row.find('td').eq(2).text()).toMatch('1');
     expect(row.find('td').eq(3).text()).toEqual('2');
@@ -156,18 +156,22 @@ describe('Transactions', () => {
         dateSelect: {},
         transactionList: {
           page: 1,
-          pageSize: 50
+          pageSize: 50,
+          filterCategories: new Set()
         }
       }
     });
 
     const container = shallow(
       <MemoryRouter>
-        <Transactions store={store} />
+        <Provider store={store}>
+          <Transactions />
+        </Provider>
       </MemoryRouter>
-    ).render();
+    )
+    const rendered = container.render();
 
-    const categoryCol = container.find('tr').eq(1).find('td').eq(4);
+    const categoryCol = rendered.find('tr').eq(1).find('td').eq(4);
     expect(categoryCol.find('svg').length).toEqual(3);
     expect(categoryCol.text()).toEqual('Travel');
   });
@@ -202,13 +206,18 @@ describe('Transactions', () => {
       },
       edit: {
         dateSelect: {},
-        isCategoryGuessing: true
+        isCategoryGuessing: true,
+        transactionList: {
+          filterCategories: new Set()
+        }
       }
     });
 
     const container = shallow(
       <MemoryRouter>
-        <Transactions store={store} />
+        <Provider store={store}>
+          <Transactions />
+        </Provider>
       </MemoryRouter>
     );
     expect(container.render().find('.status').text()).toEqual('Guessing categories...');

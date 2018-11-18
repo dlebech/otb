@@ -40,7 +40,7 @@ class CurrencySelect extends React.Component {
       />
     );
   }
-};
+}
 
 CurrencySelect.propTypes = {
   onChange: PropTypes.func.isRequired,

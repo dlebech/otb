@@ -1,26 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   ResponsiveContainer,
   Treemap,
   Tooltip,
 } from 'recharts';
-import { nest } from 'd3-collection';
-import { sum } from 'd3-array';
 import color from '../../data/color'
-import { findCategory, formatNumber } from '../../util';
+import { formatNumber } from '../../util';
 
 const CategoryTreeMap = props => {
-  const expenses = props.transactions.filter(t => t.amount < 0);
-
-  const data = nest()
-    .key(d => d.category.confirmed || 'n/a')
-    .rollup(a => Math.abs(sum(a, d => d.amount)))
-    .entries(expenses)
-    .sort((a, b) => b.value - a.value)
+  const data = props.sortedCategoryExpenses
     .map(d => {
       return {
-        key: findCategory(props.categories, d.key).name,
-        value: d.value
+        key: d.value.category.name,
+        value: d.value.amount
       };
     });
 
@@ -41,6 +34,19 @@ const CategoryTreeMap = props => {
       </ResponsiveContainer>
     </div>
   )
+};
+
+CategoryTreeMap.propTypes = {
+  sortedCategoryExpenses: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    value: PropTypes.shape({
+      amount: PropTypes.number.isRequired,
+      category: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired
+      }).isRequired
+    })
+  })).isRequired,
 };
 
 export default CategoryTreeMap;
