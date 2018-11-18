@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Loadable from 'react-loadable';
 import moment from 'moment';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
@@ -11,10 +12,12 @@ import Dates from './Dates';
 import Summary from './charts/Summary';
 import AmountSumBar from './charts/AmountSumBar';
 import IncomeExpensesLine from './charts/IncomeExpensesLine';
-import CategoryTreeMap from './charts/CategoryTreeMap';
-import CategoryLine from './charts/CategoryLine';
 import Loading from './shared/Loading';
-import CategorySelect from './shared/CategorySelect';
+
+const CategoryExpenses = Loadable({
+  loader: () => import('./charts/CategoryExpenses'),
+  loading: Loading
+});
 
 const Charts = props => {
   if (props.transactions.length === 0) return <NoData />;
@@ -71,10 +74,6 @@ const Charts = props => {
     .entries(expenses)
     .sort((a, b) => b.value.amount - a.value.amount);
 
-  const handleCategoryChange = options => {
-    props.handleCategoryChange(options.map(o => o.value));
-  };
-
   return (
     <>
       <div className="row align-items-center">
@@ -108,51 +107,43 @@ const Charts = props => {
           </div>
         </div>}
       </div>
-      <Summary
-        expenses={expenses}
-        income={income}
-        sortedCategoryExpenses={sortedCategoryExpenses}
-        accounts={props.accounts}
-        baseCurrency={props.baseCurrency}
-      />
-      <div className="row justify-content-center">
-        <div className="col-lg-6">
-          <h4 className="text-center">Income and expenses over time</h4>
-          <IncomeExpensesLine
-            transactions={filteredTransactions}
-            startDate={props.startDate}
-            endDate={props.endDate}
-          />
+      <section>
+        <Summary
+          expenses={expenses}
+          income={income}
+          sortedCategoryExpenses={sortedCategoryExpenses}
+          accounts={props.accounts}
+          baseCurrency={props.baseCurrency}
+        />
+      </section>
+      <section className="mt-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-6">
+            <h4 className="text-center">Income and expenses over time</h4>
+            <IncomeExpensesLine
+              transactions={filteredTransactions}
+              startDate={props.startDate}
+              endDate={props.endDate}
+            />
+          </div>
+          <div className="col-lg-6">
+            <h4 className="text-center">Sum of income and expenses over time</h4>
+            <AmountSumBar
+              transactions={filteredTransactions}
+            />
+          </div>
         </div>
-        <div className="col-lg-6">
-          <h4 className="text-center">Sum of income and expenses over time</h4>
-          <AmountSumBar
-            transactions={filteredTransactions}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-5">
-          <h4 className="text-center">Categories where money is spent</h4>
-          <CategorySelect
-            selectedCategory={props.filterCategories}
-            onChange={handleCategoryChange}
-          />
-        </div>
-      </div>
-      <div className="row justify-content-center">
-        <div className="col-lg-6">
-          <CategoryLine
-            filterCategories={props.filterCategories}
-            sortedCategoryExpenses={sortedCategoryExpenses}
-            startDate={props.startDate}
-            endDate={props.endDate}
-          />
-        </div>
-        <div className="col-lg-6">
-          <CategoryTreeMap sortedCategoryExpenses={sortedCategoryExpenses} />
-        </div>
-      </div>
+      </section>
+      <section className="mt-5">
+        <CategoryExpenses
+          filterCategories={props.filterCategories}
+          handleCategoryChange={props.handleCategoryChange}
+          handleCategorySortingChange={props.handleCategorySortingChange}
+          sortedCategoryExpenses={sortedCategoryExpenses}
+          startDate={props.startDate}
+          endDate={props.endDate}
+        />
+      </section>
     </>
   );
 };
@@ -186,7 +177,7 @@ const mapStateToProps = state => {
     accounts: state.accounts.data,
     startDate: dateSelect.startDate,
     endDate: dateSelect.endDate,
-    currencyRates: state.edit.currencyRates
+    currencyRates: state.edit.currencyRates,
   };
 };
 

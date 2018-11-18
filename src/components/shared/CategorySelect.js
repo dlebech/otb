@@ -38,7 +38,8 @@ const CategorySelect = props => {
     onChange: onChange,
     value: selectedCategory,
     isMulti: props.isMulti,
-    autoFocus: props.focus
+    autoFocus: props.focus,
+    ...props.selectOptions
   };
 
   // Assume it's a creatable if the onCreate function is given
@@ -78,14 +79,16 @@ CategorySelect.propTypes = {
   placeholder: PropTypes.string,
   isMulti: PropTypes.bool,
   focus: PropTypes.bool,
-  includeUncategorized: PropTypes.bool
+  includeUncategorized: PropTypes.bool,
+  selectOptions: PropTypes.object
 };
 
 CategorySelect.defaultProps = {
   placeholder: 'Select category...',
   isMulti: true,
   focus: false,
-  includeUncategorized: true
+  includeUncategorized: true,
+  selectOptions: {}
 };
 
 const mapStateToProps = state => {

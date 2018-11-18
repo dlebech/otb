@@ -4,20 +4,7 @@ import { schemeCategory10 } from 'd3-scale-chromatic';
 import CustomLineChart from '../shared/CustomLineChart';
 
 const CategoryLine = props => {
-  let filteredCategories = props.sortedCategoryExpenses;
-
-  // Filter the categories, if requested
-  if (props.filterCategories.size > 0) {
-    filteredCategories = props.sortedCategoryExpenses
-      .filter(e => props.filterCategories.has(e.value.category.id));
-  }
-
-  // Find the largest categories in terms of number of transactions
-  // Note: Need to copy the array to ensure the sort does not mess with other
-  // components view of this array.
-  const largestCategories = [...filteredCategories] 
-    .sort((a, b) => b.value.transactions.length - a.value.transactions.length)
-    .slice(0, 4);
+  const largestCategories = [...props.sortedCategoryExpenses];
 
   const dateKeySelector = props.endDate.diff(props.startDate, 'month', true) < 2 ?
     t => t.date :
@@ -80,7 +67,6 @@ const CategoryLine = props => {
 };
 
 CategoryLine.propTypes = {
-  filterCategories: PropTypes.instanceOf(Set).isRequired,
   sortedCategoryExpenses: PropTypes.arrayOf(PropTypes.shape({
     value: PropTypes.shape({
       amount: PropTypes.number.isRequired,
@@ -94,7 +80,7 @@ CategoryLine.propTypes = {
     })
   })).isRequired,
   startDate: PropTypes.object.isRequired,
-  endDate: PropTypes.object.isRequired,
+  endDate: PropTypes.object.isRequired
 };
 
 export default CategoryLine;
