@@ -2,6 +2,7 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import * as categories from './data/categories';
 import { defaultAccount }  from './data/accounts';
+import { uncategorized }  from './data/categories';
 import { Exception } from 'handlebars';
 
 /**
@@ -80,7 +81,7 @@ export const findCategory = (categories, categoryId, returnFallback = true) => {
   let category;
   if (Array.isArray(categories)) category = categories.find(c => c.id === categoryId);
   else category = categories[categoryId]; // Assume it's an object
-  if (!category && returnFallback) return { name: 'Uncategorized' };
+  if (!category && returnFallback) return uncategorized;
   return category;
 };
 
