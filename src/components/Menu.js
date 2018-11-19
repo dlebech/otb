@@ -12,6 +12,7 @@ class Menu extends React.Component {
     super(props);
 
     this.handleToggleStorage = this.handleToggleStorage.bind(this);
+    this.handleExitDemo = this.handleExitDemo.bind(this);
   }
 
   componentDidMount() {
@@ -33,6 +34,11 @@ class Menu extends React.Component {
     this.props.toggleLocalStorage(enabled);
   }
 
+  async handleExitDemo() {
+    if (this.props.localStorageEnabled) await this.handleToggleStorage({ target: { checked: false }});
+    window.location.href = '/';
+  }
+
   render() {
     // Do not return the menu on the front page.
     if (this.props.match.url === '/') return null;
@@ -43,7 +49,7 @@ class Menu extends React.Component {
 
     return (
       <>
-        <nav className="navbar navbar-expand-md navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
           <div className="container">
             <Link className="navbar-brand" to="/">Off The Books</Link>
             <div className="navbar-collapse">
@@ -67,6 +73,12 @@ class Menu extends React.Component {
                   </Link>
                 </li>
               </ul>
+              {this.props.isTestMode && <button
+                onClick={this.handleExitDemo}
+                className="btn btn-outline-warning btn-sm mx-3"
+              >
+                Exit Demo
+              </button>}
               <form className="form-inline">
                 <div className="form-check">
                   <input
@@ -79,16 +91,14 @@ class Menu extends React.Component {
                   <label className="form-check-label navbar-text" htmlFor="local-storage-check">
                     Save Data in Browser
                   </label>
+                  <FontAwesomeIcon
+                    icon="question-circle"
+                    className="ml-1 cursor-pointer text-info"
+                    fixedWidth
+                    onClick={() => this.props.showModal(SaveData.modalName)}
+                  />
                 </div>
               </form>
-              <div className="navbar-text text-info">
-                <FontAwesomeIcon
-                  icon="question-circle"
-                  className="ml-1 cursor-pointer"
-                  fixedWidth
-                  onClick={() => this.props.showModal(SaveData.modalName)}
-                />
-              </div>
             </div>
           </div>
         </nav>
@@ -100,7 +110,8 @@ class Menu extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    localStorageEnabled: state.app.storage.localStorage
+    localStorageEnabled: state.app.storage.localStorage,
+    isTestMode: state.app.isTestMode
   };
 };
 
