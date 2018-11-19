@@ -2,7 +2,6 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import * as categories from './data/categories';
 import { defaultAccount }  from './data/accounts';
-import { uncategorized }  from './data/categories';
 import { Exception } from 'handlebars';
 
 /**
@@ -73,15 +72,15 @@ export const guessColumnSpec = transactions => {
 
 /**
  * Search for the category with the given ID in the category list.
- * @param {Array} categories - A list of categories to search through
+ * @param {Array} categoryList - A list of categories to search through
  * @param {String} categoryId - The ID of the category
  * @param {Boolean} [returnFallback] - Optionally return a fallback category, default is true
  */
-export const findCategory = (categories, categoryId, returnFallback = true) => {
+export const findCategory = (categoryList, categoryId, returnFallback = true) => {
   let category;
-  if (Array.isArray(categories)) category = categories.find(c => c.id === categoryId);
-  else category = categories[categoryId]; // Assume it's an object
-  if (!category && returnFallback) return uncategorized;
+  if (Array.isArray(categoryList)) category = categoryList.find(c => c.id === categoryId);
+  else category = categoryList[categoryId]; // Assume it's an object
+  if (!category && returnFallback) return categories.uncategorized;
   return category;
 };
 
@@ -148,21 +147,24 @@ export const toggleLocalStorage = async (persistor, enabled) => {
 };
 
 export const createTestData = () => {
-  const startDate = moment().subtract(4, 'month');
+  const startDate = moment().subtract(7, 'month');
   const now = moment();
   const transactions = [];
   const categorySelection = [
     categories.entertainment,
     categories.foodAndDrink,
     categories.home,
-    categories.money,
     categories.shopping,
     categories.transportation,
     categories.travel
   ];
+  const purchaseLimit = 100;
   while (startDate.isBefore(now)) {
     startDate.add(1, 'day');
-    for (let i = 0; i < 3; i++) {
+
+    // Add up to 3 transactions per day
+    const limit = Math.round(Math.random() * 3);
+    for (let i = 0; i < limit; i++) {
       const category = categorySelection[Math.floor(Math.random() * categorySelection.length)];
       const tCategory = {};
       if (Math.round(Math.random()) === 1) tCategory.confirmed = category.id;
@@ -170,27 +172,31 @@ export const createTestData = () => {
       transactions.push({
         id: uuidv4(),
         date: startDate.clone().format('YYYY-MM-DD'),
-        description: `A ${category.name} store`,
+        description: `The ${category.name} store`,
         descriptionCleaned: cleanTransactionDescription(`A ${category.name} store`),
-        amount: -Math.round(Math.random() * 100 + 1),
+        amount: -Math.round(Math.random() * purchaseLimit + 1),
         total: 0,
         category: tCategory,
         account: defaultAccount.id
       });
     }
-  }
 
-  // Add some income...
-  transactions.push({
-    id: uuidv4(),
-    date: startDate.clone().format('YYYY-MM-DD'),
-    description: 'Some income',
-    descriptionCleaned: cleanTransactionDescription('Some income'),
-    amount: 123,
-    total: 0,
-    category: {},
-    account: defaultAccount.id
-  });
+    // Add some income every end of month
+    if (startDate.isSame(startDate.clone().endOf('month'), 'day')) {
+      transactions.push({
+        id: uuidv4(),
+        date: startDate.clone().format('YYYY-MM-DD'),
+        description: 'Salary',
+        descriptionCleaned: cleanTransactionDescription('Salary'),
+        amount: purchaseLimit * (Math.random() * 10 + 20),
+        total: 0,
+        category: {
+          confirmed: categories.money.id
+        },
+        account: defaultAccount.id
+      });
+    }
+  }
 
   transactions.reduce((prev, cur) => {
     cur.total = prev.total + cur.amount;

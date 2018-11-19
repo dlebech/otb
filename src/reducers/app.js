@@ -22,6 +22,12 @@ const appReducer = (state = initialApp, action) => {
       return update(state, {
         $set: action.newState.app
       });
+    case actions.CREATE_TEST_DATA:
+      return update(state, {
+        isTestMode: {
+          $set: true
+        }
+      });
     default:
       return state;
   }

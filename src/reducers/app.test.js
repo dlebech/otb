@@ -19,3 +19,7 @@ it('should handle the toggle persist action', () => {
     localStorage: false
   });
 });
+
+it('should handle create test mode action', () => {
+  expect(reducers({}, actions.createTestData()).app.isTestMode).toEqual(true);
+});
