@@ -355,7 +355,25 @@ const transactionsReducer = (state = initialTransactions, action) => {
     case actions.GROUP_TRANSACTIONS:
       if (action.transactionIds.length <= 1) return state;
 
+      if (!state.groups) {
+        state = update(state, {
+          groups: {
+            $set: {}
+          }
+        });
+      }
+
       const transactionSet = new Set(action.transactionIds);
+      const hasGroupOverlap = Object
+        .keys(state.groups)
+        .map(key => key.split('_')) // An array of arrays
+        .reduce((prev, cur) => {    // A flattened array
+          return [...prev, ...cur];
+        }, [])
+        .find(transactionId => transactionSet.has(transactionId));
+
+      if (hasGroupOverlap) return state;
+
       const orderedTransactionIds = []
         .concat(state.data.filter(t => transactionSet.has(t.id)))
         .sort((a, b) => a.date.localeCompare(b.date))
@@ -370,19 +388,17 @@ const transactionsReducer = (state = initialTransactions, action) => {
         linkedIds: orderedTransactionIds.slice(1)
       };
 
-      if (!state.groups) {
-        state = update(state, {
-          groups: {
-            $set: {}
-          }
-        });
-      }
-
       return update(state, {
         groups: {
           [groupId]: {
             $set: group
           }
+        }
+      });
+    case actions.DELETE_TRANSACTION_GROUP:
+      return update(state, {
+        groups: {
+          $unset: [action.transactionGroupId]
         }
       });
     case actions.CREATE_TEST_DATA:

@@ -30,6 +30,7 @@ export const CATEGORIZE_ROWS = 'CATEGORIZE_ROWS';
 export const IGNORE_TRANSACTION = 'IGNORE_TRANSACTION';
 export const DELETE_TRANSACTION = 'DELETE_TRANSACTION';
 export const GROUP_TRANSACTIONS = 'GROUP_TRANSACTIONS';
+export const DELETE_TRANSACTION_GROUP = 'DELETE_TRANSACTION_GROUP ';
 
 // General actions
 export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
@@ -191,6 +192,13 @@ export const groupTransactions = transactionIds => {
   return {
     type: GROUP_TRANSACTIONS,
     transactionIds
+  };
+};
+
+export const deleteTransactionGroup = transactionGroupId => {
+  return {
+    type: DELETE_TRANSACTION_GROUP,
+    transactionGroupId
   };
 };
 

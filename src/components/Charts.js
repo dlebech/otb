@@ -168,12 +168,53 @@ const mapStateToProps = state => {
     return obj;
   }, {});
 
+  let transactions = state.transactions.data;
+  if (state.transactions.groups) {
+    // Copy the array because we will manipulate it below...
+    transactions = [...state.transactions.data];
+
+    // Create a reverse index lookup table for easier transaction access.
+    const reverseLookup = transactions.reduce((obj, cur, i) => {
+      obj[cur.id] = i;
+      return obj;
+    }, {})
+
+    const transactionsToRemove = new Set();
+
+    // For each of the groups:
+    // 1. Find the primary transaction
+    // 2. Calculate a new amount for the primary transaction
+    // 3. Replace the existing transaction and remove linked transactions
+    // XXX: In the future, this summing of amounts might be changed by a group
+    // parameter. This is just the default behavior for now and it should work
+    // well for e.g. refunds
+    Object.entries(state.transactions.groups)
+      .forEach(([_, group]) => {
+        const primaryTransactionIndex = reverseLookup[group.primaryId];
+        const primaryTransaction = transactions[primaryTransactionIndex];
+
+        const linkedTransactionAmounts = group.linkedIds.map(id => {
+          transactionsToRemove.add(id); // Yay side effects :-)
+          return transactions[reverseLookup[id]].amount;
+        });
+
+        const newTransaction = Object.assign({}, primaryTransaction, {
+          // TODO: Handle different currencies?
+          amount: sum([primaryTransaction.amount, ...linkedTransactionAmounts])
+        });
+
+        transactions.splice(primaryTransactionIndex, 1, newTransaction);
+      });
+
+    transactions = transactions.filter(t => !transactionsToRemove.has(t.id));
+  }
+
   return {
     dateSelectId,
     baseCurrency,
     categories,
     filterCategories,
-    transactions: state.transactions.data,
+    transactions,
     accounts: state.accounts.data,
     startDate: dateSelect.startDate,
     endDate: dateSelect.endDate,

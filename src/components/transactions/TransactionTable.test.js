@@ -82,7 +82,8 @@ const defaultProps = {
   handleRowCategory: jest.fn(),
   handleFilterCategories: jest.fn(),
   handlePageChange: jest.fn(),
-  handlePageSizeChange: jest.fn()
+  handlePageSizeChange: jest.fn(),
+  transactionGroups: {}
 };
 
 it('should show all transaction rows with default sorting', () => {

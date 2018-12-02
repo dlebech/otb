@@ -82,11 +82,13 @@ class Transactions extends React.Component {
         <hr />
         <TransactionTable
           transactions={this.props.transactions}
+          transactionGroups={this.props.transactionGroups}
           categories={this.props.categories}
           accounts={this.props.accounts}
           handleRowCategoryChange={this.handleRowCategoryChange}
           handleDeleteRow={this.props.handleDeleteRow}
           handleIgnoreRow={this.props.handleIgnoreRow}
+          handleGroupRows={this.props.handleGroupRows}
           handleSearch={this.props.handleSearch}
           handleDatesChange={this.props.handleDatesChange}
           handlePageChange={this.props.handlePageChange}
@@ -94,6 +96,7 @@ class Transactions extends React.Component {
           handleSortChange={this.props.handleSortChange}
           handleFilterCategories={this.props.handleFilterCategories}
           handleRoundAmount={this.props.handleRoundAmount}
+          handleDeleteTransactionGroup={this.props.handleDeleteTransactionGroup}
           showCreateCategoryModal={this.showCreateCategoryModal}
           showModal={this.props.showModal}
           hideModal={this.props.hideModal}
@@ -125,11 +128,6 @@ const mapStateToProps = state => {
     transactions = transactions.filter(t => ids.has(t.id));
   }
 
-  const accounts = state.accounts.data.reduce((obj, account) => {
-    obj[account.id] = account;
-    return obj;
-  }, {});
-
   transactions = transactions.map(t => {
     return {
       categoryGuess: categories[t.category.guess] || null,
@@ -138,6 +136,37 @@ const mapStateToProps = state => {
       date: moment(t.date)
     };
   });
+
+  const accounts = state.accounts.data.reduce((obj, account) => {
+    obj[account.id] = account;
+    return obj;
+  }, {});
+
+  const reverseTransactionLookup = transactions.reduce((obj, t, i) =>{
+    obj[t.id] = i;
+    return obj;
+  }, {});
+
+  // Create an ID -> transactions mapping for easier tooltip'ing.
+  const transactionGroups = Object.entries(state.transactions.groups || {})
+    .reduce((obj, [groupId, group]) => {
+      obj[group.primaryId] = {
+        groupId,
+        linkedTransactions: group.linkedIds.map(id => transactions[reverseTransactionLookup[id]])
+      }
+      group.linkedIds.forEach(id => {
+        obj[id] = {
+          groupId,
+          linkedTransactions: [
+            transactions[reverseTransactionLookup[group.primaryId]],
+            ...group.linkedIds
+              .filter(innerId => innerId !== id)
+              .map(innerId => transactions[reverseTransactionLookup[innerId]])
+          ]
+        }
+      });
+      return obj;
+    }, {});
 
   const dateSelectId = 'transaction-dates';
   const dateSelect = state.edit.dateSelect[dateSelectId] || {
@@ -150,6 +179,7 @@ const mapStateToProps = state => {
     transactions,
     categories,
     accounts,
+    transactionGroups,
     isCategoryGuessing: state.edit.isCategoryGuessing,
     hasTransactions: state.transactions.data.length > 0,
     transactionListSettings: {
@@ -184,6 +214,12 @@ const mapDispatchToProps = dispatch => {
     },
     handleIgnoreRow: (rowId, ignore) => {
       dispatch(actions.ignoreTransaction(rowId, ignore));
+    },
+    handleGroupRows: rowIds => {
+      dispatch(actions.groupTransactions(rowIds));
+    },
+    handleDeleteTransactionGroup: transactionGroupId => {
+      dispatch(actions.deleteTransactionGroup(transactionGroupId));
     },
     showModal: (...args) => {
       dispatch(show(...args));

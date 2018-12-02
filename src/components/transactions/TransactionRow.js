@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import Confirm from '../modals/Confirm';
 import RowCategorizer from './RowCategorizer';
 import IgnoreTransaction from './IgnoreTransaction';
+import GroupedTransaction from './GroupedTransaction';
 import ConfirmDelete from './ConfirmDelete';
 import { formatNumber } from '../../util';
 
@@ -83,6 +84,11 @@ const TransactionRow = props => {
       </td>
       <td onClick={handleRowSelect}>
         {props.transaction.description}
+        <GroupedTransaction
+          transactionId={props.transaction.id}
+          transactionGroup={props.transactionGroup}
+          handleDeleteTransactionGroup={props.handleDeleteTransactionGroup}
+        />
       </td>
       <td className="text-right">
         <Amount
@@ -150,7 +156,15 @@ TransactionRow.propTypes = {
   handleIgnoreRow: PropTypes.func.isRequired,
   handleRowCategoryChange: PropTypes.func.isRequired,
   handleRowSelect: PropTypes.func.isRequired,
-  roundAmount: PropTypes.bool.isRequired
+  roundAmount: PropTypes.bool.isRequired,
+  handleDeleteTransactionGroup: PropTypes.func.isRequired,
+  transactionGroup: PropTypes.shape({
+    groupId: PropTypes.string.isRequired,
+    linkedTransactions: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      date: PropTypes.instanceOf(moment)
+    })).isRequired
+  }),
 };
 
 export default TransactionRow;

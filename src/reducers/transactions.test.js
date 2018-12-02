@@ -735,7 +735,6 @@ describe('Transaction grouping', () => {
           { id: 'efgh', date: '2018-01-01' }
         ]
       }
-
     }, actions.groupTransactions(['abcd', 'efgh']));
 
     expect(state.transactions.groups).toEqual({
@@ -744,6 +743,45 @@ describe('Transaction grouping', () => {
         linkedIds: ['abcd'],
       }
     });
+  });
+
+  it('should not add subset groups', () => {
+    const state = reducers({
+      transactions: {
+        data: [
+          { id: 'abcd', date: '2018-01-02' },
+          { id: 'efgh', date: '2018-01-01' },
+          { id: 'ijkl', date: '2018-01-03' }
+        ],
+        groups: {
+          'abcd_efgh_ijkl': {
+            primaryId: 'efgh',
+            linkedIds: ['abcd', 'ijkl']
+          }
+        }
+      }
+
+    }, actions.groupTransactions(['abcd', 'ijkl']));
+
+    expect(state.transactions.groups).toEqual({
+      'abcd_efgh_ijkl': {
+        primaryId: 'efgh',
+        linkedIds: ['abcd', 'ijkl']
+      }
+    });
+  });
+
+  it('should delete a group', () => {
+    const state = reducers({
+      transactions: {
+        groups: {
+          'abcd_efgh_ijkl': {}
+        }
+      }
+
+    }, actions.deleteTransactionGroup('abcd_efgh_ijkl'));
+
+    expect(state.transactions.groups).toEqual({});
   });
 });
 
