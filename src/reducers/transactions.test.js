@@ -687,13 +687,13 @@ it('should set a transaction to ignored', () => {
         { id: 'abcd' }
       ]
     }
-  }, actions.ignoreRow('abcd', true));
+  }, actions.ignoreTransaction('abcd', true));
   expect(state.transactions.data).toContainEqual({
     id: 'abcd',
     ignore: true
   });
 
-  state = reducers(state, actions.ignoreRow('abcd', false));
+  state = reducers(state, actions.ignoreTransaction('abcd', false));
   expect(state.transactions.data).toContainEqual({
     id: 'abcd'
   });
@@ -706,8 +706,45 @@ it('should delete a transaction', () => {
         { id: 'abcd' }
       ]
     }
-  }, actions.deleteRow('abcd'));
+
+  }, actions.deleteTransaction('abcd'));
   expect(state.transactions.data).toEqual([]);
+});
+
+describe('Transaction grouping', () => {
+  it('should not update groups if there are not enough IDs', () => {
+    const state = reducers({
+      transactions: {
+        data: [
+          { id: 'abcd' },
+          { id: 'efgh' }
+        ],
+        groups: {}
+      }
+
+    }, actions.groupTransactions(['abcd']));
+
+    expect(state.transactions.groups).toEqual({});
+  });
+
+  it('should group transactions according to dates', () => {
+    const state = reducers({
+      transactions: {
+        data: [
+          { id: 'abcd', date: '2018-01-02' },
+          { id: 'efgh', date: '2018-01-01' }
+        ]
+      }
+
+    }, actions.groupTransactions(['abcd', 'efgh']));
+
+    expect(state.transactions.groups).toEqual({
+      'abcd_efgh': {
+        primaryId: 'efgh',
+        linkedIds: ['abcd'],
+      }
+    });
+  });
 });
 
 it('should create test data', () => {

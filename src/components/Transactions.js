@@ -180,10 +180,10 @@ const mapDispatchToProps = dispatch => {
       dispatch(actions.guessAllCategories())
     },
     handleDeleteRow: rowId => {
-      dispatch(actions.deleteRow(rowId));
+      dispatch(actions.deleteTransaction(rowId));
     },
     handleIgnoreRow: (rowId, ignore) => {
-      dispatch(actions.ignoreRow(rowId, ignore));
+      dispatch(actions.ignoreTransaction(rowId, ignore));
     },
     showModal: (...args) => {
       dispatch(show(...args));

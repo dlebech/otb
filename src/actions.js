@@ -2,8 +2,6 @@ import chunk from 'lodash/chunk';
 import { sleep } from './util';
 import { lambdaBase } from './config';
 
-export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
-
 // Import actions
 export const IMPORT_PARSE_TRANSACTIONS_START = 'IMPORT_PARSE_TRANSACTIONS_START';
 export const IMPORT_PARSE_TRANSACTIONS_END = 'IMPORT_PARSE_TRANSACTIONS_END';
@@ -25,13 +23,17 @@ export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 
+// Transaction actions
 export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
 export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
 export const CATEGORIZE_ROWS = 'CATEGORIZE_ROWS';
-export const IGNORE_ROW = 'IGNORE_ROW';
-export const DELETE_ROW = 'DELETE_ROW';
-export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
+export const IGNORE_TRANSACTION = 'IGNORE_TRANSACTION';
+export const DELETE_TRANSACTION = 'DELETE_TRANSACTION';
+export const GROUP_TRANSACTIONS = 'GROUP_TRANSACTIONS';
 
+// General actions
+export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
+export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const EDIT_DATES = 'EDIT_DATES';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
 export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
@@ -170,18 +172,25 @@ export const categorizeRows = rowCategoryMapping => {
   };
 };
 
-export const ignoreRow = (rowId, ignore) => {
+export const ignoreTransaction = (transactionId, ignore) => {
   return {
-    type: IGNORE_ROW,
-    rowId,
+    type: IGNORE_TRANSACTION,
+    transactionId,
     ignore
   };
 };
 
-export const deleteRow = rowId => {
+export const deleteTransaction = transactionId => {
   return {
-    type: DELETE_ROW,
-    rowId
+    type: DELETE_TRANSACTION,
+    transactionId
+  };
+};
+
+export const groupTransactions = transactionIds => {
+  return {
+    type: GROUP_TRANSACTIONS,
+    transactionIds
   };
 };
 
