@@ -5,6 +5,7 @@ import CategorySelect from '../shared/CategorySelect';
 
 const CONFIRM_CATEGORY_GUESSES = 'confirmCategoryGuesses';
 const SET_CATEGORIES = 'setCategories';
+const GROUP_TRANSACTIONS = 'groupRows';
 
 class BulkActionSelection extends React.Component {
   constructor(props) {
@@ -55,6 +56,8 @@ class BulkActionSelection extends React.Component {
         return this.confirmCategoryGuesses();
       case SET_CATEGORIES:
         return this.setCategories();
+      case GROUP_TRANSACTIONS:
+        return this.props.handleGroupRows(this.props.selectedTransactions.map(t => t.id))
       default:
         return;
     }
@@ -71,6 +74,10 @@ class BulkActionSelection extends React.Component {
       {
         value: SET_CATEGORIES,
         label: 'Set specific category'
+      },
+      {
+        value: GROUP_TRANSACTIONS,
+        label: 'Group transactions'
       }
     ];
 
@@ -123,7 +130,8 @@ BulkActionSelection.propTypes = {
     }),
   })).isRequired,
   handleRowCategoryChange: PropTypes.func.isRequired,
-  showCreateCategoryModal: PropTypes.func.isRequired
+  showCreateCategoryModal: PropTypes.func.isRequired,
+  handleGroupRows: PropTypes.func.isRequired
 };
 
 export default BulkActionSelection;

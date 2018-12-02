@@ -16,7 +16,8 @@ import {
   faSort,
   faSortUp,
   faSortDown,
-  faSpinner
+  faSpinner,
+  faLink
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function configureFa() {
@@ -37,6 +38,7 @@ export default function configureFa() {
     faSort,
     faSortUp,
     faSortDown,
-    faSpinner
+    faSpinner,
+    faLink
   );
 };

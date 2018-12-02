@@ -191,6 +191,7 @@ class TransactionTable extends React.Component {
               handleSelectAll={() => this.handleSelectAll(dataPage.map(t => t.id))}
               handleSelectNone={this.handleSelectNone}
               showCreateCategoryModal={this.props.showCreateCategoryModal}
+              handleGroupRows={this.props.handleGroupRows}
             />
           </div>
         </div>
@@ -248,6 +249,8 @@ class TransactionTable extends React.Component {
                     hideModal={this.props.hideModal}
                     roundAmount={this.props.roundAmount}
                     isSelected={this.state.selectedRows.has(transaction.id)}
+                    transactionGroup={this.props.transactionGroups[transaction.id]}
+                    handleDeleteTransactionGroup={this.props.handleDeleteTransactionGroup}
                   />
                 })}
               </tbody>
@@ -289,6 +292,7 @@ TransactionTable.propTypes = {
   hideModal: PropTypes.func.isRequired,
   handleIgnoreRow: PropTypes.func.isRequired,
   handleDeleteRow: PropTypes.func.isRequired,
+  handleGroupRows: PropTypes.func.isRequired,
   handleRowCategoryChange: PropTypes.func.isRequired,
   handleSearch: PropTypes.func.isRequired,
   handleDatesChange: PropTypes.func.isRequired,
@@ -298,7 +302,9 @@ TransactionTable.propTypes = {
   handleFilterCategories: PropTypes.func.isRequired,
   searchText: PropTypes.string,
   handleRoundAmount: PropTypes.func.isRequired,
+  handleDeleteTransactionGroup: PropTypes.func.isRequired,
   roundAmount: PropTypes.bool,
+  transactionGroups: PropTypes.object
 };
 
 TransactionTable.defaultProps = {

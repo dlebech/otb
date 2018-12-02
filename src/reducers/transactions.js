@@ -329,8 +329,8 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         },
       });
-    case actions.IGNORE_ROW:
-      const indexToIgnore = state.data.findIndex(c => c.id === action.rowId);
+    case actions.IGNORE_TRANSACTION:
+      const indexToIgnore = state.data.findIndex(c => c.id === action.transactionId);
       if (indexToIgnore < 0) return state;
       const op = action.ignore ? {
         ignore: {
@@ -344,12 +344,61 @@ const transactionsReducer = (state = initialTransactions, action) => {
           [indexToIgnore]: op
         }
       });
-    case actions.DELETE_ROW:
-      const indexToDelete = state.data.findIndex(c => c.id === action.rowId);
+    case actions.DELETE_TRANSACTION:
+      const indexToDelete = state.data.findIndex(c => c.id === action.transactionId);
       if (indexToDelete < 0) return state;
       return update(state, {
         data: {
           $splice: [[indexToDelete, 1]]
+        }
+      });
+    case actions.GROUP_TRANSACTIONS:
+      if (action.transactionIds.length <= 1) return state;
+
+      if (!state.groups) {
+        state = update(state, {
+          groups: {
+            $set: {}
+          }
+        });
+      }
+
+      const transactionSet = new Set(action.transactionIds);
+      const hasGroupOverlap = Object
+        .keys(state.groups)
+        .map(key => key.split('_')) // An array of arrays
+        .reduce((prev, cur) => {    // A flattened array
+          return [...prev, ...cur];
+        }, [])
+        .find(transactionId => transactionSet.has(transactionId));
+
+      if (hasGroupOverlap) return state;
+
+      const orderedTransactionIds = []
+        .concat(state.data.filter(t => transactionSet.has(t.id)))
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(t => t.id);
+
+      // The group ID should always be ordered according to the contained
+      // transactions.
+      const groupId = [...orderedTransactionIds].sort().join('_');
+
+      const group = {
+        primaryId: orderedTransactionIds[0],
+        linkedIds: orderedTransactionIds.slice(1)
+      };
+
+      return update(state, {
+        groups: {
+          [groupId]: {
+            $set: group
+          }
+        }
+      });
+    case actions.DELETE_TRANSACTION_GROUP:
+      return update(state, {
+        groups: {
+          $unset: [action.transactionGroupId]
         }
       });
     case actions.CREATE_TEST_DATA:

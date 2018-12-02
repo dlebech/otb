@@ -32,6 +32,7 @@ const BulkActions = props => {
         selectedTransactions={props.selectedTransactions}
         handleRowCategoryChange={props.handleRowCategoryChange}
         showCreateCategoryModal={props.showCreateCategoryModal}
+        handleGroupRows={props.handleGroupRows}
       />
     </>
   );
@@ -48,7 +49,8 @@ BulkActions.propTypes = {
   handleRowCategoryChange: PropTypes.func.isRequired,
   handleSelectAll: PropTypes.func.isRequired,
   handleSelectNone: PropTypes.func.isRequired,
-  showCreateCategoryModal: PropTypes.func.isRequired
+  showCreateCategoryModal: PropTypes.func.isRequired,
+  handleGroupRows: PropTypes.func.isRequired
 };
 
 export default BulkActions;
