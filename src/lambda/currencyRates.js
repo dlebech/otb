@@ -42,7 +42,8 @@ exports.handler = async event => {
     return prev;
   }, {});
 
-  rates = fillDates(rates);
+  // TODO: Removed temporarily because of a regression
+  // rates = fillDates(rates);
 
   return {
     statusCode: 200,
