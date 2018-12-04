@@ -37,19 +37,7 @@ describe('currencyRates', () => {
       '2018-09-13': {
         USD: 1.1689,
         JPY: 130.75
-      },
-      // The 15-16 didn't have currencies but for completeness, the last known
-      // currency rates are returned.
-      //'2018-09-15': {
-      //  USD: 1.1690,
-      //  JPY: 130.76,
-      //  refDate: '2018-09-14'
-      //},
-      //'2018-09-16': {
-      //  USD: 1.1690,
-      //  JPY: 130.76,
-      //  refDate: '2018-09-14'
-      //}
+      }
     };
 
     expect(res).toEqual({
@@ -73,15 +61,7 @@ describe('currencyRates', () => {
       },
       '2018-09-13': {
         USD: 1.1689
-      },
-      //'2018-09-15': {
-      //  USD: 1.1690,
-      //  refDate: '2018-09-14'
-      //},
-      //'2018-09-16': {
-      //  USD: 1.1690,
-      //  refDate: '2018-09-14'
-      //}
+      }
     };
 
     expect(res).toEqual({
