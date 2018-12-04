@@ -53,7 +53,7 @@ describe('Transactions', () => {
   it('should show table when there are transactions, even when search is empty', () => {
     const store = mockStore(Object.assign({}, defaultData, {
       transactions: {
-        data: [{}]
+        data: [{ id: 'abcd', category: {}}]
       }
     }));
 

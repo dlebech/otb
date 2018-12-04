@@ -6559,10 +6559,10 @@ js-tokens@^3.0.0, js-tokens@^3.0.2:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-worker-search@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/js-worker-search/-/js-worker-search-1.3.0.tgz#c3738fbb0699cddbde0c517dcfb81fc834f52d27"
-  integrity sha512-bHtMFO8+d3ykPyK3Hd0+O9mKT1IEFIfa2SV4jv7iFA1mIKTNmC25SvYmiRqXzVxIvtcURWrrazuEc9b2kzxZ4g==
+js-worker-search@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/js-worker-search/-/js-worker-search-1.4.0.tgz#504f06cca63591be743a5e9a52e3544cb09ac7d4"
+  integrity sha512-xhRydfK5+/wBifybewZQQSG/2YWp/jghKiUJxyrMcoRsy3bhoeRY6cJH6FajqQAlaDLqnTYXkTK8TH15qNTsuw==
   dependencies:
     flow-bin "^0.50.0"
     uuid "^2.0.1"
@@ -9575,13 +9575,13 @@ redux-persist@^5.9.1:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
   integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
 
-redux-search@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/redux-search/-/redux-search-2.4.1.tgz#d15ee0bc45baba37aeb518ef8730854a3d329533"
-  integrity sha512-03mj6x504OxzO6oAMIxn7dI7Xs2QI5J1XRTxVX9cgoe8D2h7eiXL8akIaPJgT42UcTr9Ky0+Qgnjui2H+xxG0Q==
+redux-search@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/redux-search/-/redux-search-2.5.0.tgz#487eab7161fbeae6b0ee0a3aa7d8d441b67ed583"
+  integrity sha512-U/gvPuoJKQcPIy9IrxOSEy+K0nOvJuEw+7XMSEM0hkGxH/ndMQY469Afg6iAoOcSUHIBG2kfnEA+Cx7XMIa9Sw==
   dependencies:
     babel-runtime "^6.11.6"
-    js-worker-search "^1.3.0"
+    js-worker-search "^1.4.0"
     redux "^3.0.4"
 
 redux-thunk@^2.2.0:

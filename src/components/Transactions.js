@@ -122,25 +122,15 @@ const mapStateToProps = state => {
     return obj;
   }, {});
 
-  let transactions = state.transactions.data;
-  if (state.search.transactions.result.length !== transactions.length) {
-    const ids = new Set(state.search.transactions.result);
-    transactions = transactions.filter(t => ids.has(t.id));
-  }
-
-  transactions = transactions.map(t => {
-    return {
-      categoryGuess: categories[t.category.guess] || null,
-      categoryConfirmed: categories[t.category.confirmed] || null,
-      ...t,
-      date: moment(t.date)
-    };
-  });
-
-  const accounts = state.accounts.data.reduce((obj, account) => {
-    obj[account.id] = account;
-    return obj;
-  }, {});
+  let transactions = state.transactions.data
+    .map(t => {
+      return {
+        categoryGuess: categories[t.category.guess] || null,
+        categoryConfirmed: categories[t.category.confirmed] || null,
+        ...t,
+        date: moment(t.date)
+      };
+    });
 
   const reverseTransactionLookup = transactions.reduce((obj, t, i) =>{
     obj[t.id] = i;
@@ -167,6 +157,16 @@ const mapStateToProps = state => {
       });
       return obj;
     }, {});
+
+  if (state.search.transactions.result.length !== transactions.length) {
+    const ids = new Set(state.search.transactions.result);
+    transactions = transactions.filter(t => ids.has(t.id));
+  }
+
+  const accounts = state.accounts.data.reduce((obj, account) => {
+    obj[account.id] = account;
+    return obj;
+  }, {});
 
   const dateSelectId = 'transaction-dates';
   const dateSelect = state.edit.dateSelect[dateSelectId] || {

@@ -36,7 +36,7 @@
     "redux-logger": "^3.0.6",
     "redux-modal": "^2.0.3",
     "redux-persist": "^5.9.1",
-    "redux-search": "^2.4.1",
+    "redux-search": "^2.5.0",
     "redux-thunk": "^2.2.0",
     "uuid": "^3.2.1",
     "yauzl": "^2.10.0"

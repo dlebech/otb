@@ -2,7 +2,7 @@ import { applyMiddleware, compose, createStore } from 'redux'
 import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
-import { reduxSearch } from 'redux-search';
+import { reduxSearch, SearchApi } from 'redux-search';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './reducers'
 
@@ -36,7 +36,10 @@ export default function configureStore(preloadedState) {
           return state.transactions.data;
         }
         return [];
-      }
+      },
+      searchApi: new SearchApi({
+        matchAnyToken: true
+      })
     })
   );
 
