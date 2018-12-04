@@ -1,5 +1,5 @@
 import chunk from 'lodash/chunk';
-import { sleep } from './util';
+import { sleep, fillDates } from './util';
 import { lambdaBase } from './config';
 
 // Import actions
@@ -412,7 +412,10 @@ export const fetchCurrencyRates = currencies => {
         }
         url.search = params;
       }
+
       const currencyRates = await fetch(url).then(res => res.json());
+      fillDates(currencyRates);
+
       dispatch(setCurrencyRates(currencyRates));
     } finally {
       dispatch(endFetchCurrencyRates());

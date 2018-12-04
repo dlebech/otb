@@ -112,4 +112,40 @@ describe('fetchCurrencyRates', () => {
       },
     ]);
   });
+
+  it('should fill currencies for blank dates', async () => {
+    const store = mockStore({ edit: {} });
+    const rates = {
+      '2018-01-01': {
+        DKK: 7.5,
+        SEK: 9.5
+      },
+      '2018-01-03': {
+        DKK: 8.5,
+        SEK: 10.5
+      }
+    };
+    fetch.once(JSON.stringify(rates));
+
+    await store.dispatch(actions.fetchCurrencyRates());
+
+    expect(store.getActions()).toEqual([
+      {
+        type: actions.START_FETCH_CURRENCY_RATES
+      },
+      {
+        type: actions.SET_CURRENCY_RATES,
+        currencyRates: Object.assign({}, rates, {
+          '2018-01-02': {
+            DKK: 7.5,
+            SEK: 9.5,
+            refDate: '2018-01-01'
+          }
+        })
+      },
+      {
+        type: actions.END_FETCH_CURRENCY_RATES
+      },
+    ]);
+  });
 });
