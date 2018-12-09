@@ -11,23 +11,27 @@ import ConfirmDelete from './ConfirmDelete';
 import { formatNumber } from '../../util';
 
 const Amount = props => {
-  if (!props.hasMultipleAccounts && !props.roundAmount) return <span>{props.amount}</span>;
-
-  const roundedAmount = formatNumber(props.amount, { maximumFractionDigits: 0 });
+  const fractions = props.roundAmount ? 0 : 2;
+  const amount = formatNumber(props.amount, {
+    minimumFractionDigits: fractions,
+    maximumFractionDigits: fractions
+  });
   const fullAmount = formatNumber(props.amount, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 
   const amountTip = <ReactTooltip
-    id={`amount-tip-${props.transactionId}`}
+    id={`amount-tip-${props.amountId}`}
     className="text-left"
   >
     {props.roundAmount && <span>
         Full amount: {fullAmount}<br />
       </span>}
-    Currency: {props.account.currency}<br />
-    Account: {props.account.name}
+    {props.hasMultipleAccounts && <>
+      Currency: {props.account.currency}<br />
+      Account: {props.account.name}
+      </>}
   </ReactTooltip>;
 
   return (
@@ -35,9 +39,9 @@ const Amount = props => {
       <span
         className="cursor-help"
         data-tip=""
-        data-for={`amount-tip-${props.transactionId}`}
+        data-for={`amount-tip-${props.amountId}`}
       >
-        {roundedAmount}
+        {amount}
       </span>
       {amountTip}
     </>
@@ -47,7 +51,8 @@ const Amount = props => {
 Amount.propTypes = {
   amount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   hasMultipleAccounts: PropTypes.bool.isRequired,
-  roundAmount: PropTypes.bool.isRequired
+  roundAmount: PropTypes.bool.isRequired,
+  amountId: PropTypes.string.isRequired
 };
 
 const TransactionRow = props => {
@@ -92,7 +97,7 @@ const TransactionRow = props => {
       </td>
       <td className="text-right">
         <Amount
-          transactionId={props.transaction.id}
+          amountId={`amount-${props.transaction.id}`}
           amount={props.transaction.amount}
           account={account}
           hasMultipleAccounts={hasMultipleAccounts}
@@ -101,10 +106,11 @@ const TransactionRow = props => {
       </td>
       <td className="text-right">
         <Amount
+          amountId={`total-${props.transaction.id}`}
           amount={props.transaction.total}
           account={account}
           hasMultipleAccounts={hasMultipleAccounts}
-          roundAmount={!props.roundAmount}
+          roundAmount={props.roundAmount}
         />
       </td>
       <td className="text-nowrap">
