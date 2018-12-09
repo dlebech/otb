@@ -102,7 +102,8 @@ describe('Transactions', () => {
         transactionList: {
           page: 1,
           pageSize: 50,
-          filterCategories: new Set()
+          filterCategories: new Set(),
+          roundAmount: true
         }
       }
     });
@@ -120,7 +121,7 @@ describe('Transactions', () => {
     const row = rendered.find('tr').eq(1);
     expect(row.find('td').eq(1).text()).toEqual('test');
     expect(row.find('td').eq(2).text()).toMatch('1');
-    expect(row.find('td').eq(3).text()).toEqual('2');
+    expect(row.find('td').eq(3).text()).toMatch('2');
     expect(row.find('td').eq(4).text()).toEqual('Food');
   });
 
