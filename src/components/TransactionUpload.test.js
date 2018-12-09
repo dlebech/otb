@@ -24,7 +24,8 @@ describe('Transaction Upload', () => {
           { type: 'amount'},
           { type: 'total'}
         ],
-        dateFormat: ''
+        dateFormat: '',
+        account: defaultAccount.id
       }
     },
     accounts: {
@@ -179,6 +180,43 @@ describe('Transaction Upload', () => {
             type: 'date',
             message: 'Cannot parse all dates correctly, ' +
               'perhaps you need to skip a header, or change the date format?'
+          }
+        ]
+      });
+    });
+
+    it('should complain if account is empty', () => {
+      const data = update(baseData, {
+        transactions: {
+          import: {
+            account: {
+              $set: ''
+            }
+          }
+        }
+      });
+      const store = mockStore(data);
+
+      const container = mount(
+        <MemoryRouter>
+          <TransactionUpload store={store} />
+        </MemoryRouter>
+      );
+
+      // Call the save function
+      const uploadWrapper = container.find('TransactionUpload').first();
+      uploadWrapper.instance().handleSave();
+
+      // Should not dispatch
+      expect(store.getActions()).toEqual([]);
+
+      uploadWrapper.update();
+
+      expect(uploadWrapper.state()).toEqual({
+        errors: [
+          {
+            type: 'account',
+            message: 'Account is required'
           }
         ]
       });

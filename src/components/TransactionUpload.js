@@ -25,6 +25,7 @@ class TransactionUpload extends React.Component {
     const specTypes = new Set(this.props.columnSpec.map(s => s.type));
     let checkDates = false;
     let checkAmounts = false;
+
     if (!specTypes.has('date')) {
       errors.push({
         type: 'columnSpec',
@@ -68,6 +69,13 @@ class TransactionUpload extends React.Component {
           break; // Exit early
         };
       }
+    }
+
+    if (!this.props.account) {
+      errors.push({
+        type: 'account',
+        message: 'Account is required'
+      });
     }
 
     this.setState({ errors });
