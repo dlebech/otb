@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import * as actions from '../actions';
 import { detectFileEncoding, cleanNumber, momentParse } from '../util';
-import UploadForm from './transactionUpload/UploadForm';
-import PreviewTable from './transactionUpload/PreviewTable';
-import Errors from './transactionUpload/Errors';
+import Form from './transactionAdd/Form';
+import PreviewTable from './transactionAdd/PreviewTable';
+import Errors from './transactionAdd/Errors';
 
-class TransactionUpload extends React.Component {
+class TransactionAdd extends React.Component {
   constructor(props) {
     super(props);
 
@@ -99,11 +99,11 @@ class TransactionUpload extends React.Component {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <li className="breadcrumb-item"><Link to="/transactions">Transactions</Link></li>
-            <li className="breadcrumb-item active" aria-current="page">Upload</li>
+            <li className="breadcrumb-item active" aria-current="page">Add</li>
           </ol>
         </nav>
         <Errors errors={this.state.errors} />
-        <UploadForm
+        <Form
           handleFileChange={this.props.handleFileChange}
           handleSkipRowsChange={this.handleFormChange.bind(this, this.props.handleSkipRowsChange)}
           handleSkipDuplicatesChange={this.props.handleSkipDuplicatesChange}
@@ -128,7 +128,7 @@ class TransactionUpload extends React.Component {
   }
 }
 
-TransactionUpload.propTypes = {
+TransactionAdd.propTypes = {
   transactions: PropTypes.arrayOf(PropTypes.array).isRequired,
   accounts: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -212,5 +212,5 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(TransactionUpload)
+  connect(mapStateToProps, mapDispatchToProps)(TransactionAdd)
 );

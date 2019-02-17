@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FileUpload from './FileUpload';
+import FileInput from './FileInput';
 import ImportControls from './ImportControls';
 
-const UploadForm = props => {
+const Form = props => {
   return (
     <form>
-      {!props.hasTransactions && <FileUpload handleFileChange={props.handleFileChange} />}
+      {!props.hasTransactions && <FileInput handleFileChange={props.handleFileChange} />}
       {props.hasTransactions && <ImportControls
         skipRows={props.skipRows}
         skipDuplicates={props.skipDuplicates}
@@ -22,7 +22,7 @@ const UploadForm = props => {
   );
 };
 
-UploadForm.propTypes = {
+Form.propTypes = {
   hasTransactions: PropTypes.bool.isRequired,
   skipRows: PropTypes.number.isRequired,
   skipDuplicates: PropTypes.bool.isRequired,
@@ -40,8 +40,8 @@ UploadForm.propTypes = {
   selectedAccount: PropTypes.string
 };
 
-UploadForm.defaultProps = {
+Form.defaultProps = {
   selectedAccount: ''
 };
 
-export default UploadForm;
+export default Form;

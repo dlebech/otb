@@ -4,10 +4,10 @@ import { MemoryRouter } from 'react-router-dom';
 import { mount } from 'enzyme';
 import update from 'immutability-helper';
 import * as actions from '../actions';
-import TransactionUpload from './TransactionUpload';
+import TransactionAdd from './TransactionAdd';
 import { defaultAccount } from '../data/accounts';
 
-describe('Transaction Upload', () => {
+describe('Transaction Add', () => {
   const mockStore = configureStore();
 
   const baseData = {
@@ -33,12 +33,12 @@ describe('Transaction Upload', () => {
     }
   };
 
-  it('should save the uploaded data', () => {
+  it('should save the added data', () => {
     const store = mockStore(baseData);
 
     const container = mount(
       <MemoryRouter>
-        <TransactionUpload store={store} />
+        <TransactionAdd store={store} />
       </MemoryRouter>
     );
 
@@ -48,8 +48,8 @@ describe('Transaction Upload', () => {
     container.instance().history.push = push;
 
     // Call the save function
-    const uploadWrapper = container.find('TransactionUpload').first();
-    uploadWrapper.instance().handleSave();
+    const wrapper = container.find('TransactionAdd').first();
+    wrapper.instance().handleSave();
 
     // Should dispatch
     expect(store.getActions()).toEqual([
@@ -79,20 +79,20 @@ describe('Transaction Upload', () => {
 
       const container = mount(
         <MemoryRouter>
-          <TransactionUpload store={store} />
+          <TransactionAdd store={store} />
         </MemoryRouter>
       );
 
       // Call the save function
-      const uploadWrapper = container.find('TransactionUpload').first();
-      uploadWrapper.instance().handleSave();
+      const wrapper = container.find('TransactionAdd').first();
+      wrapper.instance().handleSave();
 
       // Should not dispatch
       expect(store.getActions()).toEqual([]);
 
-      uploadWrapper.update();
+      wrapper.update();
 
-      expect(uploadWrapper.state()).toEqual({
+      expect(wrapper.state()).toEqual({
         errors: [
           {
             type: 'columnSpec',
@@ -120,20 +120,20 @@ describe('Transaction Upload', () => {
 
       const container = mount(
         <MemoryRouter>
-          <TransactionUpload store={store} />
+          <TransactionAdd store={store} />
         </MemoryRouter>
       );
 
       // Call the save function
-      const uploadWrapper = container.find('TransactionUpload').first();
-      uploadWrapper.instance().handleSave();
+      const wrapper = container.find('TransactionAdd').first();
+      wrapper.instance().handleSave();
 
       // Should not dispatch
       expect(store.getActions()).toEqual([]);
 
-      uploadWrapper.update();
+      wrapper.update();
 
-      expect(uploadWrapper.state()).toEqual({
+      expect(wrapper.state()).toEqual({
         errors: [
           {
             type: 'amount',
@@ -161,20 +161,20 @@ describe('Transaction Upload', () => {
 
       const container = mount(
         <MemoryRouter>
-          <TransactionUpload store={store} />
+          <TransactionAdd store={store} />
         </MemoryRouter>
       );
 
       // Call the save function
-      const uploadWrapper = container.find('TransactionUpload').first();
-      uploadWrapper.instance().handleSave();
+      const wrapper = container.find('TransactionAdd').first();
+      wrapper.instance().handleSave();
 
       // Should not dispatch
       expect(store.getActions()).toEqual([]);
 
-      uploadWrapper.update();
+      wrapper.update();
 
-      expect(uploadWrapper.state()).toEqual({
+      expect(wrapper.state()).toEqual({
         errors: [
           {
             type: 'date',
@@ -199,20 +199,20 @@ describe('Transaction Upload', () => {
 
       const container = mount(
         <MemoryRouter>
-          <TransactionUpload store={store} />
+          <TransactionAdd store={store} />
         </MemoryRouter>
       );
 
       // Call the save function
-      const uploadWrapper = container.find('TransactionUpload').first();
-      uploadWrapper.instance().handleSave();
+      const wrapper = container.find('TransactionAdd').first();
+      wrapper.instance().handleSave();
 
       // Should not dispatch
       expect(store.getActions()).toEqual([]);
 
-      uploadWrapper.update();
+      wrapper.update();
 
-      expect(uploadWrapper.state()).toEqual({
+      expect(wrapper.state()).toEqual({
         errors: [
           {
             type: 'account',

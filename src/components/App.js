@@ -13,8 +13,8 @@ const Intro = Loadable({
   loading: Loading
 });
 
-const TransactionUpload = Loadable({
-  loader: () => import('./TransactionUpload'),
+const TransactionAdd = Loadable({
+  loader: () => import('./TransactionAdd'),
   loading: Loading
 });
 
@@ -52,7 +52,7 @@ const App = props => {
           <Route exact path="/" render={routeProps => <Intro persistor={props.persistor} {...routeProps} />} />
           <Route exact path="/charts" component={Charts} />
           <Route exact path="/transactions" component={Transactions} />
-          <Route exact path="/transactions/upload" component={TransactionUpload} />
+          <Route exact path="/transactions/add" component={TransactionAdd} />
           <Route exact path="/data" render={routeProps => <ManageData persistor={props.persistor} {...routeProps} />} />
           <Route exact path="/privacy" component={Privacy} />
         </div>
