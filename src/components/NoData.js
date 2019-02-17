@@ -5,7 +5,7 @@ const NoData = () => {
   return (
     <div className="row">
       <div className="col">
-        <p>No data yet. <Link to="/transactions/upload">Add some</Link>.</p>
+        <p>No data yet. <Link to="/transactions/add">Add some</Link>.</p>
       </div>
     </div>
   );

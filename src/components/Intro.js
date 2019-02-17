@@ -14,9 +14,9 @@ const IntroWithData = props => {
         You have {props.numTransactions} transactions so far.
       </p>
       <hr />
-      <Link className="btn btn-primary m-1" to="/transactions/upload">
+      <Link className="btn btn-primary m-1" to="/transactions/add">
         <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
-        Upload more transactions
+        Add more transactions
       </Link>
       <Link className="btn btn-secondary m-1" to="/transactions">
         <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
@@ -37,12 +37,12 @@ const IntroWithoutData = props => {
       <p className="lead">Privacy-First Bank Transaction Analysis</p>
       <hr />
       <p>
-        Catchy headline eh? But seriously, if you have a list of bank
-        transactions, and you want to see some pretty graphs, go ahead and
-        upload the file here. The data stays in your browser and is not
-        shared or stored anywhere else.
+        Catchy headline eh? But seriously, if you have some bank transactions
+        in a file, go ahead and add the file here to see a few graphs &mdash;
+        or try the "demo". The data stays in your browser and is not shared
+        or stored anywhere else.
       </p>
-      <Link className="btn btn-primary btn-lg m-1" to="/transactions/upload">Upload Transactions</Link>
+      <Link className="btn btn-primary btn-lg m-1" to="/transactions/add">Add Transactions</Link>
       <RestoreData className="btn btn-secondary btn-lg m-1" persistor={props.persistor}>
         Restore Data
         <FontAwesomeIcon
