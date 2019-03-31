@@ -61,7 +61,7 @@ describe('Categories', () => {
 
     const c = container.render();
     expect(c.find('li').length).toEqual(1);
-    expect(c.find('li').text()).toEqual('Food');
+    expect(c.find('li').text()).toEqual('Food0');
   });
 
   it('should show hierachical structure', () => {
