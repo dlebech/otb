@@ -24,8 +24,8 @@ const Categories = props => {
       <div className="row">
         <div className="col">
           <p className="small">
-            The number after the category name indicates how many
-            transactions have been tagged with the category.
+            The number in the parentheses indicates how many transactions
+            have been tagged with the category.
           </p>
           <ul>
             {parentCategories.map(c => {

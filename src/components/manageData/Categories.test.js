@@ -61,7 +61,7 @@ describe('Categories', () => {
 
     const c = container.render();
     expect(c.find('li').length).toEqual(1);
-    expect(c.find('li').text()).toEqual('Food0');
+    expect(c.find('li').text()).toEqual('Food (0)');
   });
 
   it('should show hierachical structure', () => {
@@ -153,6 +153,6 @@ describe('Categories', () => {
     const c = container.render();
 
     // Find two lists in total
-    expect(c.find('ul').text()).toMatch('Food2Groceries1');
+    expect(c.find('ul').text()).toMatch('Food (2)Groceries (1)');
   });
 });

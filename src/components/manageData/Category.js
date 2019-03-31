@@ -97,8 +97,7 @@ class Category extends React.Component {
           className="cursor-pointer"
           onClick={this.handleEditCategory}
         >
-          {this.props.category.name}
-          <span className="ml-2 badge badge-secondary">{this.props.category.transactionCount}</span>
+          {this.props.category.name} ({this.props.category.transactionCount})
           <FontAwesomeIcon
             icon="edit"
             className="ml-2"
