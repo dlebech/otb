@@ -1,6 +1,6 @@
 {
   "name": "off-the-books",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
@@ -51,6 +51,7 @@
     "analyze": "yarn build --stats && webpack-bundle-analyzer build/bundle-stats.json"
   },
   "devDependencies": {
+    "babel-loader": "^8.0.5",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
     "jest-fetch-mock": "^2.1.1",
