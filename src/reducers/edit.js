@@ -11,7 +11,7 @@ const initialEditor = {
     page: 1,
     pageSize: 50,
     sortKey: 'date',
-    sortAscending: true,
+    sortAscending: false,
     filterCategories: new Set()
   },
   charts: {}

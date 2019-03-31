@@ -45,7 +45,9 @@ describe('Intro ', () => {
 
     const container = shallow(
       <MemoryRouter initialEntries={['/']}>
-        <Intro store={store} />
+        <Provider store={store}>
+          <Intro />
+        </Provider>
       </MemoryRouter>
     );
     const rendered = container.render();

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { shallow, mount } from 'enzyme';
@@ -13,7 +14,11 @@ describe('Currency Select', () => {
   it('should render nothing when there are no currencies', () => {
     const store = mockStore({ app: {}, edit: {} });
 
-    const container = shallow(<CurrencySelect store={store} />);
+    const container = shallow(
+      <Provider store={store}>
+        <CurrencySelect />
+      </Provider>
+    );
     expect(container.render().text()).toEqual('');
   });
 
@@ -25,7 +30,11 @@ describe('Currency Select', () => {
       }
     });
 
-    const container = mount(<CurrencySelect store={store} />);
+    const container = mount(
+      <Provider store={store}>
+        <CurrencySelect />
+      </Provider>
+    );
     expect(container.find('Select').length).toEqual(1);
   });
 
@@ -34,7 +43,11 @@ describe('Currency Select', () => {
 
     const store = mockStore({ app: {}, edit: {} });
 
-    mount(<CurrencySelect store={store} />);
+    mount(
+      <Provider store={store}>
+        <CurrencySelect />
+      </Provider>
+    );
 
     // This will give the fetch a chance to finish
     await new Promise(resolve => {

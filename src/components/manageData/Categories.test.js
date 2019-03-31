@@ -1,4 +1,5 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { shallow } from 'enzyme';
@@ -25,7 +26,9 @@ describe('Categories', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Categories store={store} />
+        <Provider store={store}>
+          <Categories />
+        </Provider>
       </MemoryRouter>
     );
 
@@ -50,13 +53,15 @@ describe('Categories', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Categories store={store} />
+        <Provider store={store}>
+          <Categories />
+        </Provider>
       </MemoryRouter>
     );
 
     const c = container.render();
     expect(c.find('li').length).toEqual(1);
-    expect(c.find('li').text()).toEqual('Food');
+    expect(c.find('li').text()).toEqual('Food (0)');
   });
 
   it('should show hierachical structure', () => {
@@ -81,7 +86,9 @@ describe('Categories', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Categories store={store} />
+        <Provider store={store}>
+          <Categories />
+        </Provider>
       </MemoryRouter>
     );
 
@@ -93,6 +100,59 @@ describe('Categories', () => {
     expect(c.find('ul').first().find('ul').length).toEqual(1);
 
     // Test the text
-    expect(c.find('ul').first().find('ul').text()).toEqual('Groceries');
+    expect(c.find('ul').first().find('ul').text()).toMatch('Groceries');
+  });
+
+  it('should show transaction counts', () => {
+    const store = mockStore({
+      transactions: {
+        data: [
+          {
+            id: 'a',
+            category: {
+              confirmed: 'abcd'
+            }
+          },
+          {
+            id: 'b',
+            category: {
+              confirmed: 'abcd'
+            }
+          },
+          {
+            id: 'c',
+            category: {
+              confirmed: 'efgh'
+            }
+          }
+        ]
+      },
+      categories: {
+        data: [
+          {
+            id: 'abcd',
+            name: 'Food'
+          },
+          {
+            id: 'efgh',
+            name: 'Groceries',
+            parent: 'abcd'
+          }
+        ]
+      }
+    });
+
+    const container = shallow(
+      <MemoryRouter>
+        <Provider store={store}>
+          <Categories />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const c = container.render();
+
+    // Find two lists in total
+    expect(c.find('ul').text()).toMatch('Food (2)Groceries (1)');
   });
 });

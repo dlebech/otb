@@ -84,7 +84,9 @@ describe('Chart', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Charts store={store} />
+        <Provider store={store}>
+          <Charts />
+        </Provider>
       </MemoryRouter>
     );
     expect(container.render().text()).toEqual('No data yet. Add some.');
@@ -93,8 +95,13 @@ describe('Chart', () => {
   it('should render expenses/incomes graph when there are transactions', () => {
     const store = mockStore(baseData);
 
-    const wrapper = shallow(<Charts store={store} />);
-    const barChart = wrapper.dive().find('AmountSumBar').dive().find('BarChart');
+    const wrapper = mount(
+      <Provider store={store}>
+        <Charts />
+      </Provider>
+    );
+    const charts = wrapper.find('Charts');
+    const barChart = charts.find('AmountSumBar').find('BarChart');
     expect(barChart.length).toEqual(1);
     expect(barChart.props().data).toEqual([
       {
@@ -103,7 +110,7 @@ describe('Chart', () => {
       },
     ]);
 
-    const lineChart = wrapper.dive().find('IncomeExpensesLine').dive().find('CustomLineChart');
+    const lineChart = charts.find('IncomeExpensesLine').find('CustomLineChart');
     expect(lineChart.length).toEqual(1);
     expect(lineChart.props().data).toEqual([
       {
@@ -118,7 +125,7 @@ describe('Chart', () => {
       }
     ]);
 
-    const summary = wrapper.dive().find('Summary');
+    const summary = charts.find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('2Expenses');
@@ -139,8 +146,12 @@ describe('Chart', () => {
     };
     const store = mockStore(data);
 
-    const wrapper = shallow(<Charts store={store} />);
-    const summary = wrapper.dive().find('Summary');
+    const wrapper = mount(
+      <Provider store={store}>
+        <Charts />
+      </Provider>
+    );
+    const summary = wrapper.find('Charts').find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('0Expenses');
@@ -173,8 +184,13 @@ describe('Chart', () => {
     };
     const store = mockStore(data);
 
-    const wrapper = shallow(<Charts store={store} />);
-    const barChart = wrapper.dive().find('AmountSumBar').dive().find('BarChart');
+    const wrapper = mount(
+      <Provider store={store}>
+        <Charts />
+      </Provider>
+    );
+    const charts = wrapper.find('Charts');
+    const barChart = charts.find('AmountSumBar').find('BarChart');
     expect(barChart.length).toEqual(1);
     expect(barChart.props().data).toEqual([
       {
@@ -183,7 +199,7 @@ describe('Chart', () => {
       }
     ]);
 
-    const summary = wrapper.dive().find('Summary');
+    const summary = charts.find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('1Expenses');
@@ -193,9 +209,13 @@ describe('Chart', () => {
   describe('base currency dropdown', () => {
     it('should show base currency dropdown', () => {
       const store = mockStore(baseData);
-      const wrapper = shallow(<Charts store={store} />);
-      //const rendered = wrapper.render();
-      const options = wrapper.dive().find('#base-currency > option');
+      const wrapper = mount(
+        <Provider store={store}>
+          <Charts />
+        </Provider>
+      );
+      const charts = wrapper.find('Charts');
+      const options = charts.find('#base-currency > option');
       expect(options.length).toEqual(2);
       expect(options.at(0).text()).toEqual('SEK');
       expect(options.at(1).text()).toEqual('DKK');
@@ -217,8 +237,13 @@ describe('Chart', () => {
         }],
       };
       const store = mockStore(data);
-      const wrapper = shallow(<Charts store={store} />);
-      const options = wrapper.dive().find('#base-currency > option');
+      const wrapper = shallow(
+        <Provider store={store}>
+          <Charts />
+        </Provider>
+      );
+      const charts = wrapper.find('Charts');
+      const options = charts.find('#base-currency > option');
       expect(options.length).toEqual(0);
     });
   });
