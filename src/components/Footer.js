@@ -9,8 +9,11 @@ const Footer = () => {
       <hr />
       <div className="container">
         <div className="row justify-content-center my-3">
-          <div className="col-auto">
-            <Link to="/privacy">Privacy Policy</Link> / <a href="https://github.com/dlebech/off-the-books">Source Code</a> / Version { version }{contactEmail ? ` / ${contactEmail}` : ''}
+          <div className="col-auto text-center">
+            <p>
+              <Link to="/privacy">Privacy Policy</Link> / <a href="https://github.com/dlebech/off-the-books">Source Code</a>{contactEmail ? ` / ${contactEmail}` : ''}<br />
+              Current version: { version }
+            </p>
           </div>
         </div>
       </div>
