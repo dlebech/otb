@@ -42,7 +42,9 @@ describe('Transactions', () => {
 
     const container = shallow(
       <MemoryRouter>
-        <Transactions store={store} />
+        <Provider store={store}>
+          <Transactions />
+        </Provider>
       </MemoryRouter>
     );
     const rendered = container.render();

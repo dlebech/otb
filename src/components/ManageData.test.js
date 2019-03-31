@@ -41,7 +41,7 @@ describe('Manage Data', () => {
       const container = shallow(
         <div>
           <Provider store={store}>
-            <ManageData store={store} />
+            <ManageData />
           </Provider>
         </div>
       );
@@ -59,7 +59,7 @@ describe('Manage Data', () => {
       const container = shallow(
         <div>
           <Provider store={store}>
-            <ManageData store={store} />
+            <ManageData />
           </Provider>
         </div>
       );
@@ -77,7 +77,7 @@ describe('Manage Data', () => {
       const container = mount(
         <div>
           <Provider store={store}>
-            <ManageData store={store} />
+            <ManageData />
           </Provider>
         </div>
       );
