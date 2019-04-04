@@ -45,6 +45,7 @@ export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
 export const END_FETCH_CURRENCIES = 'END_FETCH_CURRENCIES';
 export const START_FETCH_CURRENCY_RATES = 'START_FETCH_CURRENCY_RATES';
 export const END_FETCH_CURRENCY_RATES = 'END_FETCH_CURRENCY_RATES';
+export const UPDATE_TRAINING_PROGRESS = 'UPDATE_TRAINING_PROGRESS';
 
 // Transaction list edit changes
 export const SET_TRANSACTION_LIST_PAGE = 'SET_TRANSACTION_LIST_PAGE';
@@ -420,5 +421,104 @@ export const fetchCurrencyRates = currencies => {
     } finally {
       dispatch(endFetchCurrencyRates());
     }
+  };
+};
+
+const updateTrainingProgress = (training, batch, epoch) => {
+  return {
+    type: UPDATE_TRAINING_PROGRESS,
+    progress: {
+      training,
+      batch,
+      epoch
+    }
+  }
+};
+
+export const retrainCategorizer = () => {
+  return async (dispatch, getState) => {
+    // Signal to everyone that we are starting the training.
+    dispatch(updateTrainingProgress('Starting'));
+
+    const { train } = await import('./ml/category');
+    const { tensor } = await import('@tensorflow/tfjs');
+    const tfvis = await import('@tensorflow/tfjs-vis');
+
+    const state = getState();
+
+    const onBatchEnd = (batch, batchInfo) => {
+      console.log(batch);
+      console.log(batchInfo);
+      batchInfo.batch = batch + 1;
+      dispatch(updateTrainingProgress(null, batchInfo));
+    };
+    
+    const onEpochEnd = (epoch, epochInfo, ) => {
+      console.log(epoch);
+      console.log(epochInfo);
+      epochInfo.epoch = epoch + 1;
+      dispatch(updateTrainingProgress(null, null, epochInfo));
+    };
+
+    const callbacks = {
+      onBatchEnd,
+      onEpochEnd
+    };
+
+    const epochs = 10;
+    const batchSize = 32;
+    const transactions = state.transactions.data;
+    const batchesPerEpoch = Math.ceil(transactions.length / batchSize);
+    dispatch(updateTrainingProgress({
+      epochs,
+      batchesPerEpoch
+    }, null, null));
+
+    const [model, history] =
+      await train(transactions, state.categories.data, { epochs, batchSize }, callbacks);
+
+    tfvis.show.history({
+      name: 'History', tab: 'Training', styles: { height: '1000px' }
+    }, history, ['loss', 'acc']);
+
+    tfvis.show.modelSummary({
+      name: 'Model', tab: 'Model'
+    }, model.model);
+
+    const categoryNames = state.categories.data.reduce((obj, c) => {
+      obj[c.id] = c.name;
+      return obj;
+    }, {})
+
+    const labels = tensor(transactions.map(t => model.categoryMapping[t.category.confirmed]));
+    const predicted = await model.predict(transactions);
+    console.log(labels.arraySync());
+    const predictedLabels = tensor(predicted.map(p => p.labelIndex));
+    console.log(predictedLabels.arraySync());
+
+    const labelNames = new Array(Object.keys(model.categoryMapping).length).fill(0).map((_, i) => categoryNames[model.reverseCategoryMapping[i]])
+
+    const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, predictedLabels);
+    console.log(labelNames, classAccuracy);
+    tfvis.show.perClassAccuracy({
+      name: 'Class Summary', tab: 'Evaluation'
+    }, classAccuracy, labelNames)
+
+    const confusion = await tfvis.metrics.confusionMatrix(labels, predictedLabels);
+    tfvis.render.confusionMatrix({
+      name: 'Confusion Matrix', tab: 'Evaluation', styles: {
+        width: 1600,
+        height: 1600
+      }
+    }, {
+      values: confusion,
+      tickLabels: labelNames
+    }, {
+      width: 1500,
+      height: 1500
+    })
+
+    console.log(history.history);
+    //dispatch(updateTrainingProgress('Done training'));
   };
 };

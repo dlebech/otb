@@ -69,6 +69,13 @@ class Transactions extends React.Component {
               <FontAwesomeIcon icon="lightbulb" className="mr-1" fixedWidth />
               Guess missing categories
             </button>
+            <button
+              className="btn btn-outline-secondary ml-2"
+              onClick={() => this.props.handleRetrain()}
+            >
+              <FontAwesomeIcon icon="lightbulb" className="mr-1" fixedWidth />
+              Retrain categorizer
+            </button>
           </div>
           <div className="col-auto status">
             {this.props.isCategoryGuessing &&
@@ -76,6 +83,23 @@ class Transactions extends React.Component {
                 Guessing categories...
                 <FontAwesomeIcon icon="spinner" className="ml-1" pulse />
               </span>
+            }
+            {this.props.trainingProgress &&
+              <>
+                <div>
+                  {Math.round(this.props.trainingProgress.progress * 100)}%
+                  <FontAwesomeIcon icon="spinner" className="ml-1" pulse />
+                </div>
+                {this.props.trainingProgress.batch && <>
+                  <div>Batch num: {this.props.trainingProgress.batch.batch}</div>
+                  <div>Batch size: {this.props.trainingProgress.batch.size}</div>
+                  <div>Batch accuracy: {this.props.trainingProgress.batch.acc}</div>
+                  <div>Batch loss: {this.props.trainingProgress.batch.loss}</div>
+                </>}
+                {this.props.trainingProgress.epoch && <>
+                  <div>Epoch accuracy: {this.props.trainingProgress.epoch.acc}</div>
+                </>}
+              </>
             }
           </div>
         </div>
@@ -181,6 +205,7 @@ const mapStateToProps = state => {
     accounts,
     transactionGroups,
     isCategoryGuessing: state.edit.isCategoryGuessing,
+    trainingProgress: state.edit.trainingProgress,
     hasTransactions: state.transactions.data.length > 0,
     transactionListSettings: {
       searchText: state.search.transactions.text,
@@ -208,6 +233,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleGuessCategories: () => {
       dispatch(actions.guessAllCategories())
+    },
+    handleRetrain: () => {
+      dispatch(actions.retrainCategorizer())
     },
     handleDeleteRow: rowId => {
       dispatch(actions.deleteTransaction(rowId));
@@ -250,7 +278,7 @@ const mapDispatchToProps = dispatch => {
     },
     handleRoundAmount: enabled => {
       dispatch(actions.setTransactionListRoundAmount(enabled));
-    }
+    },
   };
 };
 

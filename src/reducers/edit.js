@@ -125,6 +125,26 @@ const editReducer = (state = initialEditor, action) => {
       return update(state, {
         isCategoryGuessing: { $set: false }
       });
+    case actions.UPDATE_TRAINING_PROGRESS:
+      if (!state.trainingProgress) state = update(state, { trainingProgress: { $set: {
+        progress: 0,
+        training: {},
+        batch: {},
+        epoch: {}
+      } } });
+      if (action.progress.training) state = update(state, { trainingProgress: { training: { $set: action.progress.training }} });
+      if (action.progress.batch) state = update(state, { trainingProgress: { batch: { $set: action.progress.batch}} });
+      if (action.progress.epoch) state = update(state, { trainingProgress: { epoch: { $set: action.progress.epoch }} });
+      if (state.trainingProgress.training.batchesPerEpoch) {
+        const batch = state.trainingProgress.batch.batch || 0;
+        const epoch =  state.trainingProgress.epoch.epoch || 0;
+        const batchProgress = batch / state.trainingProgress.training.batchesPerEpoch;
+        const epochProgress = epoch / state.trainingProgress.training.epochs;
+        const eachEpochProgress = state.trainingProgress.training.epochs / 100;
+        const progress = epochProgress + (batchProgress * eachEpochProgress);
+        state = update(state, { trainingProgress: { progress: { $set: progress }} });
+      }
+      return state;
     case actions.START_FETCH_CURRENCIES:
       return update(state, {
         isFetchingCurrencies: { $set: true }

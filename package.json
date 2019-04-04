@@ -6,6 +6,8 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
     "@fortawesome/free-solid-svg-icons": "^5.8.1",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "@tensorflow/tfjs": "^1.0.4",
+    "@tensorflow/tfjs-vis": "^1.0.3",
     "axios": "^0.18.0",
     "bayes": "^0.0.7",
     "bootstrap": "^4.3.1",
@@ -51,13 +53,12 @@
     "analyze": "yarn build --stats && webpack-bundle-analyzer build/bundle-stats.json"
   },
   "devDependencies": {
-    "babel-loader": "^8.0.5",
     "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.11.2",
+    "enzyme-adapter-react-16": "^1.12.1",
     "jest-fetch-mock": "^2.1.1",
     "moxios": "^0.4.0",
     "redux-mock-store": "^1.5.1",
-    "webpack-bundle-analyzer": "^3.0.3"
+    "webpack-bundle-analyzer": "^3.3.2"
   },
   "eslintConfig": {
     "extends": "react-app"
