@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="row justify-content-center my-3">
           <div className="col-auto text-center">
             <p>
-              <Link to="/privacy">Privacy Policy</Link> / <a href="https://github.com/dlebech/off-the-books">Source Code</a>{contactEmail ? ` / ${contactEmail}` : ''}<br />
+              <Link to="/privacy">Privacy Policy</Link> / <a href="https://github.com/dlebech/otb">Source Code</a>{contactEmail ? ` / ${contactEmail}` : ''}<br />
               Current version: { version }
             </p>
           </div>

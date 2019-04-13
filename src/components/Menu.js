@@ -51,7 +51,7 @@ class Menu extends React.Component {
       <>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
           <div className="container">
-            <Link className="navbar-brand" to="/">Off The Books</Link>
+            <Link className="navbar-brand" to="/">OTB</Link>
             <div className="navbar-collapse">
               <ul className="navbar-nav mr-auto">
                 <li className={`nav-item${active('/transactions')}`}>

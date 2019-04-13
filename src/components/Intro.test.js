@@ -28,7 +28,7 @@ describe('Intro ', () => {
       </MemoryRouter>
     );
     const rendered = container.render();
-    expect(rendered.find('h1').text()).toEqual('Off The Books');
+    expect(rendered.find('h1').text()).toEqual('OTB');
   });
 
   it('should render the intro with data', () => {
