@@ -8,7 +8,7 @@ const Privacy = () => {
         <em>No information is stored by this website. That is the base principle.</em>
       </p>
       <h3>Who we are</h3>
-      <p>Our website address is: <code>https://off-the-books.app</code>. The word &quot;app&quot; is used interchangeably with &quot;website&quot;.</p>
+      <p>Our website address is: <code>https://otb.hirobo.dev</code>. The word &quot;app&quot; is used interchangeably with &quot;website&quot;.</p>
 
       <h3>What personal data we collect and why we collect it</h3>
       <p>The website collects bank transactions and related data (like categories) and analyzes the data in the browser.</p>

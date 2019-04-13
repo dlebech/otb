@@ -33,7 +33,7 @@ const IntroWithData = props => {
 const IntroWithoutData = props => {
   return (
     <div className="jumbotron">
-      <h1 className="display-4">Off The Books</h1>
+      <h1 className="display-4">OTB</h1>
       <p className="lead">Privacy-First Bank Transaction Analysis</p>
       <hr />
       <p>
