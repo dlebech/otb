@@ -1,6 +1,6 @@
 {
   "name": "otb",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
@@ -28,7 +28,7 @@
     "react-loadable": "^5.5.0",
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "2.1.8",
+    "react-scripts": "3.0.1",
     "react-select": "^2.4.2",
     "react-tooltip": "^3.10.0",
     "recharts": "^1.5.0",
@@ -51,7 +51,6 @@
     "analyze": "yarn build --stats && webpack-bundle-analyzer build/bundle-stats.json"
   },
   "devDependencies": {
-    "babel-loader": "^8.0.5",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
     "jest-fetch-mock": "^2.1.1",
@@ -62,10 +61,16 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version"
+    ]
+  }
 }
