@@ -233,4 +233,60 @@ describe('Transaction Add', () => {
       });
     });
   });
+
+  describe('upload', () => {
+    const baseData = {
+        transactions: {
+          import: {
+            data: []
+          }
+        },
+        accounts: {
+          data: [defaultAccount]
+        }
+    };
+
+    it('should complain if columns are uneven in length', async () => {
+      const store = mockStore(baseData);
+
+      const container = mount(
+        <MemoryRouter>
+          <Provider store={store}>
+            <TransactionAdd />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      // Call the save function
+      const wrapper = container.find('TransactionAdd').first();
+
+      const fileContents = 'a,b,c\ne,f';
+      const file = new File(
+        [new Blob([fileContents], {type : 'text/plain'})],
+        'file.csv',
+        { type: 'text/plain' }
+      );
+
+      // Instead of simulating a file change on the input box itself, explicitly
+      // call the handleFileChange function so we can wait for it to finish.
+      await wrapper.find('FileInput').first().props().handleFileChange({
+        target: {
+          files: [
+            file
+          ]
+        }
+      });
+
+      // Should dispatch a start and stop action
+      expect(store.getActions()).toEqual([
+        { type: actions.IMPORT_PARSE_TRANSACTIONS_START },
+        { type: actions.IMPORT_PARSE_TRANSACTIONS_END, transactions: [] }
+      ]);
+
+      // Should report an error
+      expect(wrapper.state().errors.length).toEqual(1);
+      expect(wrapper.state().errors[0].type).toEqual('upload')
+      expect(wrapper.state().errors[0].message).toContain('Cannot parse the file');
+    });
+  })
 });
