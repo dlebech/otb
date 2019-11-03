@@ -194,6 +194,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
 
   switch (action.type) {
     case actions.IMPORT_PARSE_TRANSACTIONS_END:
+      if (action.transactions.length === 0) return state;
       const [columnSpec, dateFormat] = util.guessColumnSpec(action.transactions);
       return update(state, {
         import: {

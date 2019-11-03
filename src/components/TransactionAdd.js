@@ -14,6 +14,7 @@ class TransactionAdd extends React.Component {
 
     this.validateForm = this.validateForm.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.handleFileChange = this.handleFileChange.bind(this);
 
     this.state = { errors: [] };
   }
@@ -93,6 +94,19 @@ class TransactionAdd extends React.Component {
     this.validateForm();
   }
 
+  async handleFileChange(...args) {
+    try {
+      await this.props.handleFileChange(...args);
+      this.setState({ errors: [] });
+    } catch (err) {
+      const errors = Array.isArray(err) ? err : [{
+        type: 'upload',
+        message: 'Could not parse the transactions file'
+      }];
+      this.setState({ errors });
+    }
+  }
+
   render() {
     return (
       <>
@@ -104,7 +118,7 @@ class TransactionAdd extends React.Component {
         </nav>
         <Errors errors={this.state.errors} />
         <Form
-          handleFileChange={this.props.handleFileChange}
+          handleFileChange={this.handleFileChange}
           handleSkipRowsChange={this.handleFormChange.bind(this, this.props.handleSkipRowsChange)}
           handleSkipDuplicatesChange={this.props.handleSkipDuplicatesChange}
           handleSave={this.handleSave}
@@ -169,23 +183,45 @@ const mapDispatchToProps = dispatch => {
     handleFileChange: async e => {
       // File needs to be extracted here, because it is unavailable after the
       // dynamic import below for some reason.
-      const file = e.target.files[0];
+      try {
+        const file = e.target.files[0];
 
-      dispatch(actions.importParseTransactionsStart());
+        dispatch(actions.importParseTransactionsStart());
 
-      const [encodingResult, Papa] = await Promise.all([
-        detectFileEncoding(file),
-        import('papaparse').then(m => m.default)
-      ]);
+        const [encodingResult, Papa] = await Promise.all([
+          detectFileEncoding(file),
+          import('papaparse').then(m => m.default)
+        ]);
 
-      Papa.parse(file, {
-        encoding: encodingResult.encoding, 
-        skipEmptyLines: true,
-        complete: result => {
-          // TODO handle errors results.errors, 
-          dispatch(actions.importParseTransactionsEnd(result.data));
-        }
-      });
+        await new Promise((resolve, reject) => {
+          Papa.parse(file, {
+            encoding: encodingResult.encoding,
+            skipEmptyLines: true,
+            error: err => {
+              reject(err);
+            },
+            complete: result => {
+              if (result.errors && result.errors.length > 0) {
+                return reject(result.errors);
+              }
+              // Papaparse seems to be quite forgiving around the input format So
+              // as an early sanity test, check that the parsed number of columns
+              // is the same for all rows.
+              if (!result.data.every(d => d.length === result.data[0].length)) {
+                return reject([{
+                  type: 'upload',
+                  message: 'Cannot parse the file. The number of columns varies between rows'
+                }]);
+              }
+              dispatch(actions.importParseTransactionsEnd(result.data));
+              resolve();
+            }
+          });
+        });
+      } catch (err) {
+        dispatch(actions.importParseTransactionsEnd([]));
+        throw err;
+      }
     },
     handleSkipRowsChange: e => {
       return dispatch(actions.importUpdateSkipRows(Number(e.target.value)))
