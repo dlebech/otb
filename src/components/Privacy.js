@@ -2,7 +2,7 @@ import React from 'react';
 
 const Privacy = () => {
   return (
-    <React.Fragment>
+    <>
       <h2>Privacy Policy</h2>
       <p className="lead">
         <em>No information is stored by this website. That is the base principle.</em>
@@ -33,8 +33,7 @@ const Privacy = () => {
       <p>Nowhere.</p>
 
       <p><em>Last updated 2019-03-31.</em></p>
-
-    </React.Fragment>
+    </>
   );
 };
 
