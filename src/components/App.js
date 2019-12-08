@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Loading, { Loader } from './shared/Loading';
+import Loading from './shared/Loading';
 import loadable from '@loadable/component';
 
 const Menu = loadable(() => import('./Menu'));
