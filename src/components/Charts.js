@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Loadable from 'react-loadable';
+import loadable from '@loadable/component';
 import moment from 'moment';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
@@ -14,9 +14,8 @@ import AmountSumBar from './charts/AmountSumBar';
 import IncomeExpensesLine from './charts/IncomeExpensesLine';
 import Loading from './shared/Loading';
 
-const CategoryExpenses = Loadable({
-  loader: () => import('./charts/CategoryExpenses'),
-  loading: Loading
+const CategoryExpenses = loadable(() => import('./charts/CategoryExpenses'), {
+  fallback: <Loading />
 });
 
 const Charts = props => {

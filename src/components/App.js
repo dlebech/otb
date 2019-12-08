@@ -1,47 +1,35 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Loadable from 'react-loadable';
-import Loading from './shared/Loading';
+import Loading, { Loader } from './shared/Loading';
+import loadable from '@loadable/component';
 
-const Menu = Loadable({
-  loader: () => import('./Menu'),
-  loading: () => null
+const Menu = loadable(() => import('./Menu'));
+
+const Intro = loadable(() => import('./Intro'), {
+  fallback: <Loading />
 });
 
-const Intro = Loadable({
-  loader: () => import('./Intro'),
-  loading: Loading
+const TransactionAdd = loadable(() => import('./TransactionAdd'), {
+  fallback: <Loading />
 });
 
-const TransactionAdd = Loadable({
-  loader: () => import('./TransactionAdd'),
-  loading: Loading
+const Transactions = loadable(() => import('./Transactions'), {
+  fallback: <Loading />
 });
 
-const Transactions = Loadable({
-  loader: () => import('./Transactions'),
-  loading: Loading
+const Charts = loadable(() => import('./Charts'), {
+  fallback: <Loading />
 });
 
-const Charts = Loadable({
-  loader: () => import('./Charts'),
-  loading: Loading
+const ManageData = loadable(() => import('./ManageData'), {
+  fallback: <Loading />
 });
 
-const ManageData = Loadable({
-  loader: () => import('./ManageData'),
-  loading: Loading
+const Privacy = loadable(() => import('./Privacy'), {
+  fallback: <Loading />
 });
 
-const Privacy = Loadable({
-  loader: () => import('./Privacy'),
-  loading: Loading
-});
-
-const Footer = Loadable({
-  loader: () => import('./Footer'),
-  loading: () => null
-});
+const Footer = loadable(() => import('./Footer'));
 
 const App = props => {
   return (

@@ -9,7 +9,7 @@ const rateHistoricalUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-h
 // Simple global cache for storing the unzipped versions of the rates. This is
 // of course not going to work a lot of the time, since this is Lambda, but it
 // should help a little bit, especially during testing.
-const cache = LRU({
+const cache = new LRU({
   max: 10,
   maxAge: 1000 * 60 * 60 // 1 hour cache
 });
