@@ -178,46 +178,71 @@ const mapStateToProps = state => {
   };
 };
 
+const handleCsv = async (fileOrString, dispatch) => {
+  const [encodingResult, Papa] = await Promise.all([
+    detectFileEncoding(fileOrString),
+    import('papaparse').then(m => m.default)
+  ]);
+
+  return new Promise((resolve, reject) => {
+    Papa.parse(fileOrString, {
+      encoding: encodingResult.encoding,
+      skipEmptyLines: true,
+      error: err => {
+        reject(err);
+      },
+      complete: result => {
+        if (result.errors && result.errors.length > 0) {
+          return reject(result.errors);
+        }
+        // Papaparse seems to be quite forgiving around the input format So
+        // as an early sanity test, check that the parsed number of columns
+        // is the same for all rows.
+        if (!result.data.every(d => d.length === result.data[0].length)) {
+          return reject([{
+            type: 'upload',
+            message: 'Cannot parse the file. The number of columns varies between rows'
+          }]);
+        }
+        dispatch(actions.importParseTransactionsEnd(result.data));
+        resolve();
+      }
+    });
+  });
+};
+
+const sheetToCsv = async file => {
+  const XLSX = await import('xlsx').then(m => m.default);
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]])
+      resolve(csv);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     handleFileChange: async e => {
       // File needs to be extracted here, because it is unavailable after the
       // dynamic import below for some reason.
       try {
-        const file = e.target.files[0];
-
+        let file = e.target.files[0];
         dispatch(actions.importParseTransactionsStart());
 
-        const [encodingResult, Papa] = await Promise.all([
-          detectFileEncoding(file),
-          import('papaparse').then(m => m.default)
-        ]);
+        // Full mimetype for Excel sheets is
+        // application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        // but to keep things simple, just search for the word sheet in the type
+        // Convert Excel sheets to CSV before parsing.
+        if (file.type.includes('sheet')) {
+          file = await sheetToCsv(file);
+        }
 
-        await new Promise((resolve, reject) => {
-          Papa.parse(file, {
-            encoding: encodingResult.encoding,
-            skipEmptyLines: true,
-            error: err => {
-              reject(err);
-            },
-            complete: result => {
-              if (result.errors && result.errors.length > 0) {
-                return reject(result.errors);
-              }
-              // Papaparse seems to be quite forgiving around the input format So
-              // as an early sanity test, check that the parsed number of columns
-              // is the same for all rows.
-              if (!result.data.every(d => d.length === result.data[0].length)) {
-                return reject([{
-                  type: 'upload',
-                  message: 'Cannot parse the file. The number of columns varies between rows'
-                }]);
-              }
-              dispatch(actions.importParseTransactionsEnd(result.data));
-              resolve();
-            }
-          });
-        });
+        await handleCsv(file, dispatch);
       } catch (err) {
         dispatch(actions.importParseTransactionsEnd([]));
         throw err;

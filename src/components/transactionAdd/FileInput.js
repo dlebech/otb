@@ -5,7 +5,7 @@ const FileInput = props => {
   return (
     <div className="form-row">
       <div className="col-auto">
-        <label htmlFor="transactions-input">Transactions file (CSV):</label>
+        <label htmlFor="transactions-input">Transactions file (CSV or Excel sheet):</label>
         <input
           type="file"
           id="transactions-input"
