@@ -19,6 +19,8 @@ const Categories = props => {
     }
   });
 
+  parentCategories.sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <>
       <div className="row">
@@ -46,20 +48,24 @@ const Categories = props => {
                   />
                   {hasChildren &&
                   <ul>
-                    {childCategories[c.id].map(childC => {
-                      return (
-                        <li key={`child-cat-${childC.id}`}>
-                          <Category
-                            category={childC}
-                            transactions={props.transactions}
-                            parentCategories={parentCategories}
-                            handleUpdateCategory={props.handleUpdateCategory}
-                            handleDeleteCategory={props.handleDeleteCategory}
-                            showModal={props.showModal}
-                            hideModal={props.hideModal}
-                          />
-                        </li>
-                    )})}
+                    {childCategories[c.id]
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map(childC => {
+                        return (
+                          <li key={`child-cat-${childC.id}`}>
+                            <Category
+                              category={childC}
+                              transactions={props.transactions}
+                              parentCategories={parentCategories}
+                              handleUpdateCategory={props.handleUpdateCategory}
+                              handleDeleteCategory={props.handleDeleteCategory}
+                              showModal={props.showModal}
+                              hideModal={props.hideModal}
+                            />
+                          </li>
+                        )
+                      })
+                    }
                   </ul>}
                 </li>
               );
