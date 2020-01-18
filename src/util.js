@@ -219,13 +219,16 @@ export const formatNumber = (num, options, locale = 'en-US') => {
   return num.toLocaleString(locale, options);
 };
 
-export const detectFileEncoding = async file => {
+export const detectFileEncoding = async fileOrString => {
   const jschardet = await import('jschardet').then(m => m.default);
 
   return new Promise(resolve => {
+    if (typeof fileOrString === 'string') {
+      return resolve(jschardet.detect(fileOrString));
+    }
     const reader = new FileReader();
     reader.onload = () => resolve(jschardet.detect(reader.result));
-    reader.readAsBinaryString(file);
+    reader.readAsBinaryString(fileOrString);
   });
 };
 
