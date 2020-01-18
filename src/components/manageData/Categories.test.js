@@ -38,16 +38,22 @@ describe('Categories', () => {
     expect(c.find('button').text()).toEqual('Add New Category');
   });
 
-  it('should show categories', () => {
+  it('should show categories (alphabetically)', () => {
     const store = mockStore({
       transactions: {
         data: []
       },
       categories: {
-        data: [{
-          id: 'abcd',
-          name: 'Food'
-        }]
+        data: [
+          {
+            id: 'b',
+            name: 'Food'
+          },
+          {
+            id: 'a',
+            name: 'Entertainment'
+          }
+        ]
       }
     });
 
@@ -60,11 +66,11 @@ describe('Categories', () => {
     );
 
     const c = container.render();
-    expect(c.find('li').length).toEqual(1);
-    expect(c.find('li').text()).toEqual('Food (0)');
+    expect(c.find('li').length).toEqual(2);
+    expect(c.find('li').text()).toEqual('Entertainment (0)Food (0)');
   });
 
-  it('should show hierachical structure', () => {
+  it('should show hierachical structure (alphebetically)', () => {
     const store = mockStore({
       transactions: {
         data: []
@@ -72,13 +78,22 @@ describe('Categories', () => {
       categories: {
         data: [
           {
-            id: 'abcd',
+            id: 'b',
             name: 'Food'
           },
           {
-            id: 'efgh',
+            id: 'a',
+            name: 'Entertainment'
+          },
+          {
+            id: 'c',
             name: 'Groceries',
-            parent: 'abcd'
+            parent: 'b'
+          },
+          {
+            id: 'd',
+            name: 'Bar',
+            parent: 'b'
           }
         ]
       }
@@ -96,11 +111,8 @@ describe('Categories', () => {
     // Find two lists in total
     expect(c.find('ul').length).toEqual(2);
 
-    // Find one nested list
-    expect(c.find('ul').first().find('ul').length).toEqual(1);
-
     // Test the text
-    expect(c.find('ul').first().find('ul').text()).toMatch('Groceries');
+    expect(c.find('ul').text()).toMatch('Entertainment (0)Food (0)Bar (0)Groceries (0)');
   });
 
   it('should show transaction counts', () => {
