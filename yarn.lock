@@ -2355,10 +2355,10 @@ batch@0.6.1:
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY=
 
-bayes@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/bayes/-/bayes-0.0.7.tgz#357bf74aa887e796de4bf5e922c5631090af8a00"
-  integrity sha1-NXv3SqiH55beS/XpIsVjEJCvigA=
+bayes@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/bayes/-/bayes-1.0.0.tgz#5c50b569a6d600653b01bc47626278da20170d11"
+  integrity sha512-dJkTHtGBbOLtrmcm37R44jelbgKalMPXLLmhNceEgeLRJLdDTU2DoEF7L+UqM3m36dve7/Vka4hgaacT7a8Jjw==
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"

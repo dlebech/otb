@@ -1,5 +1,4 @@
 import update from 'immutability-helper';
-import bayes from 'bayes';
 import uuidv4 from 'uuid/v4';
 import * as actions from '../actions';
 import * as util from '../util';
@@ -64,16 +63,6 @@ const mapImportToTransactions = (transactionsImport, existingTransactions) => {
     .filter(filter);
 };
 
-const retrainBayes = transactions => {
-  const classifier = bayes();
-  transactions.forEach(t => {
-    if (t.category.confirmed && t.descriptionCleaned) {
-      classifier.learn(t.descriptionCleaned, t.category.confirmed);
-    }
-  });
-  return classifier;
-};
-
 const v1Migration = state => {
   if (!state.data) return state;
 
@@ -106,85 +95,6 @@ const migrate = state => {
     state = migrations[i](state);
   }
   return state;
-};
-
-/**
- * Update the confirmed category for one or more transactions.
- * @param {Object} state - The existing state to update
- * @param {Object} transactionCategoryMapping - A mapping of transaction IDs to category IDs
- * @returns {Object} The new State
- */
-const categorizeTransactions = (state, transactionCategoryMapping) => {
-  const rowIds = Object.keys(transactionCategoryMapping);
-  const rowsToCategorizeAsSet = new Set(rowIds);
-
-  // This wouldn't be necessary if the transactions were not stored in an array.
-  const reverseIndexLookup = state.data.reduce((obj, t, i) => {
-    obj[t.id] = i;
-    return obj;
-  }, {});
-  // Find the indexes to update.
-  const rowIndexes = rowIds
-    .map(rowId => reverseIndexLookup[rowId])
-    .filter(rowIndex => rowIndex !== null && rowIndex >= 0);
-
-  // Exit early if we can't find the transactions. This shouldn't really
-  // happen...
-  if (rowIndexes.length === 0) return state;
-
-  // If the bayes classifier exists and none of the new rows previously had
-  // a confirmed category, just instantiate the classifier.
-  // Otherwise if there's currently no bayes classifier or if the category changed
-  // from a non-empty category, create a new one.
-  // XXX: This is complicated and should be simplified...
-  let classifier;
-  const anyTransactionHasCategory = !!state.data
-    .find(t => rowsToCategorizeAsSet.has(t.id) && t.category.confirmed);
-
-  if (state.categorizer.bayes && !anyTransactionHasCategory) {
-    classifier = bayes.fromJson(state.categorizer.bayes);
-  } else {
-    // Reset the classifier and re-train on all transactions, except the ones
-    // we are changing here.
-    classifier = retrainBayes(state.data.filter(t => !rowsToCategorizeAsSet.has(t.id)));
-  }
-
-  let newState = state;
-
-  // Atomically update the state
-  rowIndexes.forEach(i => {
-    const newCategoryId = transactionCategoryMapping[newState.data[i].id];
-
-    // Train on the new category we are about to add.
-    // Note: The category can be the empty string, if it's a reset of the
-    // category. In those cases, we shouldn't train on it...
-    if (newCategoryId && newState.data[i].descriptionCleaned) {
-      classifier.learn(newState.data[i].descriptionCleaned, newCategoryId);
-    }
-
-    // Update the category for each transaction.
-    newState = update(newState, {
-      data: {
-        [i]: {
-          category: {
-            confirmed: {
-              $set: newCategoryId
-            },
-            $unset: ['guess']
-          }
-        }
-      }
-    });
-  });
-
-  // Finally, save the classifier
-  return update(newState, {
-    categorizer: {
-      bayes: {
-        $set: classifier.toJson()
-      }
-    }
-  });
 };
 
 const transactionsReducer = (state = initialTransactions, action) => {
@@ -254,63 +164,56 @@ const transactionsReducer = (state = initialTransactions, action) => {
           $push: mapImportToTransactions(state.import, state.data)
         }
       });
-    case actions.GUESS_CATEGORY_FOR_ROW:
-      let rowsToGuess = action.rowId;
-      if (!Array.isArray(rowsToGuess)) {
-        rowsToGuess = [rowsToGuess];
-      }
-
-      let rowIndexes = rowsToGuess;
-      if (typeof rowIndexes[0] !== 'number') {
-        // This wouldn't be necessary if the transactions were not stored in an array.
-        const reverseIndexLookup = state.data.reduce((obj, t, i) => {
-          obj[t.id] = i;
-          return obj;
-        }, {});
-        rowIndexes = rowIndexes
-          .map(rowId => reverseIndexLookup[rowId])
-          .filter(rowIndex => rowIndex !== null && rowIndex >= 0);
-      }
-      if (rowIndexes.length === 0) return state;
-      if (!state.categorizer.bayes) return state;
-
-      const guesstimator = bayes.fromJson(state.categorizer.bayes);
-
-      let newState = state;
-      rowIndexes.forEach(i => {
-        const guess = guesstimator.categorize(newState.data[i].descriptionCleaned);
-        newState = update(newState, {
+    case actions.GUESS_ALL_CATEGORIES_END:
+      const lookup = util.reverseIndexLookup(state.data);
+      Object.keys(action.transactionCategoryMapping).forEach(key => {
+        state = update(state, {
           data: {
-            [i]: {
+            [lookup[key]]: {
               category: {
                 guess: {
-                  $set: guess
+                  $set: action.transactionCategoryMapping[key]
                 }
               }
             }
           }
         });
       });
-      return newState;
-    case actions.CATEGORIZE_ROW:
-      return categorizeTransactions(state, { [action.rowId]: action.categoryId });
-    case actions.CATEGORIZE_ROWS:
-      return categorizeTransactions(state, action.rowCategoryMapping);
+      return state;
+    case actions.CATEGORIZE_ROW_END:
+      const lookup2 = util.reverseIndexLookup(state.data);
+      Object.keys(action.transactionCategoryMapping).forEach(key => {
+        state = update(state, {
+          data: {
+            [lookup2[key]]: {
+              category: {
+                confirmed: {
+                  $set: action.transactionCategoryMapping[key]
+                },
+                $unset: ['guess']
+              }
+            }
+          }
+        });
+      });
+      return update(state, {
+        categorizer: {
+          $set: action.categorizerConfig
+        }
+      });
     case actions.RESTORE_STATE_FROM_FILE:
       if (!action.newState.transactions) return state;
       state = update(state, {
         $set: action.newState.transactions
       });
       return migrate(state);
-    case actions.DELETE_CATEGORY:
-      let retrain = false;
+    case actions.DELETE_CATEGORY_START:
       for (let i = 0; i < state.data.length; i++) {
         const t = state.data[i];
         const unset = [];
         if (t.category.guess === action.categoryId) unset.push('guess');
         if (t.category.confirmed === action.categoryId) unset.push('confirmed');
         if (unset.length > 0) {
-          retrain = true;
           state = update(state, {
             data: {
               [i]: {
@@ -322,13 +225,12 @@ const transactionsReducer = (state = initialTransactions, action) => {
           });
         }
       }
-      if (!retrain) return state;
+      return state;
+    case actions.DELETE_CATEGORY_END:
       return update(state, {
         categorizer: {
-          bayes: {
-            $set: retrainBayes(state.data).toJson()
-          }
-        },
+          $set: action.categorizerConfig
+        }
       });
     case actions.IGNORE_TRANSACTION:
       const indexToIgnore = state.data.findIndex(c => c.id === action.transactionId);
@@ -407,12 +309,7 @@ const transactionsReducer = (state = initialTransactions, action) => {
       return update(state, {
         data: {
           $set: testTransactions
-        },
-        categorizer: {
-          bayes: {
-            $set: retrainBayes(testTransactions).toJson()
-          }
-        },
+        }
       });
     case actions.SET_EMPTY_TRANSACTIONS_ACCOUNT:
       for (let i = 0; i < state.data.length; i++) {

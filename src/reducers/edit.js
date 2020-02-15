@@ -117,11 +117,11 @@ const editReducer = (state = initialEditor, action) => {
           }
         }
       });
-    case actions.START_GUESS_ALL_CATEGORIES:
+    case actions.GUESS_ALL_CATEGORIES_START:
       return update(state, {
         isCategoryGuessing: { $set: true }
       });
-    case actions.END_GUESS_ALL_CATEGORIES:
+    case actions.GUESS_ALL_CATEGORIES_END:
       return update(state, {
         isCategoryGuessing: { $set: false }
       });

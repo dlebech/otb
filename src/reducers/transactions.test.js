@@ -386,90 +386,7 @@ describe('import', () => {
   });
 });
 
-describe('guess category', () => {
-  const baseData = {
-    transactions: {
-      categorizer: {
-        // A bayes classifier, trained on apple and origami
-        bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
-      },
-      data: [
-        {
-          id: 'abcd',
-          date: '2018-04-06',
-          description: 'more origami',
-          amount: 123,
-          total: 456,
-          category: {
-            guess: '',
-            confirmed: ''
-          }
-        }
-      ]
-    }
-  };
-
-  it('should guess the category of a single row', () => {
-    const state = reducers(baseData, actions.guessCategoryForRow('abcd'));
-
-    // Sets the data
-    expect(state.transactions.data[0].category).toEqual({
-      guess: 'hobby',
-      confirmed: ''
-    });
-  });
-
-  it('should guess the category of a single row where the index is known', () => {
-    // XXX: This test becomes obsolete if we change the transaction data into an
-    // object indexes on the ID of the transaction.
-    const state = reducers(baseData, actions.guessCategoryForRow(0));
-
-    // Sets the data
-    expect(state.transactions.data[0].category).toEqual({
-      guess: 'hobby',
-      confirmed: ''
-    });
-  });
-
-  it('should guess the category of multiple rows', () => {
-    const state = reducers({
-      transactions: {
-        categorizer: {
-          // A bayes classifier, trained on apple and origami
-          bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
-        },
-        data: [
-          {
-            id: 'a',
-            description: 'more origami',
-            category: {}
-          },
-          {
-            id: 'b',
-            description: 'more origami yet',
-            category: {}
-          },
-          {
-            id: 'c',
-            description: 'so much origami',
-            category: {}
-          }
-        ]
-      }
-    }, actions.guessCategoryForRow(['a', 'b', 'ok']));
-
-    // Sets the data
-    expect(state.transactions.data[0].category).toEqual({
-      guess: 'hobby'
-    });
-    expect(state.transactions.data[1].category).toEqual({
-      guess: 'hobby'
-    });
-    expect(state.transactions.data[2].category).toEqual({});
-  });
-});
-
-describe('categorizeRow', () => {
+describe('categorizeRowEnd', () => {
   it('should add a confirmed category to the classifier', () => {
     const state = reducers({
       transactions: {
@@ -487,140 +404,14 @@ describe('categorizeRow', () => {
           }
         ]
       }
-    }, actions.categorizeRow('abcd', 'hobby'));
+    }, actions.categorizeRowEnd({ abcd: 'hobby' }, { bayes: '{}' }));
 
-    expect(state.transactions.categorizer.bayes).toEqual(
-      // Expecting it to be trained on one row now :-)
-      '{"categories":{"hobby":true},"docCount":{"hobby":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"hobby":1},"wordFrequencyCount":{"hobby":{"origami":1}},"options":{}}'
-    );
-
-    // Sets the data
+    expect(state.transactions.categorizer.bayes).toEqual('{}');
     expect(state.transactions.data[0].category).toEqual({
       confirmed: 'hobby'
     });
   });
 
-  it('should retrain the classifier when a category changes', () => {
-    const state = reducers({
-      transactions: {
-        categorizer: {
-          bayes: '{"categories":{"hobby":true},"docCount":{"hobby":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"hobby":1},"wordFrequencyCount":{"hobby":{"origami":1}},"options":{}}'
-        },
-        data: [
-          {
-            id: 'abcd',
-            description: 'origami',
-            category: {
-              confirmed: 'hobby'
-            }
-          }
-        ]
-      }
-    }, actions.categorizeRow('abcd', 'food'));
-
-    expect(state.transactions.categorizer.bayes).toEqual(
-      // Expecting it to not know about hobby anymore because origami is now food for some reason.
-      '{"categories":{"food":true},"docCount":{"food":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"food":1},"wordFrequencyCount":{"food":{"origami":1}},"options":{}}'
-    );
-  });
-
-  it('should not add empty categories to classifier', () => {
-    const state = reducers({
-      transactions: {
-        categorizer: {
-          bayes: ''
-        },
-        data: [
-          {
-            id: 'abcd',
-            description: 'origami',
-            category: {
-              guess: 'travel',
-              confirmed: ''
-            }
-          }
-        ]
-      }
-    }, actions.categorizeRow('abcd', ''));
-
-    // Expect and empty classifier because the category is empty.
-    expect(state.transactions.categorizer.bayes).toEqual(
-      '{"categories":{},"docCount":{},"totalDocuments":0,"vocabulary":{},"vocabularySize":0,"wordCount":{},"wordFrequencyCount":{},"options":{}}'
-    );
-  });
-
-  it('should not add empty descriptions to classifier', () => {
-    const state = reducers({
-      transactions: {
-        categorizer: {
-          bayes: ''
-        },
-        data: [
-          {
-            id: 'abcd',
-            description: '',
-            category: {
-              guess: 'travel',
-              confirmed: ''
-            }
-          }
-        ]
-      }
-    }, actions.categorizeRow('abcd', 'hobby'));
-
-    // Expect and empty classifier because the category is empty.
-    expect(state.transactions.categorizer.bayes).toEqual(
-      '{"categories":{},"docCount":{},"totalDocuments":0,"vocabulary":{},"vocabularySize":0,"wordCount":{},"wordFrequencyCount":{},"options":{}}'
-    );
-  });
-});
-
-describe('categorizeRows', () => {
-  const baseData = {
-    transactions: {
-      categorizer: {
-        bayes: ''
-      },
-      data: [
-        {
-          id: 'abcd',
-          description: 'origami',
-          descriptionCleaned: 'origami',
-          category: {
-            guess: 'travel',
-            confirmed: ''
-          }
-        },
-        {
-          id: 'efgh',
-          description: 'hotel',
-          category: {
-            guess: 'travel',
-            confirmed: ''
-          }
-        }
-      ]
-    }
-  };
-
-  it('should add a confirmed category to multiple rows', () => {
-    const state = reducers(baseData, actions.categorizeRows({
-      'abcd': 'hobby',
-      'efgh': 'travel'
-    }));
-
-    expect(state.transactions.categorizer.bayes).toEqual(
-      '{"categories":{"hobby":true,"travel":true},"docCount":{"hobby":1,"travel":1},"totalDocuments":2,"vocabulary":{"origami":true,"hotel":true},"vocabularySize":2,"wordCount":{"hobby":1,"travel":1},"wordFrequencyCount":{"hobby":{"origami":1},"travel":{"hotel":1}},"options":{}}'
-    );
-
-    // Sets the data
-    expect(state.transactions.data[0].category).toEqual({
-      confirmed: 'hobby'
-    });
-    expect(state.transactions.data[1].category).toEqual({
-      confirmed: 'travel'
-    });
-  });
 });
 
 it('should restore from file', () => {
@@ -635,13 +426,9 @@ it('should restore from file', () => {
   ])
 });
 
-it('should reset categories and retrain categorizer when a category is removed', () => {
+it('should reset categories when a category is removed', () => {
   const state = reducers({
     transactions: {
-      categorizer: {
-        // trained on apple and origami
-        bayes: '{"categories":{"hobby":true,"food":true},"docCount":{"hobby":1,"food":1},"totalDocuments":2,"vocabulary":{"origami":true,"apple":true},"vocabularySize":2,"wordCount":{"hobby":1,"food":1},"wordFrequencyCount":{"hobby":{"origami":1},"food":{"apple":1}},"options":{}}'
-      },
       data: [
         {
           category: {
@@ -665,7 +452,7 @@ it('should reset categories and retrain categorizer when a category is removed',
         }
       ]
     }
-  }, actions.deleteCategory('food'));
+  }, actions.deleteCategoryStart('food'));
 
   expect(state.transactions.data[0].category).toEqual({ confirmed: '' });
   expect(state.transactions.data[1].category).toEqual({ guess: '' });
@@ -673,11 +460,36 @@ it('should reset categories and retrain categorizer when a category is removed',
     guess: '',
     confirmed: 'hobby'
   });
+});
 
-  expect(state.transactions.categorizer.bayes).toEqual(
-    // Expecting it to be trained only on hobby now
-    '{"categories":{"hobby":true},"docCount":{"hobby":1},"totalDocuments":1,"vocabulary":{"origami":true},"vocabularySize":1,"wordCount":{"hobby":1},"wordFrequencyCount":{"hobby":{"origami":1}},"options":{}}'
-  );
+it('should set a new categorizer when a category is done being deleted', () => {
+  const state = reducers({
+    transactions: {
+      data: [
+        {
+          category: {
+            guess: 'food',
+            confirmed: ''
+          }
+        },
+        {
+          description: 'apple',
+          category: {
+            guess: '',
+            confirmed: 'food'
+          }
+        },
+        {
+          description: 'origami',
+          category: {
+            guess: '',
+            confirmed: 'hobby'
+          }
+        }
+      ]
+    }
+  }, actions.deleteCategoryEnd('food', { bayes: '{}' }));
+  expect(state.transactions.categorizer.bayes).toEqual('{}');
 });
 
 it('should set a transaction to ignored', () => {
@@ -790,7 +602,6 @@ it('should create test data', () => {
   expect(state.transactions.data.length).toBeGreaterThan(100);
   expect(state.transactions.data[0].total).toBeGreaterThan(state.transactions.data[1].total);
   expect(state.transactions.data[0].account).toBeDefined();
-  expect(state.transactions.categorizer.bayes.length).toBeGreaterThan(0);
 });
 
 it('should update empty account fields', () => {

@@ -34,7 +34,7 @@ const categoriesReducer = (state = initialCategories, action) => {
           }
         }
       });
-    case actions.DELETE_CATEGORY:
+    case actions.DELETE_CATEGORY_START:
       const indexToDelete = state.data.findIndex(c => c.id === action.categoryId);
       if (indexToDelete < 0) return state;
       return update(state, {
