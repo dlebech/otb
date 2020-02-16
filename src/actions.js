@@ -358,7 +358,7 @@ export const guessAllCategories = (requireConfirmed = true) => {
     // Guess 100 transactions at a time with a bit of sleeping in between to
     // avoid locking the UI completely.
     const transactionsToGuess = chunk(
-      state.transactions.data.filter(t => !t.category.confirmed && !t.ignore),
+      state.transactions.data.filter(t => !t.category.confirmed),
       100
     );
 

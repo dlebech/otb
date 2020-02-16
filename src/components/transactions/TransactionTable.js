@@ -92,6 +92,8 @@ class TransactionTable extends React.Component {
   }
 
   handleCategorySelect(options) {
+    // Options is sometimes null
+    options = options || [];
     const filterCategories = new Set(options.map(o => o.value));
 
     // Since the category filter might reduce the number of transactions, we
