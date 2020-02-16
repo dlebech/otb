@@ -1,5 +1,6 @@
 import chunk from 'lodash/chunk';
 import { sleep, fillDates } from './util';
+import { updateCategorizer, guessCategory, retrainCategorizer } from './ml';
 import { lambdaBase } from './config';
 
 // Import actions
@@ -21,12 +22,14 @@ export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 // Category actions
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
-export const DELETE_CATEGORY = 'DELETE_CATEGORY';
+export const DELETE_CATEGORY_START = 'DELETE_CATEGORY_START';
+export const DELETE_CATEGORY_END = 'DELETE_CATEGORY_END';
 
 // Transaction actions
-export const GUESS_CATEGORY_FOR_ROW = 'GUESS_CATEGORY_FOR_ROW';
-export const CATEGORIZE_ROW = 'CATEGORIZE_ROW';
-export const CATEGORIZE_ROWS = 'CATEGORIZE_ROWS';
+export const CATEGORIZE_ROW_START = 'CATEGORIZE_ROW_START';
+export const CATEGORIZE_ROW_END = 'CATEGORIZE_ROW_END';
+export const GUESS_ALL_CATEGORIES_START = 'GUESS_ALL_CATEGORIES_START';
+export const GUESS_ALL_CATEGORIES_END = 'GUESS_ALL_CATEGORIES_END';
 export const IGNORE_TRANSACTION = 'IGNORE_TRANSACTION';
 export const DELETE_TRANSACTION = 'DELETE_TRANSACTION';
 export const GROUP_TRANSACTIONS = 'GROUP_TRANSACTIONS';
@@ -37,8 +40,6 @@ export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
 export const EDIT_DATES = 'EDIT_DATES';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
-export const START_GUESS_ALL_CATEGORIES = 'START_GUESS_ALL_CATEGORIES';
-export const END_GUESS_ALL_CATEGORIES = 'END_GUESS_ALL_CATEGORIES';
 export const SET_CURRENCIES = 'SET_CURRENCIES';
 export const SET_CURRENCY_RATES = 'SET_CURRENCY_RATES';
 export const START_FETCH_CURRENCIES = 'START_FETCH_CURRENCIES';
@@ -151,28 +152,6 @@ export const deleteAccount = accountId => {
   };
 };
 
-export const guessCategoryForRow = rowId => {
-  return {
-    type: GUESS_CATEGORY_FOR_ROW,
-    rowId
-  };
-};
-
-export const categorizeRow = (rowId, categoryId) => {
-  return {
-    type: CATEGORIZE_ROW,
-    rowId,
-    categoryId
-  };
-};
-
-export const categorizeRows = rowCategoryMapping => {
-  return {
-    type: CATEGORIZE_ROWS,
-    rowCategoryMapping
-  };
-};
-
 export const ignoreTransaction = (transactionId, ignore) => {
   return {
     type: IGNORE_TRANSACTION,
@@ -202,6 +181,20 @@ export const deleteTransactionGroup = transactionGroupId => {
   };
 };
 
+export const categorizeRowStart = () => {
+  return {
+    type: CATEGORIZE_ROW_START
+  };
+};
+
+export const categorizeRowEnd = (transactionCategoryMapping, categorizerConfig) => {
+  return {
+    type: CATEGORIZE_ROW_END,
+    transactionCategoryMapping,
+    categorizerConfig
+  };
+};
+
 export const restoreStateFromFile = newState => {
   return {
     type: RESTORE_STATE_FROM_FILE,
@@ -217,25 +210,6 @@ export const addCategory = (name, parentId) => {
   };
 };
 
-export const addCategoryWithRow = (name, parentId, rowId) => {
-  return (dispatch, getState) => {
-    // First add the new category
-    dispatch(addCategory(name, parentId));
-
-    // Then find the updated categories so we can get the category ID.
-    // The new category is probably the last one in the array, but just to be
-    // safe, let's loop through them... but backwards for that wee bit of extra
-    // speed :-)
-    const categories = getState().categories.data;
-    for (let i = categories.length - 1; i >= 0; i--) {
-      if (categories[i].name === name) {
-        dispatch(categorizeRow(rowId, categories[i].id));
-        break;
-      }
-    }
-  };
-};
-
 export const updateCategory = (categoryId, name, parentId) => {
   return {
     type: UPDATE_CATEGORY,
@@ -245,10 +219,18 @@ export const updateCategory = (categoryId, name, parentId) => {
   };
 };
 
-export const deleteCategory = categoryId => {
+export const deleteCategoryStart = categoryId => {
   return {
-    type: DELETE_CATEGORY,
+    type: DELETE_CATEGORY_START,
     categoryId
+  };
+};
+
+export const deleteCategoryEnd = (categoryId, categorizerConfig) => {
+  return {
+    type: DELETE_CATEGORY_END,
+    categoryId,
+    categorizerConfig
   };
 };
 
@@ -322,8 +304,11 @@ export const setEmptyTransactionsAccount = accountId => {
 
 export const createTestData = () => ({ type: CREATE_TEST_DATA });
 
-export const startGuessAllCategories = () => ({ type: START_GUESS_ALL_CATEGORIES });
-export const endGuessAllCategories = () => ({ type: END_GUESS_ALL_CATEGORIES });
+export const guessAllCategoriesStart = () => ({ type: GUESS_ALL_CATEGORIES_START });
+export const guessAllCategoriesEnd = transactionCategoryMapping => ({
+  type: GUESS_ALL_CATEGORIES_END,
+  transactionCategoryMapping
+});
 
 export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
 export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
@@ -345,7 +330,7 @@ export const setCurrencyRates = currencyRates => {
   };
 };
 
-export const guessAllCategories = () => {
+export const guessAllCategories = (requireConfirmed = true) => {
   return async (dispatch, getState) => {
     // Do not start guessing until the previous guessing is done.
     // Note: This can potentially queue up a lot of guessing, but in practice
@@ -353,40 +338,98 @@ export const guessAllCategories = () => {
     while (getState().edit.isCategoryGuessing) {
       await sleep(100);
     }
-    // Determine the diversity of currently confirmed categories.
-    // Do not start guessing if we have less than 3 confirmed categories.
-    const confirmedCategories = new Set(
-      getState().transactions.data
-        .filter(t => !!t.category.confirmed)
-        .map(t => t.category.confirmed)
-    );
-    if (confirmedCategories.size < 3) return;
+
+    const state = getState();
+
+    if (requireConfirmed) {
+      // Determine the diversity of currently confirmed categories.
+      // Do not start guessing if we have less than 3 confirmed categories.
+      const confirmedCategories = new Set(
+        state.transactions.data
+          .filter(t => !!t.category.confirmed)
+          .map(t => t.category.confirmed)
+      );
+      if (confirmedCategories.size < 3) return;
+    }
 
     // Signal to everyone that we are starting the guessing game.
-    dispatch(startGuessAllCategories());
+    dispatch(guessAllCategoriesStart());
 
     // Guess 100 transactions at a time with a bit of sleeping in between to
     // avoid locking the UI completely.
     const transactionsToGuess = chunk(
-      getState().transactions.data
-        .reduce((arr, t, i) => {
-          // Store the index of the transaction rather than the ID.
-          // XXX: This is going to cause race conditions if transactions are
-          // somehow changed between sleeping (see below), but this will not
-          // happen in practice, and it is necessary optimization.
-          if (!t.category.confirmed && !t.ignore) arr.push(i);
-          return arr;
-        }, []),
+      state.transactions.data.filter(t => !t.category.confirmed),
       100
     );
 
+    const transactionCategoryMapping = {};
+
     for (let i = 0; i < transactionsToGuess.length; i++) {
-      await dispatch(guessCategoryForRow(transactionsToGuess[i]));
+      const guessMapping = await guessCategory(
+        transactionsToGuess[i],
+        state.transactions.categorizer
+      );
+      for (const [key, value] of Object.entries(guessMapping)) {
+        transactionCategoryMapping[key] = value;
+      }
       await sleep(10);
     }
 
-    // Signal that we are done
-    dispatch(endGuessAllCategories());
+    // Signal that we are done, and update all the guesses.
+    dispatch(guessAllCategoriesEnd(transactionCategoryMapping));
+  };
+};
+
+export const categorizeRows = rowCategoryMapping => {
+  return async (dispatch, getState) => {
+    dispatch(categorizeRowStart());
+    const state = getState();
+    const categorizerConfig = await updateCategorizer(
+      state.transactions.data,
+      state.transactions.categorizer.bayes,
+      rowCategoryMapping
+    );
+    dispatch(categorizeRowEnd(rowCategoryMapping, categorizerConfig));
+  };
+};
+
+export const categorizeRow = (rowId, categoryId) => {
+  const rowCategoryMapping = { [rowId]: categoryId };
+  return categorizeRows(rowCategoryMapping);
+};
+
+export const addCategoryWithRow = (name, parentId, rowId) => {
+  return async (dispatch, getState) => {
+    // First add the new category
+    dispatch(addCategory(name, parentId));
+
+    // Then find the updated categories so we can get the category ID.
+    // The new category is probably the last one in the array, but just to be
+    // safe, let's loop through them... but backwards for that wee bit of extra
+    // speed :-)
+    const categories = getState().categories.data;
+    for (let i = categories.length - 1; i >= 0; i--) {
+      if (categories[i].name === name) {
+        await dispatch(categorizeRow(rowId, categories[i].id));
+        break;
+      }
+    }
+  };
+};
+
+export const deleteCategory = categoryId => {
+  return async (dispatch, getState) => {
+    dispatch(deleteCategoryStart(categoryId));
+
+    // Retrain the categorizer...
+    // Even though deleteCategoryStart above might actually reset the category
+    // and transaction data, it is slightly safer to manually remove the
+    // transactions with the given category ID when retraining the classifier.
+    // Also, it makes the tests work :D :D :D
+    const transactions = getState().transactions.data.filter(t => t.category.confirmed !== categoryId);
+    const categorizerConfig = await retrainCategorizer(transactions);
+
+    dispatch(deleteCategoryEnd(categoryId, categorizerConfig));
   };
 };
 

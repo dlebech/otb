@@ -150,11 +150,11 @@ it('should set parsing to false on parse transaction ending', () => {
 });
 
 it('should handle the guess start action', () => {
-  expect(reducers({}, actions.startGuessAllCategories()).edit.isCategoryGuessing).toEqual(true);
+  expect(reducers({}, actions.guessAllCategoriesStart()).edit.isCategoryGuessing).toEqual(true);
 });
 
 it('should handle the guess end action', () => {
-  expect(reducers({ edit: { isCategoryGuessing: true } }, actions.endGuessAllCategories()).edit.isCategoryGuessing).toEqual(false);
+  expect(reducers({ edit: { isCategoryGuessing: true } }, actions.guessAllCategoriesEnd({})).edit.isCategoryGuessing).toEqual(false);
 });
 
 it('should handle fetch currencies start action', () => {

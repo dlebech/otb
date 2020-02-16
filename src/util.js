@@ -278,3 +278,16 @@ export const fillDates = rates => {
 
   return rates;
 };
+
+/**
+ * Get a mapping of IDs to array indices. It is assumed that the objects have a
+ * single ID field.
+ * @param {Array} arr - The array to search through
+ * @returns {Object} - The mapping of ID to array index
+ */
+export const reverseIndexLookup = arr => {
+  return arr.reduce((obj, t, i) => {
+    obj[t.id] = i;
+    return obj;
+  }, {});
+};

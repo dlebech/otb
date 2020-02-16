@@ -194,12 +194,12 @@ const searchTransactions = createSearchAction('transactions');
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleRowCategoryChange: (rowId, categoryId) => {
-      dispatch(actions.categorizeRow(rowId, categoryId));
+    handleRowCategoryChange: async (rowId, categoryId) => {
+      await dispatch(actions.categorizeRow(rowId, categoryId));
       if (categoryId) dispatch(actions.guessAllCategories());
     },
-    handleRowCategoriesChange: rowCategoryMapping => {
-      dispatch(actions.categorizeRows(rowCategoryMapping));
+    handleRowCategoriesChange: async rowCategoryMapping => {
+      await dispatch(actions.categorizeRows(rowCategoryMapping));
       if (Object.values(rowCategoryMapping).filter(c => !!c).length > 0) dispatch(actions.guessAllCategories());
     },
     handleNewRowCategory: (rowId, categoryName, parentId) => {
