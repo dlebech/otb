@@ -117,6 +117,14 @@ const editReducer = (state = initialEditor, action) => {
           }
         }
       });
+    case actions.SET_CHARTS_GROUP_BY_PARENT_CATEGORY:
+      return update(state, {
+        charts: {
+          groupByParentCategory: {
+            $set: action.enabled
+          }
+        }
+      });
     case actions.GUESS_ALL_CATEGORIES_START:
       return update(state, {
         isCategoryGuessing: { $set: true }

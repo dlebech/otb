@@ -8,36 +8,6 @@ import Select from 'react-select';
 import 'react-dates/lib/css/_datepicker.css';
 import '../css/datepicker.css';
 
-const DatePreset = props => {
-  const isActive = props.startDate &&
-    props.endDate &&
-    props.startDate.isSame(props.currentStartDate, 'day') &&
-    props.endDate.isSame(props.currentEndDate, 'day');
-
-  const className = `btn ${isActive ? 'btn-secondary' : 'btn-outline-secondary'}`;
-
-  return (
-    <button
-      className={className}
-      onClick={() => props.handleDatesChange({
-        startDate: props.startDate,
-        endDate: props.endDate
-      })}
-    >
-      {props.label}
-    </button>
-  );
-};
-
-DatePreset.propTypes = {
-  label: PropTypes.string.isRequired,
-  startDate: PropTypes.object.isRequired,
-  endDate: PropTypes.object.isRequired,
-  currentStartDate: PropTypes.object,
-  currentEndDate: PropTypes.object,
-  handleDatesChange: PropTypes.func.isRequired
-};
-
 const presets = [
   {
     label: 'This month so far',
@@ -75,22 +45,33 @@ class Dates extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { focusedInput: START_DATE };
+    this.state = {
+      focusedInput: START_DATE,
+      startDate: props.startDate,
+      endDate: props.endDate,
+    };
 
     this.handleFocusChange = this.handleFocusChange.bind(this);
+    this.handleDatesChange = this.handleDatesChange.bind(this);
     this.handlePresetChange = this.handlePresetChange.bind(this);
+  }
+
+  handleDatesChange({ startDate, endDate }) {
+    if (!startDate || !endDate) return;
+    this.props.handleDatesChange(this.props.id, startDate, endDate);
   }
 
   handleFocusChange(focusedInput) {
     this.setState({ focusedInput });
   }
 
-  handlePresetChange(option, action) {
+  handlePresetChange({ startDate, endDate }, action) {
     if (action.action !== 'select-option') return;
-    this.props.handleDatesChange({
-      startDate: option.startDate,
-      endDate: option.endDate
-    });
+    this.props.handleDatesChange(
+      this.props.id,
+      startDate,
+      endDate
+    );
   }
 
   render() {
@@ -110,7 +91,7 @@ class Dates extends React.Component {
             endDateId={`${this.props.id}-end-date`}
             focusedInput={this.state.focusedInput}
             onFocusChange={this.handleFocusChange}
-            onDatesChange={this.props.handleDatesChange}
+            onDatesChange={this.handleDatesChange}
             isOutsideRange={() => false}
             {...this.props.dateProps}
           />
@@ -120,7 +101,6 @@ class Dates extends React.Component {
             name="date-preset"
             options={presets}
             onChange={this.handlePresetChange}
-            //value={this.state.selectedPreset}
             value={selectedOption}
           />
         </div>}

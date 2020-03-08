@@ -130,6 +130,16 @@ it('should set base currency for charts', () => {
   expect(state.edit.charts.baseCurrency).toEqual('DKK');
 });
 
+it('should set group by parent category', () => {
+  const state = reducers({
+    edit: {
+      charts: {}
+    }
+  }, actions.setChartsGroupByParentCategory(true));
+
+  expect(state.edit.charts.groupByParentCategory).toEqual(true);
+});
+
 it('should handle filter categories change for charts', () => {
   const state = reducers({
     edit: {

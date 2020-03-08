@@ -75,12 +75,14 @@ export const guessColumnSpec = transactions => {
  * @param {Array} categoryList - A list of categories to search through
  * @param {String} categoryId - The ID of the category
  * @param {Boolean} [returnFallback] - Optionally return a fallback category, default is true
+ * @param {Boolean} [returnParent] - Optionally return the category, default is false
  */
-export const findCategory = (categoryList, categoryId, returnFallback = true) => {
+export const findCategory = (categoryList, categoryId, returnFallback = true, returnParent = false) => {
   let category;
   if (Array.isArray(categoryList)) category = categoryList.find(c => c.id === categoryId);
   else category = categoryList[categoryId]; // Assume it's an object
   if (!category && returnFallback) return categories.uncategorized;
+  if (returnParent && category.parent) return findCategory(categoryList, category.parent);
   return category;
 };
 

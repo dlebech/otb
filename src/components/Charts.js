@@ -4,6 +4,7 @@ import loadable from '@loadable/component';
 import moment from 'moment';
 import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
+import { createSelector } from 'reselect';
 import { uncategorized } from '../data/categories';
 import * as actions from '../actions';
 import { convertCurrency, findCategory } from '../util';
@@ -19,59 +20,12 @@ const CategoryExpenses = loadable(() => import('./charts/CategoryExpenses'), {
 });
 
 const Charts = props => {
-  if (props.transactions.length === 0) return <NoData />;
+  if (props.noData) return <NoData />;
 
-  let filteredTransactions = props.transactions.filter(t => {
-    return !t.ignore &&
-      moment(t.date).isBetween(props.startDate, props.endDate, 'day', '[]');
-  });
-
-  const currencies = props.accounts
-    .filter(a => !!a.currency)
-    .map(a => a.currency);
-
-  if (!props.currencyRates && currencies.length > 1) {
-    props.ensureCurrencyRates(currencies);
+  if (!props.currencyRates && props.currencies.length > 1) {
+    props.ensureCurrencyRates(props.currencies);
     return <Loading />;
   }
-
-  const accounts = props.accounts.reduce((obj, acct) => {
-    obj[acct.id] = acct;
-    return obj;
-  }, {});
-
-  if (currencies.length > 1) {
-    filteredTransactions = filteredTransactions.map(t => {
-      return Object.assign({}, t, {
-        amount: convertCurrency(
-          t.amount,
-          accounts[t.account].currency,
-          props.baseCurrency,
-          t.date,
-          props.currencyRates
-        ),
-        currency: props.baseCurrency,
-        originalAmount: t.amount,
-        originalCurrency: accounts[t.account].currency
-      });
-    });
-  }
-
-  // Calculate some commonly used subsets of the filtered data.
-  const expenses = filteredTransactions.filter(t => t.amount < 0);
-  const income = filteredTransactions.filter(t => t.amount >= 0);
-  const sortedCategoryExpenses = nest()
-    .key(d => d.category.confirmed || uncategorized.id)
-    .rollup(transactions => ({
-      transactions,
-      category: findCategory(
-        props.categories,
-        transactions[0].category.confirmed || uncategorized.id
-      ),
-      amount: Math.abs(sum(transactions, d => d.amount))
-    }))
-    .entries(expenses)
-    .sort((a, b) => b.value.amount - a.value.amount);
 
   return (
     <>
@@ -81,15 +35,13 @@ const Charts = props => {
             id={props.dateSelectId}
             startDate={props.startDate}
             endDate={props.endDate}
-            handleDatesChange={({startDate, endDate}) => {
-              props.handleDatesChange(props.dateSelectId, startDate, endDate);
-            }}
+            handleDatesChange={props.handleDatesChange}
           />
         </div>
-        {currencies.length > 1 && <div className="col-auto">
-          <div className="form-row align-items-center">
+        <div className="col-md-auto">
+          {props.currencies.length > 1 && <div className="form-row align-items-center">
             <div className="col-auto">
-              <label className="my-0" htmlFor="base-currency">Base Currency</label>
+              <label className="my-0" htmlFor="base-currency">Base currency</label>
             </div>
             <div className="col">
               <select
@@ -98,19 +50,35 @@ const Charts = props => {
                 value={props.baseCurrency}
                 onChange={e => props.handleBaseCurrencyChange(e.target.value)}
               >
-                {currencies.map(c => {
+                {props.currencies.map(c => {
                   return <option key={`base-currency-${c}`} value={c}>{c}</option>
                 })}
               </select>
             </div>
+          </div>}
+        </div>
+        <div className="col-md-auto">
+          <div className="form-row align-items-center">
+            <div className="form-check">
+              <input
+                type="checkbox"
+                id="group-by-parent-categories"
+                className="form-check-input"
+                checked={props.groupByParentCategory}
+                onChange={e => props.handleGroupByParentCategoryChange(e.target.checked)}
+              />
+              <label className="form-check-label" htmlFor="group-by-parent-categories">
+                Show only parent categories
+              </label>
+            </div>
           </div>
-        </div>}
+        </div>
       </div>
       <section>
         <Summary
-          expenses={expenses}
-          income={income}
-          sortedCategoryExpenses={sortedCategoryExpenses}
+          expenses={props.expenses}
+          income={props.income}
+          sortedCategoryExpenses={props.sortedCategoryExpenses}
           accounts={props.accounts}
           baseCurrency={props.baseCurrency}
         />
@@ -120,7 +88,7 @@ const Charts = props => {
           <div className="col-lg-6">
             <h4 className="text-center">Income and expenses over time</h4>
             <IncomeExpensesLine
-              transactions={filteredTransactions}
+              transactions={props.transactions}
               startDate={props.startDate}
               endDate={props.endDate}
             />
@@ -128,7 +96,7 @@ const Charts = props => {
           <div className="col-lg-6">
             <h4 className="text-center">Sum of income and expenses over time</h4>
             <AmountSumBar
-              transactions={filteredTransactions}
+              transactions={props.transactions}
             />
           </div>
         </div>
@@ -138,7 +106,7 @@ const Charts = props => {
           filterCategories={props.filterCategories}
           handleCategoryChange={props.handleCategoryChange}
           handleCategorySortingChange={props.handleCategorySortingChange}
-          sortedCategoryExpenses={sortedCategoryExpenses}
+          sortedCategoryExpenses={props.sortedCategoryExpenses}
           startDate={props.startDate}
           endDate={props.endDate}
         />
@@ -147,30 +115,60 @@ const Charts = props => {
   );
 };
 
-const mapStateToProps = state => {
-  const dateSelectId = 'chart-dates';
-  const dateSelect = state.edit.dateSelect[dateSelectId] || {
+// The following functions are used to avoid doing expensive filtering multiple times.
+const dateSelectId = 'chart-dates';
+const _getDateSelects = state => state.edit.dateSelect;
+const _getAccounts = state => state.accounts.data;
+const _getCategories = state => state.categories.data;
+const _getBaseCurrency = state => state.edit.charts.baseCurrency;
+const _getTransactions = state => state.transactions.data;
+const _getTransactionGroups = state => state.transactions.groups;
+const _getCurrencyRates = state => state.edit.currencyRates;
+const getGroupByParentCategory = state => state.edit.charts.groupByParentCategory;
+
+const getDateSelect = createSelector([_getDateSelects], dateSelects => {
+  return dateSelects[dateSelectId] || {
     startDate: moment().subtract(3, 'month').startOf('month'),
     endDate: moment().subtract(1, 'month').endOf('month')
   };
+});
 
-  // If not explicitly set, the base currency is just the currency of the first
-  // account (usually the default)
-  const baseCurrency = state.edit.charts.baseCurrency ||
-    (state.accounts.data.find(a => !!a.currency) || {}).currency ||
-    null;
+const getBaseCurrency = createSelector(
+  [_getAccounts, _getBaseCurrency],
+  (accounts, baseCurrency) => {
+    // If not explicitly set, the base currency is just the currency of the first
+    // account (usually the default)
+    return baseCurrency || (accounts.find(a => !!a.currency) || {}).currency || null;
+  }
+);
 
-  const filterCategories = state.edit.charts.filterCategories || new Set();
+const getCurrencies = createSelector([_getAccounts], accounts => {
+  return Array.from(
+    new Set(accounts.filter(a => !!a.currency).map(a => a.currency))
+  ).sort()
+});
 
-  const categories = state.categories.data.reduce((obj, category) => {
-    obj[category.id] = category;
+const getAccounts = createSelector([_getAccounts], accounts => {
+  return accounts.reduce((obj, acct) => {
+    obj[acct.id] = acct;
     return obj;
   }, {});
+});
 
-  let transactions = state.transactions.data;
-  if (state.transactions.groups) {
+const getCategories = createSelector([_getCategories], categories => {
+  return categories.reduce((obj, category) => {
+    obj[category.id] = category;
+    return obj;
+  }, {})
+});
+
+const _getTransactionsWithGrouping = createSelector(
+  [_getTransactions,_getTransactionGroups],
+  (transactions,transactionGroups) => {
+    if (!transactionGroups) return transactions;
+
     // Copy the array because we will manipulate it below...
-    transactions = [...state.transactions.data];
+    transactions = [...transactions];
 
     // Create a reverse index lookup table for easier transaction access.
     const reverseLookup = transactions.reduce((obj, cur, i) => {
@@ -187,7 +185,7 @@ const mapStateToProps = state => {
     // XXX: In the future, this summing of amounts might be changed by a group
     // parameter. This is just the default behavior for now and it should work
     // well for e.g. refunds
-    Object.entries(state.transactions.groups)
+    Object.entries(transactionGroups)
       .forEach(([_, group]) => {
         const primaryTransactionIndex = reverseLookup[group.primaryId];
         const primaryTransaction = transactions[primaryTransactionIndex];
@@ -206,7 +204,91 @@ const mapStateToProps = state => {
       });
 
     transactions = transactions.filter(t => !transactionsToRemove.has(t.id));
+    return transactions;
   }
+);
+
+const getTransactions = createSelector(
+  [
+    _getTransactionsWithGrouping,
+    getDateSelect,
+    getAccounts,
+    getCategories,
+    getCurrencies,
+    _getCurrencyRates,
+    getBaseCurrency,
+    getGroupByParentCategory
+  ],
+  (
+    transactions,
+    dateSelect,
+    accounts,
+    categories,
+    currencies,
+    currencyRates,
+    baseCurrency,
+    groupByParentCategory
+  ) => {
+    transactions = transactions.filter(t => {
+      return !t.ignore &&
+        moment(t.date).isBetween(dateSelect.startDate, dateSelect.endDate, 'day', '[]');
+    });
+
+    transactions = transactions.map(t => {
+      let newTransaction = Object.assign({}, t, {
+        category: findCategory(
+          categories,
+          t.category.confirmed || uncategorized.id,
+          true,
+          !!groupByParentCategory
+        )
+      });
+
+      if (currencies.length > 1 && currencyRates) {
+        newTransaction  = Object.assign({}, newTransaction, {
+          amount: convertCurrency(
+            t.amount,
+            accounts[t.account].currency,
+            baseCurrency,
+            t.date,
+            currencyRates
+          ),
+          currency: baseCurrency,
+          originalAmount: t.amount,
+          originalCurrency: accounts[t.account].currency
+        });
+      }
+
+      return newTransaction;
+    });
+
+    return transactions;
+  }
+);
+
+const mapStateToProps = state => {
+  const dateSelect = getDateSelect(state);
+  const baseCurrency = getBaseCurrency(state);
+  const currencies = getCurrencies(state);
+  const accounts = getAccounts(state);
+  const categories = getCategories(state);
+
+  const filterCategories = state.edit.charts.filterCategories || new Set();
+
+  const transactions = getTransactions(state);
+
+  // Calculate some commonly used subsets of the filtered data.
+  const expenses = transactions.filter(t => t.amount < 0);
+  const income = transactions.filter(t => t.amount >= 0);
+  const sortedCategoryExpenses = nest()
+    .key(d => d.category.id)
+    .rollup(transactions => ({
+      transactions,
+      category: transactions[0].category,
+      amount: Math.abs(sum(transactions, d => d.amount))
+    }))
+    .entries(expenses)
+    .sort((a, b) => b.value.amount - a.value.amount);
 
   return {
     dateSelectId,
@@ -214,10 +296,16 @@ const mapStateToProps = state => {
     categories,
     filterCategories,
     transactions,
-    accounts: state.accounts.data,
+    currencies,
+    accounts,
+    expenses,
+    income,
+    sortedCategoryExpenses,
     startDate: dateSelect.startDate,
     endDate: dateSelect.endDate,
     currencyRates: state.edit.currencyRates,
+    groupByParentCategory: state.edit.charts.groupByParentCategory,
+    noData: state.transactions.data.length === 0
   };
 };
 
@@ -228,6 +316,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleBaseCurrencyChange: baseCurrency => {
       dispatch(actions.setChartsBaseCurrency(baseCurrency));
+    },
+    handleGroupByParentCategoryChange: enabled => {
+      dispatch(actions.setChartsGroupByParentCategory(enabled));
     },
     ensureCurrencyRates: currencies => {
       dispatch(actions.fetchCurrencyRates(currencies));
