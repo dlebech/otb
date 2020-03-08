@@ -17,13 +17,17 @@ describe('Chart', () => {
         {
           date: '2018-01-01',
           amount: -1,
-          category: {},
+          category: {
+            confirmed: 'b'
+          },
           account: 'a'
         },
         {
           date: '2018-01-01',
-          amount: -1,
-          category: {},
+          amount: -2,
+          category: {
+            confirmed: 'b'
+          },
           account: 'b'
         },
         {
@@ -35,7 +39,17 @@ describe('Chart', () => {
       ]
     },
     categories: {
-      data: []
+      data: [
+        {
+          id: 'a',
+          name: 'Food'
+        },
+        {
+          id: 'b',
+          name: 'Groceries',
+          parent: 'a'
+        }
+      ]
     },
     edit: {
       charts: {},
@@ -65,7 +79,7 @@ describe('Chart', () => {
     app: {}
   };
 
-  it('should render nothing when there are no transactions', () => {
+  it('should render nothing when there are no transactions at all', () => {
     const store = mockStore({
       transactions: {
         data: []
@@ -106,7 +120,7 @@ describe('Chart', () => {
     expect(barChart.props().data).toEqual([
       {
         key: '2018-01',
-        value: 0.75 // The -1 DKK is converted to -1.25 SEK
+        value: -0.5 // The -2 DKK is converted to -2.50 SEK - 1 SEK + 3 SEK = -0.5
       },
     ]);
 
@@ -116,7 +130,7 @@ describe('Chart', () => {
       {
         key: '2018-01-01',
         income: 0,
-        expenses: 2.25 // The -1 DKK is converted to -1.25 SEK and the absolute value is used
+        expenses: 3.5 // The -2 DKK is converted to -2.50 SEK - 1 SEK = -3.5 and absolute value 3.5 is used
       },
       {
         key: '2018-01-02',
@@ -128,8 +142,11 @@ describe('Chart', () => {
     const summary = charts.find('Summary');
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
-    expect(rendered.find('.card').eq(0).text()).toMatch('2Expenses');
+
+    // 3.5 is rounded to 4 in the cards.
+    expect(rendered.find('.card').eq(0).text()).toMatch('4Expenses');
     expect(rendered.find('.card').eq(1).text()).toMatch('3Income')
+    expect(rendered.find('.card').eq(2).text()).toMatch('4Spent on "Groceries"');
   });
 
   it('should render nothing when outside daterange', () => {
@@ -155,7 +172,7 @@ describe('Chart', () => {
     expect(summary.length).toEqual(1);
     const rendered = summary.render();
     expect(rendered.find('.card').eq(0).text()).toMatch('0Expenses');
-    expect(rendered.find('.card').eq(1).text()).toMatch('0Income')
+    expect(rendered.find('.card').eq(1).text()).toMatch('0Income');
   });
 
   it('should exclude ignored transactions', () => {
@@ -206,6 +223,25 @@ describe('Chart', () => {
     expect(rendered.find('.card').eq(1).text()).toMatch('3Income')
   });
 
+  it('should show parent categories only, when requested', () => {
+    const newEdit = Object.assign({}, baseData.edit);
+    const data = Object.assign({}, baseData);
+    data.edit = newEdit;
+    data.edit.charts.groupByParentCategory = true;
+    const store = mockStore(data);
+
+    const wrapper = mount(
+      <Provider store={store}>
+        <Charts />
+      </Provider>
+    );
+    const summary = wrapper.find('Charts').find('Summary');
+    expect(summary.length).toEqual(1);
+    const rendered = summary.render();
+    // "Food", rather than "Groceries"
+    expect(rendered.find('.card').eq(2).text()).toMatch('4Spent on "Food"');
+  });
+
   describe('base currency dropdown', () => {
     it('should show base currency dropdown', () => {
       const store = mockStore(baseData);
@@ -217,8 +253,8 @@ describe('Chart', () => {
       const charts = wrapper.find('Charts');
       const options = charts.find('#base-currency > option');
       expect(options.length).toEqual(2);
-      expect(options.at(0).text()).toEqual('SEK');
-      expect(options.at(1).text()).toEqual('DKK');
+      expect(options.at(0).text()).toEqual('DKK');
+      expect(options.at(1).text()).toEqual('SEK');
     });
 
     it('should not show base currency when there are less than two currencies', () => {

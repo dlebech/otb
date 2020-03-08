@@ -13,7 +13,7 @@ const CategoryExpenses = props => {
 
   // Filter the categories, if requested
   if (props.filterCategories.size > 0) {
-    filteredCategories = props.sortedCategoryExpenses
+    filteredCategories = filteredCategories
       .filter(e => props.filterCategories.has(e.value.category.id));
   }
 

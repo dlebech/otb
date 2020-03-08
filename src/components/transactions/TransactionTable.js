@@ -52,7 +52,6 @@ class TransactionTable extends React.Component {
 
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleCategorySelect = this.handleCategorySelect.bind(this);
-    this.handleDatesChange = this.handleDatesChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.handleRowSelect = this.handleRowSelect.bind(this);
     this.handleSelectAll = this.handleSelectAll.bind(this);
@@ -81,10 +80,6 @@ class TransactionTable extends React.Component {
       props.sortAscending
     );
     return { data, dataView, selectedRows: new Set() };
-  }
-
-  handleDatesChange({ startDate, endDate }) {
-    this.props.handleDatesChange(this.props.dateSelect.id, startDate, endDate);
   }
 
   handlePageSizeChange(pageSize) {
@@ -139,7 +134,7 @@ class TransactionTable extends React.Component {
               id={this.props.dateSelect.id}
               startDate={this.props.dateSelect.startDate}
               endDate={this.props.dateSelect.endDate}
-              handleDatesChange={this.handleDatesChange}
+              handleDatesChange={this.props.handleDatesChange}
               showPresets={false}
               dateProps={{
                 showClearDates: true,

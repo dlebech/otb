@@ -13,7 +13,7 @@ const groupAmounts = (transactions, accounts) => {
       originalAmount: sum(t, d => d.originalAmount)
     }))
     .entries(transactions)
-    .map(e => ({ account: accounts.find(a => a.id === e.key), amounts: e.value }));
+    .map(e => ({ account: accounts[e.key], amounts: e.value }));
 };
 
 const Summary = props => {
@@ -25,15 +25,15 @@ const Summary = props => {
   const incomeTotal = formatNumber(Math.round(sum(income, d => d.amount)));
   const incomeAmounts = groupAmounts(income, props.accounts);
 
-  const largestCategoryExpenses = props.sortedCategoryExpenses[0];
+  const largestCategoryExpense = props.sortedCategoryExpenses[0];
 
   let categorySpend;
-  if (largestCategoryExpenses) {
-    const category = largestCategoryExpenses.value.category;
+  if (largestCategoryExpense) {
+    const category = largestCategoryExpense.value.category;
     categorySpend = {
       title: `Spent on "${category.name}"`,
-      amount: formatNumber(Math.round(largestCategoryExpenses.value.amount)),
-      amounts: groupAmounts(largestCategoryExpenses.value.transactions, props.accounts)
+      amount: formatNumber(Math.round(largestCategoryExpense.value.amount)),
+      amounts: groupAmounts(largestCategoryExpense.value.transactions, props.accounts)
     };
   }
 
@@ -81,11 +81,7 @@ Summary.propTypes = {
       }).isRequired
     })
   })).isRequired,
-  accounts: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    currency: PropTypes.string
-  })).isRequired,
+  accounts: PropTypes.object.isRequired,
   baseCurrency: PropTypes.string.isRequired
 };
 
