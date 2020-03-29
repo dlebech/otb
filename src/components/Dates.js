@@ -38,6 +38,18 @@ const presets = [
     value: 'last12Months',
     startDate: moment().subtract(12, 'month').startOf('month'),
     endDate: moment().subtract(1, 'month').endOf('month')
+  },
+  {
+    label: `Last Year (${moment().subtract(1, 'year').format('Y')})`,
+    value: 'lastYear',
+    startDate: moment().subtract(1, 'year').startOf('year'),
+    endDate: moment().subtract(1, 'year').endOf('year')
+  },
+  {
+    label: `Previous Year (${moment().subtract(2, 'year').format('Y')})`,
+    value: 'previousYear',
+    startDate: moment().subtract(2, 'year').startOf('year'),
+    endDate: moment().subtract(2, 'year').endOf('year')
   }
 ];
 

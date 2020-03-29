@@ -29,6 +29,9 @@ const CategoryLine = props => {
   const data = Object.entries(obj)
     .map(([date, categories]) => {
       const categoryIds = new Set(Object.keys(categories));
+
+      // Add 0 amounts for dates that are missing a specific category ID.
+      // This avoids holes in the graph.
       const missingCategories = [...allCategories]
         .filter(c => !categoryIds.has(c))
         .reduce((o, c) => {

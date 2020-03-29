@@ -104,6 +104,7 @@ const Charts = props => {
       <section className="mt-5">
         <CategoryExpenses
           filterCategories={props.filterCategories}
+          categories={props.categories}
           handleCategoryChange={props.handleCategoryChange}
           handleCategorySortingChange={props.handleCategorySortingChange}
           sortedCategoryExpenses={props.sortedCategoryExpenses}
@@ -207,7 +208,6 @@ const _getTransactionsWithGrouping = createSelector(
     return transactions;
   }
 );
-
 const getTransactions = createSelector(
   [
     _getTransactionsWithGrouping,
@@ -266,6 +266,29 @@ const getTransactions = createSelector(
   }
 );
 
+const getIncomeAndExpenses = createSelector([getTransactions], transactions => {
+  const income = [];
+  const expenses = []
+  transactions.forEach(t => {
+    if (t.amount < 0) expenses.push(t);
+    else income.push(t);
+  })
+  return [income, expenses];
+});
+
+const getSortedCategoryExpenses = createSelector([getIncomeAndExpenses], ([_, expenses]) => {
+  return nest()
+    .key(d => d.category.id)
+    .rollup(transactions => ({
+      transactions,
+      category: transactions[0].category,
+      amount: Math.abs(sum(transactions, d => d.amount))
+    }))
+    .entries(expenses)
+    .sort((a, b) => b.value.amount - a.value.amount)
+});
+
+
 const mapStateToProps = state => {
   const dateSelect = getDateSelect(state);
   const baseCurrency = getBaseCurrency(state);
@@ -278,17 +301,8 @@ const mapStateToProps = state => {
   const transactions = getTransactions(state);
 
   // Calculate some commonly used subsets of the filtered data.
-  const expenses = transactions.filter(t => t.amount < 0);
-  const income = transactions.filter(t => t.amount >= 0);
-  const sortedCategoryExpenses = nest()
-    .key(d => d.category.id)
-    .rollup(transactions => ({
-      transactions,
-      category: transactions[0].category,
-      amount: Math.abs(sum(transactions, d => d.amount))
-    }))
-    .entries(expenses)
-    .sort((a, b) => b.value.amount - a.value.amount);
+  const [income, expenses] = getIncomeAndExpenses(state);
+  const sortedCategoryExpenses = getSortedCategoryExpenses(state);
 
   return {
     dateSelectId,
