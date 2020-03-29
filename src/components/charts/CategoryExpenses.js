@@ -6,6 +6,8 @@ import CategoryLine from './CategoryLine';
 
 const CategoryExpenses = props => {
   const handleCategoryChange = options => {
+    // Options is sometimes null
+    options = options || [];
     props.handleCategoryChange(options.map(o => o.value));
   };
 
