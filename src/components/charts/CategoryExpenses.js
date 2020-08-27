@@ -13,7 +13,7 @@ const getFilterCategories = (categoryMapping, filterCategories) => {
     // If this is a parent category (meaning it does not have a parent itself),
     // find all children and add them as well.
     if (categoryMapping[categoryId] && !categoryMapping[categoryId].parent) {
-      for (const [_, category] of Object.entries(categoryMapping)) {
+      for (const [ , category] of Object.entries(categoryMapping)) {
         if (category.parent === categoryId) {
           actualFilterCategories.add(category.id);
         }
