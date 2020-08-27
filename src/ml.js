@@ -12,7 +12,7 @@ const retrainBayes = async transactions => {
   return classifier;
 };
 
-export const retrainCategorizer = async (transactions) => {
+export const retrainCategorizer = async transactions => {
   return {
     bayes: (await retrainBayes(transactions)).toJson()
   };

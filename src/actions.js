@@ -313,9 +313,10 @@ export const setEmptyTransactionsAccount = accountId => {
 export const createTestData = () => ({ type: CREATE_TEST_DATA });
 
 export const guessAllCategoriesStart = () => ({ type: GUESS_ALL_CATEGORIES_START });
-export const guessAllCategoriesEnd = transactionCategoryMapping => ({
+export const guessAllCategoriesEnd = (transactionCategoryMapping, categorizerConfig) => ({
   type: GUESS_ALL_CATEGORIES_END,
-  transactionCategoryMapping
+  transactionCategoryMapping,
+  categorizerConfig
 });
 
 export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
@@ -363,6 +364,15 @@ export const guessAllCategories = (requireConfirmed = true) => {
     // Signal to everyone that we are starting the guessing game.
     dispatch(guessAllCategoriesStart());
 
+    // If we don't have a classifier, train a new one
+    let categorizerConfig = state.transactions.categorizer;
+    if (!state.transactions.categorizer || !state.transactions.categorizer.bayes) {
+      // XXX: This could potentially become very heavy if the training process
+      // becomes complicated beyond bayes. It then might have to be trained
+      // asynchronously or a message shown to the user.
+      categorizerConfig = await retrainCategorizer(state.transactions.data);
+    }
+
     // Guess 100 transactions at a time with a bit of sleeping in between to
     // avoid locking the UI completely.
     const transactionsToGuess = chunk(
@@ -375,7 +385,7 @@ export const guessAllCategories = (requireConfirmed = true) => {
     for (let i = 0; i < transactionsToGuess.length; i++) {
       const guessMapping = await guessCategory(
         transactionsToGuess[i],
-        state.transactions.categorizer
+        categorizerConfig
       );
       for (const [key, value] of Object.entries(guessMapping)) {
         transactionCategoryMapping[key] = value;
@@ -384,7 +394,7 @@ export const guessAllCategories = (requireConfirmed = true) => {
     }
 
     // Signal that we are done, and update all the guesses.
-    dispatch(guessAllCategoriesEnd(transactionCategoryMapping));
+    dispatch(guessAllCategoriesEnd(transactionCategoryMapping, categorizerConfig));
   };
 };
 
