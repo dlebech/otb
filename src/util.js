@@ -1,8 +1,7 @@
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import * as categories from './data/categories';
-import { defaultAccount }  from './data/accounts';
-import { Exception } from 'handlebars';
+import { defaultAccount } from './data/accounts';
 
 /**
  * Guess the date format for a string that could potentially be a date. Makes a
@@ -59,7 +58,7 @@ export const guessColumnSpec = transactions => {
           continue;
         }
       }
-      
+
       if (cleanNumber(val)) {
         if (!hasColumnType('amount')) columnSpec[i].type = 'amount';
         else if (!hasColumnType('total')) columnSpec[i].type = 'total';
@@ -247,10 +246,10 @@ export const convertCurrency = (amount, from, to, date, rates, base = 'EUR') => 
   if (from === to) return amount;
   if (amount === 0) return 0;
   const rate = rates[date];
-  if (!rate) throw new Exception(`Rates for ${date} do not exist`);
+  if (!rate) throw new Error(`Rates for ${date} do not exist`);
   const baseAmount = from === base ? amount : amount / rate[from];
   amount = to === base ? baseAmount : baseAmount * rate[to];
-  if (!amount) throw new Exception(`Cannot convert from ${from} to ${to}`);
+  if (!amount) throw new Error(`Cannot convert from ${from} to ${to}`);
   return amount;
 };
 
