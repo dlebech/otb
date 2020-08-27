@@ -81,8 +81,7 @@ Summary.propTypes = {
       }).isRequired
     })
   })).isRequired,
-  accounts: PropTypes.object.isRequired,
-  baseCurrency: PropTypes.string.isRequired
+  accounts: PropTypes.object.isRequired
 };
 
 export default Summary;
