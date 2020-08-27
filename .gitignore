@@ -21,3 +21,11 @@ yarn-error.log*
 
 .vscode/
 test_examples/
+
+# Yarn V2 stuff (not using zero-install)
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
