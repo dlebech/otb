@@ -179,7 +179,11 @@ const transactionsReducer = (state = initialTransactions, action) => {
           }
         });
       });
-      return state;
+      return update(state, {
+        categorizer: {
+          $set: action.categorizerConfig
+        }
+      });
     case actions.CATEGORIZE_ROW_END:
       const lookup2 = util.reverseIndexLookup(state.data);
       Object.keys(action.transactionCategoryMapping).forEach(key => {
