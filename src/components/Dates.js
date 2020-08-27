@@ -69,7 +69,14 @@ class Dates extends React.Component {
   }
 
   handleDatesChange({ startDate, endDate }) {
-    if (!startDate || !endDate) return;
+    // Do nothing when both dates are empty.
+    if (!startDate && !endDate) return;
+
+    // Clone dates if one is empty. This will make the date update work when one
+    // field is initially empty.
+    if (!startDate && endDate) startDate = endDate.clone();
+    else if (startDate && !endDate) endDate = startDate.clone();
+
     this.props.handleDatesChange(this.props.id, startDate, endDate);
   }
 
