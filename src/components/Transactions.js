@@ -12,6 +12,7 @@ import Confirm from './modals/Confirm';
 import NoData from './NoData';
 import TransactionTable from './transactions/TransactionTable';
 import NewCategoryForRow from './transactions/NewCategoryForRow';
+import { arrayToObjectLookup } from '../util';
 
 class Transactions extends React.Component {
   constructor(props) {
@@ -163,10 +164,7 @@ const mapStateToProps = state => {
     transactions = transactions.filter(t => ids.has(t.id));
   }
 
-  const accounts = state.accounts.data.reduce((obj, account) => {
-    obj[account.id] = account;
-    return obj;
-  }, {});
+  const accounts = arrayToObjectLookup(state.accounts.data);
 
   const dateSelectId = 'transaction-dates';
   const dateSelect = state.edit.dateSelect[dateSelectId] || {

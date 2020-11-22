@@ -7,7 +7,7 @@ import { sum } from 'd3-array';
 import { createSelector } from 'reselect';
 import { uncategorized } from '../data/categories';
 import * as actions from '../actions';
-import { convertCurrency, findCategory } from '../util';
+import { convertCurrency, findCategory, arrayToObjectLookup, reverseIndexLookup } from '../util';
 import NoData from './NoData';
 import Dates from './Dates';
 import Summary from './charts/Summary';
@@ -149,19 +149,8 @@ const getCurrencies = createSelector([_getAccounts], accounts => {
   ).sort()
 });
 
-const getAccounts = createSelector([_getAccounts], accounts => {
-  return accounts.reduce((obj, acct) => {
-    obj[acct.id] = acct;
-    return obj;
-  }, {});
-});
-
-const getCategories = createSelector([_getCategories], categories => {
-  return categories.reduce((obj, category) => {
-    obj[category.id] = category;
-    return obj;
-  }, {})
-});
+const getAccounts = createSelector([_getAccounts], accounts => arrayToObjectLookup(accounts));
+const getCategories = createSelector([_getCategories], categories => arrayToObjectLookup(categories));
 
 const _getTransactionsWithGrouping = createSelector(
   [_getTransactions,_getTransactionGroups],
@@ -172,10 +161,7 @@ const _getTransactionsWithGrouping = createSelector(
     transactions = [...transactions];
 
     // Create a reverse index lookup table for easier transaction access.
-    const reverseLookup = transactions.reduce((obj, cur, i) => {
-      obj[cur.id] = i;
-      return obj;
-    }, {})
+    const reverseLookup = reverseIndexLookup(transactions);
 
     const transactionsToRemove = new Set();
 
