@@ -1,6 +1,6 @@
 {
   "name": "otb",
-  "version": "1.14.1",
+  "version": "1.14.2",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
