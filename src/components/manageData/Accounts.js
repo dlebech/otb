@@ -174,7 +174,7 @@ Account.propTypes = {
 
 const Accounts = props => {
   return (
-    <React.Fragment>
+    <>
       <div className="row">
         <div className="col">
           <ul>
@@ -212,7 +212,7 @@ const Accounts = props => {
         </div>
       </div>
       <Confirm />
-    </React.Fragment>
+    </>
   );
 };
 

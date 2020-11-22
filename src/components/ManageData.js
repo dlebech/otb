@@ -6,12 +6,14 @@ import RestoreData from './manageData/RestoreData';
 import Categories from './manageData/Categories';
 import Accounts from './manageData/Accounts';
 import * as actions from '../actions';
+import { arrayToObjectLookup } from '../util';
 
 class ManageData extends React.Component {
   constructor(props) {
     super(props);
 
     this.handleDownload = this.handleDownload.bind(this);
+    this.handleCsvDownload = this.handleCsvDownload.bind(this);
     this.handleSetAccountOnTransactions = this.handleSetAccountOnTransactions.bind(this);
   }
 
@@ -30,6 +32,84 @@ class ManageData extends React.Component {
       type: 'application/json'
     });
     download(blob, 'data.json', 'application/json');
+  }
+
+  async handleCsvDownload() {
+    const [Papa, download] = await Promise.all([
+      import('papaparse').then(m => m.default),
+      import('downloadjs').then(m => m.default)
+    ]);
+
+    const accounts = arrayToObjectLookup(this.props.state.accounts.data);
+    const categories = arrayToObjectLookup(this.props.state.categories.data);
+    const lines = this.props.state.transactions.data.map(t => {
+      const line = [
+        t.id,
+        t.date,
+        t.description,
+        t.descriptionCleaned,
+        t.amount,
+        t.total,
+      ];
+
+      let categoryId = '';
+      let categoryName = '';
+      if (t.category && t.category.confirmed) {
+        categoryId = t.category.confirmed;
+
+        const category = categories[t.category.confirmed];
+
+        // The category not found should never happen :-)
+        categoryName = category.name || 'CATEGORY NOT FOUND';
+        if (category.parent) {
+          categoryName = categories[category.parent].name + ' > ' + categoryName;
+        }
+      }
+
+      line.push(categoryId);
+      line.push(categoryName);
+
+      let accountId = '';
+      let accountName = '';
+      let accountCurrency = ''
+      if (t.account) {
+        accountId = t.account;
+        const account = accounts[t.account];
+
+        // The account not found should never happen :-)
+        accountName = account.name || 'ACCOUNT NOT FOUND';
+        accountCurrency = account.currency || '';
+      }
+
+      line.push(accountId);
+      line.push(accountName);
+      line.push(accountCurrency);
+
+      return line;
+    });
+
+    // Sort by date
+    lines.sort((a, b) => a[1].localeCompare(b[1]));
+
+    const csvString = Papa.unparse({
+      fields: [
+        'transaction_id',
+        'date',
+        'description',
+        'description_cleaned',
+        'amount',
+        'total',
+        'category_id',
+        'category_name',
+        'account_id',
+        'account_name',
+        'account_currency',
+      ],
+      data: lines
+    });
+
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    download(blob, 'transactions.csv', 'text/csv');
   }
 
   handleSetAccountOnTransactions() {
@@ -79,6 +159,13 @@ class ManageData extends React.Component {
             <RestoreData className="btn btn-outline-secondary m-1" persistor={this.props.persistor}>
               Restore Previous Download
             </RestoreData>
+            <button
+              type="button"
+              className="btn btn-outline-secondary m-1"
+              onClick={this.handleCsvDownload}
+            >
+              Download transactions as CSV
+            </button>
           </div>
         </div>
         <hr />

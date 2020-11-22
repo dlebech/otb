@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Select from 'react-select';
 import Creatable from 'react-select/creatable';
 import { uncategorized } from '../../data/categories';
+import { arrayToObjectLookup } from '../../util';
 
 const findValue = (value, options) => {
   if (value instanceof Set) value = Array.from(value);
@@ -92,11 +93,7 @@ CategorySelect.defaultProps = {
 };
 
 const mapStateToProps = state => {
-  const categories = state.categories.data
-    .reduce((obj, category) => {
-      obj[category.id] = category;
-      return obj;
-    }, {});
+  const categories = arrayToObjectLookup(state.categories.data);
 
   const categoryOptions = Object.values(categories)
     .map(category => ({

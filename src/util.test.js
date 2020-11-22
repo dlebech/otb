@@ -141,3 +141,33 @@ describe('momentParse', () => {
     expect(util.momentParse('13/12/2011', 'YYYY-MM-DD').isValid()).toBeFalsy();
   });
 });
+
+describe('reverseIndexLookup', () => {
+  it('should create an object with array index lookup', () => {
+    const arr = [
+      { id: 'a' },
+      { id: 'b' },
+      { id: 'c' },
+    ];
+    expect(util.reverseIndexLookup(arr)).toEqual({
+      a: 0,
+      b: 1,
+      c: 2
+    })
+  });
+});
+
+describe('reverseIndexLookup', () => {
+  it('should create an object with array index lookup', () => {
+    const arr = [
+      { id: 'a' },
+      { id: 'b' },
+      { id: 'c' },
+    ];
+    expect(util.arrayToObjectLookup(arr)).toEqual({
+      a: { id: 'a' },
+      b: { id: 'b' },
+      c: { id: 'c' },
+    })
+  });
+});

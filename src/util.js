@@ -287,8 +287,22 @@ export const fillDates = rates => {
  * @returns {Object} - The mapping of ID to array index
  */
 export const reverseIndexLookup = arr => {
-  return arr.reduce((obj, t, i) => {
-    obj[t.id] = i;
-    return obj;
+  return arr.reduce((finalObj, obj, i) => {
+    finalObj[obj.id] = i;
+    return finalObj;
+  }, {});
+};
+
+/**
+ * Takes an array of object items with an `id` field and transforms it into a
+ * single object with the IDs as lookup keys.
+ * [{id: 'a'}, {id: 'b'}] => {a: {id: 'a'}, b: {id: 'b'}}
+ * @param {Array} arr - The array to create an object from
+ * @returns {Object} - The mapping of ID to object
+ */
+export const arrayToObjectLookup = arr => {
+  return arr.reduce((finalObj, obj) => {
+    finalObj[obj.id] = obj;
+    return finalObj;
   }, {});
 };
