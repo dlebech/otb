@@ -1,6 +1,6 @@
 # OTB
 
-[![Build Status](https://travis-ci.org/dlebech/otb.svg?branch=master)](https://travis-ci.org/dlebech/otb)
+![build status](https://github.com/dlebech/otb/workflows/Node.js%20CI/badge.svg)
 
 OTB is an app that can parse a list of bank transactions, automatically categorize them
 and visualize expenses and incomes over time.
