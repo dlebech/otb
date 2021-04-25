@@ -65,6 +65,11 @@ describe('cleanTransactionDescription', () => {
     expect(util.cleanTransactionDescription('this IS cool'))
       .toEqual('this is cool');
   });
+
+  it('should remove double-spacing', () => {
+    expect(util.cleanTransactionDescription('yes  yes'))
+      .toEqual('yes yes');
+  });
 });
 
 describe('formatNumber', () => {

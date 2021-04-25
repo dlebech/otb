@@ -418,6 +418,7 @@ describe('deleteCategory', () => {
           },
           {
             description: 'apple',
+            descriptionCleaned: 'apple',
             category: {
               guess: '',
               confirmed: 'food'
@@ -425,6 +426,7 @@ describe('deleteCategory', () => {
           },
           {
             description: 'origami',
+            descriptionCleaned: 'origami',
             category: {
               guess: '',
               confirmed: 'hobby'

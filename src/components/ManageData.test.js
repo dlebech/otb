@@ -30,7 +30,10 @@ describe('Manage Data', () => {
         data: [defaultAccount]
       },
       transactions: {
-        data: []
+        data: [],
+        categorizer: {
+          bayes: '{"wordFrequencyCount":{}}'
+        }
       },
       categories: {
         data: [
