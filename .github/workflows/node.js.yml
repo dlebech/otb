@@ -26,5 +26,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install -g yarn
     - run: yarn
-    - run: yarn test --coverage --coverageReporters text lcov
+    - run: yarn test --silent --coverage --coverageReporters text lcov
     - run: bash <(curl -s https://codecov.io/bash)

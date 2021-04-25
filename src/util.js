@@ -1,5 +1,5 @@
 import moment from 'moment';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import * as categories from './data/categories';
 import { defaultAccount } from './data/accounts';
 
@@ -132,7 +132,8 @@ export const cleanTransactionDescription = description => {
   if (!description) return description;
   description = description.replace(/\d{2,4}.{0,1}\d{2}.{0,1}\d{2,4}\s*/g, '');
   description = description.replace(/\d{4}\d*\s*/g, '');
-  return description.toLowerCase();
+  description = description.replace(/\s+/g, ' ');
+  return description.toLowerCase().trim();
 };
 
 export const toggleLocalStorage = async (persistor, enabled) => {

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RestoreData from './manageData/RestoreData';
 import Categories from './manageData/Categories';
 import Accounts from './manageData/Accounts';
+import Categorizer from './manageData/Categorizer';
 import * as actions from '../actions';
 import { arrayToObjectLookup } from '../util';
 
@@ -170,13 +171,18 @@ class ManageData extends React.Component {
         </div>
         <hr />
         <div className="row">
-          <div className="col">
+          <div className="col-md-6">
             <h3>Categories</h3>
             <Categories />
           </div>
-          <div className="col">
+          <div className="col-md-6">
             <h3>Accounts</h3>
-            <Accounts />
+            <div>
+              <Accounts />
+            </div>
+            <div className="mt-md-3">
+              <Categorizer />
+            </div>
           </div>
         </div>
         <ReactTooltip />

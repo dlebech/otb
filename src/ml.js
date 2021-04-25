@@ -2,11 +2,16 @@ import bayes from 'bayes';
 import { reverseIndexLookup } from './util';
 
 const retrainBayes = async transactions => {
-  const classifier = bayes();
+  const classifier = bayes({
+    tokenizer: (text) => text
+      .replace(/[^(a-zA-ZA-Яa-я0-9_)+\s]/g, ' ')
+      .trim()
+      .split(/\s+/)
+  });
+  console.log(classifier);
   for (const t of transactions) {
-    const description = t.descriptionCleaned || t.description;
-    if (t.category.confirmed && description) {
-      await classifier.learn(description, t.category.confirmed);
+    if (t.category.confirmed && t.descriptionCleaned) {
+      await classifier.learn(t.descriptionCleaned, t.category.confirmed);
     }
   }
   return classifier;
