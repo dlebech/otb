@@ -50,6 +50,12 @@ const presets = [
     value: 'previousYear',
     startDate: moment().subtract(2, 'year').startOf('year'),
     endDate: moment().subtract(2, 'year').endOf('year')
+  },
+  {
+    label: 'Since Y2K',
+    value: 'sincey2k',
+    startDate: moment('2000-01-01'),
+    endDate: moment()
   }
 ];
 
