@@ -1,8 +1,10 @@
 import reducers from './index';
 import * as actions from '../actions';
 
-jest.mock('uuid/v4', () => {
-  return jest.fn().mockReturnValue('abcd');
+jest.mock('uuid', () => {
+  return {
+    v4: () => 'abcd'
+  };
 });
 
 it('should add a new category', () => {

@@ -11531,7 +11531,7 @@ fsevents@^1.2.7:
     redux-search: ^2.5.0
     redux-thunk: ^2.3.0
     reselect: ^4.0.0
-    uuid: ^3.3.3
+    uuid: ^8.3.2
     webpack-bundle-analyzer: ^3.0.3
     xlsx: ^0.15.4
     yauzl: ^2.10.0
@@ -16334,7 +16334,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2, uuid@npm:^3.3.3, uuid@npm:^3.4.0":
+"uuid@npm:^3.3.2, uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
@@ -16352,7 +16352,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.3.0":
+"uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:

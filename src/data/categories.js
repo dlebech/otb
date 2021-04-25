@@ -1,4 +1,4 @@
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';;
 
 // These are the base parent categories
 export const foodAndDrink = { id: uuidv4(), name: 'Food & Drink' };

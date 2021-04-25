@@ -39,7 +39,7 @@
     "redux-search": "^2.5.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "uuid": "^3.3.3",
+    "uuid": "^8.3.2",
     "xlsx": "^0.15.4",
     "yauzl": "^2.10.0"
   },
