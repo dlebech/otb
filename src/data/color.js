@@ -8,4 +8,6 @@ const bootstrapColors = {
   white: '#ffffff'
 };
 
-export default { bootstrap: bootstrapColors };
+const colors = { bootstrap: bootstrapColors };
+
+export default colors;

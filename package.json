@@ -30,7 +30,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "4.0.3",
     "react-select": "^3.0.8",
-    "react-tooltip": "^3.11.1",
+    "react-tooltip": "^4.2.18",
     "recharts": "^1.8.5",
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
@@ -55,6 +55,7 @@
   "devDependencies": {
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
+    "eslint-config-react-app": "^6.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest-fetch-mock": "^2.1.2",
     "moxios": "^0.4.0",
