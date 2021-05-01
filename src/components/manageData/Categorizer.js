@@ -18,6 +18,9 @@ const getTopWords = (bayes) => {
 };
 
 const Categorizer = (props) => {
+  if (!props.categorizer || !props.categorizer.bayes) {
+    return null;
+  }
   const bayes = JSON.parse(props.categorizer.bayes);
 
   // Word frequency count for bayes is a mapping from category -> word -> count.
