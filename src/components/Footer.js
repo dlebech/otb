@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { version } from '../../package.json';
+import packageJson from '../../package.json';
 import { contactEmail } from '../config';
 
 const Footer = () => {
@@ -12,7 +12,7 @@ const Footer = () => {
           <div className="col-auto text-center">
             <p>
               <Link to="/privacy">Privacy Policy</Link> / <a href="https://github.com/dlebech/otb">Source Code</a>{contactEmail ? ` / ${contactEmail}` : ''}<br />
-              Current version: { version }
+              Current version: {packageJson.version}
             </p>
           </div>
         </div>

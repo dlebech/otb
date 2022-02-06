@@ -1,27 +1,21 @@
 import fs from 'fs';
 import path from 'path';
-import moxios from 'moxios';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { handler } from '../currencyRates';
 
 const daily = fs.readFileSync(path.join(__dirname, './daily.zip'));
 const historical = fs.readFileSync(path.join(__dirname, './hist.zip'));
 
 describe('currencyRates', () => {
+  let mock;
   beforeEach(() => {
-    moxios.install();
-
-    moxios.stubRequest(/.*eurofxref\.zip$/, {
-      status: 200,
-      response: daily
-    });
-
-    moxios.stubRequest(/.*eurofxref-hist\.zip$/, {
-      status: 200,
-      response: historical
-    });
+    mock = new MockAdapter(axios);
+    mock.onGet(/.*eurofxref\.zip$/).reply(200, daily);
+    mock.onGet(/.*eurofxref-hist\.zip$/).reply(200, historical);
   });
 
-  afterEach(() => moxios.uninstall());
+  afterEach(() => mock.restore());
 
   it('should return daily rates', async () => {
     const res = await handler();

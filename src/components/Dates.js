@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'react-dates/initialize';
-import { DateRangePicker, START_DATE } from 'react-dates';
+import { DateRangePicker } from 'react-dates';
 import Select from 'react-select';
 
 import 'react-dates/lib/css/_datepicker.css';
@@ -64,7 +64,7 @@ class Dates extends React.Component {
     super(props);
 
     this.state = {
-      focusedInput: START_DATE,
+      focusedInput: null,
       startDate: props.startDate,
       endDate: props.endDate,
     };
