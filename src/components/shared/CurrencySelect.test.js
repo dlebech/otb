@@ -8,7 +8,10 @@ import CurrencySelect from './CurrencySelect';
 describe('Currency Select', () => {
   const mockStore = configureStore([thunk]);
 
-  beforeEach(() => fetch.once(JSON.stringify(['USD', 'JPY'])));
+  beforeEach(() => {
+    fetch.resetMocks();
+    fetch.once(JSON.stringify(['USD', 'JPY']))
+  });
   afterEach(() => fetch.resetMocks());
 
   it('should render nothing when there are no currencies', () => {
@@ -39,8 +42,6 @@ describe('Currency Select', () => {
   });
 
   it('should fetch currencies', async () => {
-    fetch.once(JSON.stringify(['USD', 'JPY']));
-
     const store = mockStore({ app: {}, edit: {} });
 
     mount(

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import * as actions from '../actions';
 import { detectFileEncoding, cleanNumber, momentParse } from '../util';
 import Form from './transactionAdd/Form';
@@ -217,7 +217,7 @@ const sheetToCsv = async file => {
     const reader = new FileReader();
     reader.onload = e => {
       const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, {type: 'array'});
+      const workbook = XLSX.read(data, { type: 'array' });
       const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]])
       resolve(csv);
     };
