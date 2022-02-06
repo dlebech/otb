@@ -45,14 +45,14 @@ const Categorizer = (props) => {
         <h4>Top-10 most used words</h4>
         {Object
           .entries(wordCounts)
-          .sort((a, b) => b[1]-a[1])
+          .sort((a, b) => b[1] - a[1])
           .slice(0, 10)
           .map(([word, frequency]) => {
-            return <div>{word}: {frequency}</div>
+            return <div key={word}> {word}: {frequency}</div>
           })
         }
       </div>
-    </div>
+    </div >
   )
 };
 

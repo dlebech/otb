@@ -474,7 +474,7 @@ export const fetchCurrencyRates = currencies => {
         url.search = params;
       }
 
-      const currencyRates = await fetch(url).then(res => res.json());
+      const currencyRates = await fetch(url.href).then(res => res.json());
       fillDates(currencyRates);
 
       dispatch(setCurrencyRates(currencyRates));

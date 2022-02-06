@@ -261,7 +261,7 @@ describe('Chart', () => {
       const data = Object.assign({}, baseData);
       data.accounts = {
         data: [
-          { id: 'a', name: 'Account 1', currency: 'SEK'}
+          { id: 'a', name: 'Account 1', currency: 'SEK' }
         ]
       }
       data.transactions = {
@@ -285,6 +285,7 @@ describe('Chart', () => {
   });
 
   describe('currency fetch', () => {
+    beforeEach(() => fetch.resetMocks());
     afterEach(() => fetch.resetMocks());
 
     it('should start fetching currency rates if they are undefined', () => {

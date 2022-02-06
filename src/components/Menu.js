@@ -35,7 +35,7 @@ class Menu extends React.Component {
   }
 
   async handleExitDemo() {
-    if (this.props.localStorageEnabled) await this.handleToggleStorage({ target: { checked: false }});
+    if (this.props.localStorageEnabled) await this.handleToggleStorage({ target: { checked: false } });
     window.location.href = '/';
   }
 

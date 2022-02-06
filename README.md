@@ -22,9 +22,9 @@ if you are even using the service or not, since I do not track visits on the ser
 Running it locally should be something like this:
 
 ```
-yarn install
-yarn start:lambda
-yarn start
+npm ci
+npm run start:lambda
+npm start
 ```
 
 ## The name OTB

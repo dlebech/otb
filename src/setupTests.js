@@ -5,7 +5,8 @@ import configureFa from './configureFa';
 
 configureFa();
 configure({ adapter: new Adapter() });
-global.fetch = jestFetchMock;
+jestFetchMock.enableMocks();
+//global.fetch = jestFetchMock;
 if (!global.setImmediate) {
   global.setImmediate = (callback, ...args) => setTimeout(() => callback(...args), 0);
 }

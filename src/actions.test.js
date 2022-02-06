@@ -45,6 +45,7 @@ describe('addCategoryWithRow', () => {
 });
 
 describe('fetchCurrencies', () => {
+  beforeEach(() => fetch.resetMocks());
   afterEach(() => fetch.resetMocks());
 
   it('should fetch and set currencies', async () => {
@@ -69,6 +70,7 @@ describe('fetchCurrencies', () => {
 });
 
 describe('fetchCurrencyRates', () => {
+  beforeEach(() => fetch.resetMocks());
   afterEach(() => fetch.resetMocks());
 
   it('should fetch and set currency rates', async () => {
