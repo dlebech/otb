@@ -29,3 +29,6 @@ test_examples/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.next/
+*.tsbuildinfo
