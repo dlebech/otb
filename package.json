@@ -26,7 +26,6 @@
     "lodash": "^4.17.21",
     "lru-cache": "^11.1.0",
     "moment": "^2.29.1",
-    "netlify-lambda": "^2.0.15",
     "next": "^15.3.2",
     "papaparse": "^5.3.1",
     "postcss": "^8.5.4",
@@ -54,8 +53,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "start:lambda": "netlify-lambda serve src/lambda --config webpack.functions.js",
-    "build:lambda": "netlify-lambda build src/lambda --config webpack.functions.js",
     "test": "jest",
     "analyze": "npm run build && npx @next/bundle-analyzer build"
   },
