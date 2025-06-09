@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import Link from 'next/link';
 import { createSearchAction } from 'redux-search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,7 +16,7 @@ import { arrayToObjectLookup } from '../util';
 const searchTransactions = createSearchAction('transactions');
 
 export default function Transactions() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryTransactionId, setNewCategoryTransactionId] = useState('');

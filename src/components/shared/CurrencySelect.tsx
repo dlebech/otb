@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../../types/redux';
 import Select from 'react-select';
 import * as actions from '../../actions';
 import type { RootState } from '../../reducers';
@@ -11,7 +12,7 @@ interface Props {
 
 export default function CurrencySelect({ onChange, selectedCurrency }: Props) {
   const currencies = useSelector((state: RootState) => state.edit.currencies);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (!Array.isArray(currencies) || currencies.length === 0) {

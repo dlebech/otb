@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import Link from 'next/link';
 import { Tooltip } from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -89,7 +90,7 @@ function IntroWithoutData({
 };
 
 export default function Intro({ persistor }: IntroProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const numTransactions = useSelector((state: RootState) => state.transactions.data.length);
 
   const handleCreateData = useCallback(() => {

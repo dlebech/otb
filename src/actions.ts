@@ -215,7 +215,7 @@ export const categorizeRows = (rowCategoryMapping: any): AppThunk<Promise<any>> 
     const state = getState();
     const categorizerConfig = await updateCategorizer(
       state.transactions.data,
-      state.transactions.categorizer.bayes,
+      state.transactions.categorizer,
       rowCategoryMapping
     );
     
@@ -342,7 +342,7 @@ export const setChartsCategorySorting = (sorting: any) => ({
   sorting
 });
 
-export const fetchCurrencyRates = (currencies?: string[]): AppThunk<Promise<void>> => {
+export const fetchCurrencyRates = (currencies?: string[]): AppThunk<void> => {
   return async (dispatch) => {
     dispatch({ type: START_FETCH_CURRENCY_RATES });
 

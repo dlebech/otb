@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
 import { v4 as uuidv4 } from 'uuid';
 import * as actions from '../actions';
-import { defaultAccount, Account } from '../data/accounts';
+import { defaultAccount } from '../data/accounts';
 import { AnyAction } from 'redux';
 import { type AccountsState } from '../types/app';
 

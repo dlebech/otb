@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { type AppDispatch } from '../../types/redux';
 import * as actions from '../../actions';
 import { toggleLocalStorage as utilToggleLocalStorage } from '../../util';
 
@@ -10,7 +11,7 @@ interface RestoreDataProps {
 }
 
 export default function RestoreData({ children, className, persistor }: RestoreDataProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRestoreFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

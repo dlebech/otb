@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import dynamic from 'next/dynamic';
 import moment from 'moment';
 import { nest } from 'd3-collection';
@@ -184,7 +185,7 @@ const getSortedCategoryExpenses = createSelector(
 );
 
 export default function Charts() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   
   const {
     baseCurrency,
@@ -208,7 +209,7 @@ export default function Charts() {
     const accounts = getAccounts(state);
     const categories = getCategories(state);
 
-    const filterCategories = state.edit.charts.filterCategories || new Set();
+    const filterCategories = new Set(state.edit.charts.filterCategories || []);
 
     const transactions = getTransactions(state);
 

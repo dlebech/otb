@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,7 +14,7 @@ interface MenuProps {
 }
 
 export default function Menu({ persistor }: MenuProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const pathname = usePathname();
   const router = useRouter();
   const [showSaveDataModal, setShowSaveDataModal] = useState(false);
@@ -44,7 +45,7 @@ export default function Menu({ persistor }: MenuProps) {
     if (persistor) {
       utilToggleLocalStorage(persistor, localStorageEnabled);
     }
-  }, []); // Empty dependency array - run only once on mount
+  }); // Empty dependency array - run only once on mount
 
   // Do not return the menu on the front page.
   if (pathname === '/') return null;

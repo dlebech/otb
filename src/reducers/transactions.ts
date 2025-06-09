@@ -4,10 +4,7 @@ import * as actions from '../actions';
 import * as util from '../util';
 import { AnyAction } from 'redux';
 import {
-  type CategoryInfo,
-  type TransactionCategory,
   type Transaction,
-  type ColumnSpec,
   type TransactionImport,
   type TransactionGroup,
   type TransactionsState

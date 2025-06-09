@@ -1,4 +1,4 @@
-import { type ThunkAction } from 'redux-thunk';
+import { type ThunkAction, type ThunkDispatch } from 'redux-thunk';
 import { type UnknownAction } from 'redux';
 import { type RootState } from '../reducers';
 
@@ -14,3 +14,6 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   UnknownAction
 >;
+
+// Redux thunk dispatch type
+export type AppDispatch = ThunkDispatch<RootState, unknown, UnknownAction>;

@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import { Tooltip } from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RestoreData from './manageData/RestoreData';
@@ -16,7 +17,7 @@ interface ManageDataProps {
 }
 
 export default function ManageData({ persistor }: ManageDataProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   
   const state = useSelector((state: RootState) => state);
   

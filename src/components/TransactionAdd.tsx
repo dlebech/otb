@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../types/redux';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import * as actions from '../actions';
@@ -8,7 +9,6 @@ import { RootState } from '../reducers';
 import Form from './transactionAdd/Form';
 import PreviewTable from './transactionAdd/PreviewTable';
 import Errors from './transactionAdd/Errors';
-import { ColumnSpec } from '@/types/app';
 
 interface TransactionAddError {
   type: string;
@@ -16,7 +16,7 @@ interface TransactionAddError {
 }
 
 export default function TransactionAdd() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [errors, setErrors] = useState<TransactionAddError[]>([]);
 

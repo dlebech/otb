@@ -1,5 +1,6 @@
 import { Action } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { RootState } from '../reducers';
 
 // Declare types for Redux Thunk
 declare module 'redux' {

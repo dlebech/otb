@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../../types/redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as actions from '../../actions';
 import { RootState } from '../../reducers';
 import { Category as CategoryType, Transaction } from '../../types/redux';
 import ConfirmModal from '../shared/ConfirmModal';
 import Category, { NEW_CATEGORY_NAME } from './Category';
-import type { AppThunk } from '../../types/redux';
 
 interface CategoryWithTransactionCount {
   id: string;
@@ -15,10 +15,8 @@ interface CategoryWithTransactionCount {
   transactionCount: number;
 }
 
-interface CategoriesProps {}
-
 export default function Categories() {
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch<AppDispatch>();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<CategoryWithTransactionCount | null>(null);
   

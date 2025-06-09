@@ -1,6 +1,6 @@
 import { configureStore as createStore } from '@reduxjs/toolkit';
 import { createLogger } from 'redux-logger';
-import { persistStore, persistReducer, Persistor } from 'redux-persist';
+import { persistStore, persistReducer } from 'redux-persist';
 import { reduxSearch, SearchApi } from 'redux-search';
 import storage from 'redux-persist/lib/storage';
 import rootReducer from './reducers'

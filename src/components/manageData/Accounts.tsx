@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { type AppDispatch } from '../../types/redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as actions from '../../actions';
 import ConfirmModal from '../shared/ConfirmModal';
@@ -165,7 +166,7 @@ function Account({
 export default function Accounts() {
   const accounts = useSelector((state: RootState) => state.accounts.data);
   const transactions = useSelector((state: RootState) => state.transactions.data);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<AccountType | null>(null);
 

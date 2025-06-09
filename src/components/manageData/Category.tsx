@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Category as CategoryType, Transaction } from '../../types/redux';
-import ConfirmDelete from './ConfirmDelete';
 import CategoryEdit from './CategoryEdit';
 
 export const NEW_CATEGORY_NAME = 'New Category';
