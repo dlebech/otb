@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useDeferredValue, useCallback, useEffect } from 'react';
+import { debounce } from 'lodash';
 
 interface Props {
   searchText?: string;
@@ -7,15 +8,14 @@ interface Props {
 
 export default function SearchField({ searchText = '', handleSearch }: Props) {
   const [internalSearchText, setInternalSearchText] = useState(searchText);
+  const searchValue = useDeferredValue(internalSearchText);
 
   useEffect(() => {
-    setInternalSearchText(searchText);
-  }, [searchText]);
+    handleSearch(searchValue);
+  }, [handleSearch, searchValue]);
 
   const handleSearchInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInternalSearchText(newValue);
-    handleSearch(newValue);
+    setInternalSearchText(e.target.value);
   };
 
   return (

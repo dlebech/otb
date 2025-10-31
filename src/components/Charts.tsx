@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { type AppDispatch } from '../types/redux';
+import { type AppDispatch, Transaction, Category } from '../types/redux';
 import dynamic from 'next/dynamic';
 import moment from 'moment';
 import { nest } from 'd3-collection';
@@ -16,6 +16,19 @@ import Summary from './charts/Summary';
 import AmountSumBar from './charts/AmountSumBar';
 import IncomeExpensesLine from './charts/IncomeExpensesLine';
 import Loading from './shared/Loading';
+
+interface TransactionWithAmount extends Transaction {
+  originalAmount: number;
+}
+
+interface CategoryExpense {
+  key: string;
+  value: {
+    amount: number;
+    transactions: TransactionWithAmount[];
+    category: Category;
+  };
+}
 
 const CategoryExpenses = dynamic(() => import('./charts/CategoryExpenses'), {
   loading: () => <Loading />
@@ -33,7 +46,14 @@ const _getCurrencyRates = (state: RootState) => state.edit.currencyRates;
 const getGroupByParentCategory = (state: RootState) => state.edit.charts.groupByParentCategory;
 
 const getDateSelect = createSelector([_getDateSelects], (dateSelects: any) => {
-  return dateSelects[dateSelectId] || {
+  const dateSelect = dateSelects[dateSelectId];
+  if (dateSelect) {
+    return {
+      startDate: dateSelect.startDate ? moment(dateSelect.startDate) : null,
+      endDate: dateSelect.endDate ? moment(dateSelect.endDate) : null
+    };
+  }
+  return {
     startDate: moment().subtract(3, 'month').startOf('month'),
     endDate: moment().subtract(1, 'month').endOf('month')
   };
@@ -236,7 +256,11 @@ export default function Charts() {
   });
 
   const handleDatesChange = (dateSelectId: string, startDate: any, endDate: any) => {
-    dispatch(actions.editDates(dateSelectId, startDate, endDate));
+    dispatch(actions.editDates(
+      dateSelectId, 
+      startDate ? startDate.format('YYYY-MM-DD') : null,
+      endDate ? endDate.format('YYYY-MM-DD') : null
+    ));
   };
 
   const handleBaseCurrencyChange = (baseCurrency: string) => {
@@ -313,7 +337,7 @@ export default function Charts() {
         <Summary
           expenses={expenses}
           income={income}
-          sortedCategoryExpenses={sortedCategoryExpenses as any}
+          sortedCategoryExpenses={sortedCategoryExpenses}
           accounts={accounts}
         />
       </section>

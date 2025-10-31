@@ -6,11 +6,7 @@ import {
 } from 'recharts';
 import color from '../../data/color';
 import { formatNumber } from '../../util';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Category } from '../../types/redux';
 
 interface CategoryExpense {
   value: {

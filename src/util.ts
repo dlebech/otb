@@ -284,6 +284,12 @@ export const arrayToObjectLookup = (arr: any[]): Record<string, any> => {
 
 // Re-export other functions for now
 export const findCategory = (categoryList: any[] | Record<string, any>, categoryId: string, returnFallback = true, _returnParent = false): any => {
+  // Handle special uncategorized case - import here to avoid circular dependency
+  const { uncategorized } = require('./data/categories');
+  if (categoryId === uncategorized.id) {
+    return uncategorized;
+  }
+
   // Handle both array and object formats
   if (Array.isArray(categoryList)) {
     return categoryList.find(cat => cat.id === categoryId) || (returnFallback ? categoryList[0] : null);

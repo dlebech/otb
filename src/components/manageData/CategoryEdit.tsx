@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category } from '../../data/categories';
+import { Category } from '../../types/redux';
 
 interface CategoryEditProps {
   textRef: React.RefObject<HTMLInputElement | null>;

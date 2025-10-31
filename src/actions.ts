@@ -18,7 +18,7 @@ export const DELETE_TRANSACTION_GROUP = 'DELETE_TRANSACTION_GROUP';
 // Action creators
 export const toggleLocalStorage = (enabled: boolean) => ({
   type: TOGGLE_LOCAL_STORAGE,
-  payload: enabled
+  enabled
 });
 
 export const createTestData = (): AppThunk<Promise<void>> => (dispatch) => {

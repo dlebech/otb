@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch } from '../types/redux';
@@ -80,11 +80,16 @@ export default function Transactions() {
     const accountsObj = arrayToObjectLookup(state.accounts.data);
 
     const dateSelectId = 'transaction-dates';
-    const dateSelect = state.edit.dateSelect[dateSelectId] || {
+    const rawDateSelect = state.edit.dateSelect[dateSelectId] || {
       startDate: null,
       endDate: null
     };
-    (dateSelect as any).id = dateSelectId;
+    
+    const dateSelect = {
+      startDate: rawDateSelect.startDate ? moment(rawDateSelect.startDate) : null,
+      endDate: rawDateSelect.endDate ? moment(rawDateSelect.endDate) : null,
+      id: dateSelectId
+    };
 
     // Get parent categories for the modal
     const parentCategories = state.categories.data.filter((c: any) => !c.parent);
@@ -182,15 +187,17 @@ export default function Transactions() {
     dispatch(actions.deleteTransactionGroup(transactionGroupId));
   }, [dispatch]);
 
-  const handleSearch = useCallback((text: string, currentPage: number) => {
-    const debouncedSearch = debounce(() => {
+  const debouncedSearchRef = useRef(
+    debounce((text: string, currentPage: number) => {
       // This is the simplest version for making sure that we don't get stuck on
       // a non-existant page.
       if (currentPage !== 1) dispatch(actions.setTransactionListPage(1));
       dispatch(searchTransactions(text));
-    }, 250);
-    
-    debouncedSearch();
+    }, 300)
+  );
+
+  const handleSearch = useCallback((text: string, currentPage: number) => {
+    debouncedSearchRef.current(text, currentPage);
   }, [dispatch]);
 
   // Modified to match TransactionTable expected prop type

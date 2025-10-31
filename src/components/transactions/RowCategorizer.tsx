@@ -64,7 +64,6 @@ export default function RowCategorizer({
         selectedCategory={categoryConfirmedAsOption}
         onChange={handleCategoryChange}
         onCreate={handleCreateCategory}
-        focus={true}
         isMulti={false}
       />}
     </React.Fragment>

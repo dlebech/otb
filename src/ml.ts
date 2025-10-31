@@ -1,6 +1,6 @@
 import bayes from 'bayes';
 import { reverseIndexLookup } from './util';
-import { type Transaction } from './types/app';
+import { type Transaction } from './types/redux';
 
 interface CategorizerConfig {
   bayes: string;

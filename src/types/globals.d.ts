@@ -13,67 +13,7 @@ declare module "*.module.css" {
   export default classes;
 }
 
-// Transaction and Category Types
-interface Transaction {
-  id: string;
-  date: string;
-  description: string;
-  descriptionCleaned: string;
-  amount: number;
-  total: number;
-  category: {
-    confirmed?: string;
-    guess?: string;
-  };
-  account: string;
-  currency?: string;
-  originalAmount?: number;
-  originalCurrency?: string;
-  ignore?: boolean;
-}
 
-interface TransactionWithAmount extends Transaction {
-  amount: number;
-  originalAmount?: number;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  parent?: string;
-  transactionCount?: number;
-}
-
-interface CategoryExpense {
-  key: string;
-  value: {
-    amount: number;
-    transactions: TransactionWithAmount[];
-    category: Category;
-  };
-}
-
-// Global Redux State Types
-interface RootState {
-  app: {
-    storage: {
-      localStorage: boolean;
-    };
-    isTestMode: boolean;
-  };
-  transactions: {
-    data: any[];
-  };
-  accounts: {
-    data: any[];
-  };
-  categories: {
-    data: any[];
-  };
-  modal: any;
-  edit: any;
-  search: any;
-}
 
 // React Select module declaration
 declare module 'react-select' {

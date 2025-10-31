@@ -3,9 +3,7 @@ import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
 import { formatNumber } from '../../util';
 import AmountCard from './AmountCard';
-import { Transaction } from '../../types/app';
-import { Account } from '../../data/accounts';
-import { Category } from '../../data/categories';
+import { Transaction, Account, Category } from '../../types/redux';
 
 interface TransactionWithAmount extends Transaction {
   originalAmount: number;

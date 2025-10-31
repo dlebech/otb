@@ -2,21 +2,11 @@ import React from 'react';
 import CategorySelect from '../shared/CategorySelect';
 import CategoryTreeMap from './CategoryTreeMap';
 import CategoryLine from './CategoryLine';
+import { Transaction, Category } from '../../types/redux';
 
 interface CategoryOption {
   label: string;
   value: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  parent?: string;
-}
-
-interface Transaction {
-  amount: number;
-  date: string;
 }
 
 interface CategoryExpense {

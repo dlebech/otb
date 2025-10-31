@@ -1,16 +1,7 @@
 import React from 'react';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import CustomLineChart from '../shared/CustomLineChart';
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Transaction {
-  amount: number;
-  date: string;
-}
+import { Transaction, Category } from '../../types/redux';
 
 interface CategoryExpense {
   value: {

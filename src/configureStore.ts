@@ -25,7 +25,7 @@ export default function configureStore(preloadedState: any = {}) {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
-          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/FLUSH', 'persist/PURGE'],
           // Ignore these field paths in the state - they are now arrays, not Sets
           ignoredPaths: ['edit.transactionList.filterCategories', 'edit.charts.filterCategories']
         }

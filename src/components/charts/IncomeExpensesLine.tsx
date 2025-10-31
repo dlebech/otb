@@ -3,11 +3,7 @@ import { nest } from 'd3-collection';
 import { sum, ascending } from 'd3-array';
 import color from '../../data/color';
 import CustomLineChart from '../shared/CustomLineChart';
-
-interface Transaction {
-  date: string;
-  amount: number;
-}
+import { Transaction } from '../../types/redux';
 
 interface Props {
   transactions: Transaction[];

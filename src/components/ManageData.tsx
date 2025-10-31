@@ -10,7 +10,7 @@ import Categorizer from './manageData/Categorizer';
 import * as actions from '../actions';
 import { arrayToObjectLookup } from '../util';
 import { RootState } from '../reducers';
-import { Transaction } from '../types/app';
+import { Transaction } from '../types/redux';
 
 interface ManageDataProps {
   persistor: any;
