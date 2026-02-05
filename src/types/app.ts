@@ -83,13 +83,13 @@ export interface TransactionListState {
   pageSize: number;
   sortKey: string;
   sortAscending: boolean;
-  filterCategories: string[];
+  filterCategories: Set<string>;
   roundAmount?: boolean;
 }
 
 export interface ChartsState {
   baseCurrency?: string;
-  filterCategories?: string[];
+  filterCategories?: Set<string>;
   groupByParentCategory?: boolean;
 }
 

@@ -15,7 +15,7 @@ const initialEditor: EditState = {
     pageSize: 50,
     sortKey: 'date',
     sortAscending: false,
-    filterCategories: []
+    filterCategories: new Set()
   },
   charts: {}
 };
@@ -76,11 +76,11 @@ const editReducer = (state: EditState = initialEditor, action: any): EditState =
     case 'SET_TRANSACTION_LIST_FILTER_CATEGORIES':
       return update(state, {
         transactionList: {
+          filterCategories: {
+            $set: new Set(action.filterCategories)
+          },
           page: {
             $set: determinePage(state.transactionList.page, state.transactionList.pageSize, action.numTransactions)
-          },
-          filterCategories: {
-            $set: Array.isArray(action.filterCategories) ? action.filterCategories : Array.from(action.filterCategories)
           }
         }
       });
@@ -116,7 +116,7 @@ const editReducer = (state: EditState = initialEditor, action: any): EditState =
       return update(state, {
         charts: {
           filterCategories: {
-            $set: Array.isArray(action.categoryIds) ? action.categoryIds : Array.from(action.categoryIds)
+            $set: new Set(action.categoryIds)
           }
         }
       });

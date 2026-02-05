@@ -41,11 +41,12 @@ export default function Menu({ persistor }: MenuProps) {
   }, [localStorageEnabled, handleToggleStorage, router]);
 
   useEffect(() => {
-    // Initialize storage state only once on mount
+    // Initialize storage state only once on mount (emulating componentDidMount)
     if (persistor) {
       utilToggleLocalStorage(persistor, localStorageEnabled);
     }
-  }); // Empty dependency array - run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty - run only once on mount
 
   // Do not return the menu on the front page.
   if (pathname === '/') return null;

@@ -198,7 +198,7 @@ export default function Transactions() {
 
   const handleSearch = useCallback((text: string, currentPage: number) => {
     debouncedSearchRef.current(text, currentPage);
-  }, [dispatch]);
+  }, []);
 
   // Modified to match TransactionTable expected prop type
   const handleDatesChange = useCallback((startDate: any, endDate: any) => {
