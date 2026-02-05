@@ -419,6 +419,7 @@ describe('categorizeRowEnd', () => {
 it('should restore from file', () => {
   const state = reducers({}, actions.restoreStateFromFile({
     transactions: {
+      version: 1,
       data: [{ id: 'abcd' }]
     }
   }));
@@ -431,6 +432,7 @@ it('should restore from file', () => {
 it('should reset categories when a category is removed', () => {
   const state = reducers({
     transactions: {
+      version: 1,
       data: [
         {
           category: {
@@ -467,6 +469,7 @@ it('should reset categories when a category is removed', () => {
 it('should set a new categorizer when a category is done being deleted', () => {
   const state = reducers({
     transactions: {
+      version: 1,
       data: [
         {
           category: {
@@ -497,6 +500,7 @@ it('should set a new categorizer when a category is done being deleted', () => {
 it('should set a transaction to ignored', () => {
   let state = reducers({
     transactions: {
+      version: 1,
       data: [
         { id: 'abcd' }
       ]
@@ -516,6 +520,7 @@ it('should set a transaction to ignored', () => {
 it('should delete a transaction', () => {
   const state = reducers({
     transactions: {
+      version: 1,
       data: [
         { id: 'abcd' }
       ]
@@ -529,6 +534,7 @@ describe('Transaction grouping', () => {
   it('should not update groups if there are not enough IDs', () => {
     const state = reducers({
       transactions: {
+        version: 1,
         data: [
           { id: 'abcd' },
           { id: 'efgh' }
@@ -544,6 +550,7 @@ describe('Transaction grouping', () => {
   it('should group transactions according to dates', () => {
     const state = reducers({
       transactions: {
+        version: 1,
         data: [
           { id: 'abcd', date: '2018-01-02' },
           { id: 'efgh', date: '2018-01-01' }
@@ -562,6 +569,7 @@ describe('Transaction grouping', () => {
   it('should not add subset groups', () => {
     const state = reducers({
       transactions: {
+        version: 1,
         data: [
           { id: 'abcd', date: '2018-01-02' },
           { id: 'efgh', date: '2018-01-01' },
@@ -588,6 +596,7 @@ describe('Transaction grouping', () => {
   it('should delete a group', () => {
     const state = reducers({
       transactions: {
+        version: 1,
         groups: {
           'abcd_efgh_ijkl': {}
         }
@@ -609,6 +618,7 @@ it('should create test data', () => {
 it('should update empty account fields', () => {
   const state = reducers({
     transactions: {
+      version: 1,
       data: [
         { id: 'a', account: 'c' },
         { id: 'b' }

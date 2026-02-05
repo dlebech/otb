@@ -1,31 +1,25 @@
 import '@testing-library/jest-dom'
 
-// Mock Next.js router
-jest.mock('next/router', () => ({
+// Mock Next.js App Router navigation
+jest.mock('next/navigation', () => ({
   useRouter() {
     return {
-      route: '/',
-      pathname: '/',
-      query: {},
-      asPath: '/',
       push: jest.fn(),
-      pop: jest.fn(),
-      reload: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
       back: jest.fn(),
-      prefetch: jest.fn().mockResolvedValue(undefined),
-      beforePopState: jest.fn(),
-      events: {
-        on: jest.fn(),
-        off: jest.fn(),
-        emit: jest.fn(),
-      },
-      isFallback: false,
-      isLocaleDomain: false,
-      isReady: true,
-      defaultLocale: 'en',
-      domainLocales: [],
-      isPreview: false,
+      forward: jest.fn(),
+      refresh: jest.fn(),
     }
+  },
+  usePathname() {
+    return '/'
+  },
+  useSearchParams() {
+    return new URLSearchParams()
+  },
+  useParams() {
+    return {}
   },
 }))
 
@@ -39,4 +33,33 @@ jest.mock('next/link', () => {
 // Mock UUID
 jest.mock('uuid', () => ({
   v4: () => 'test-uuid-123'
+}))
+
+// Mock Next.js server components
+class MockNextRequest {
+  url: string;
+  method: string;
+  headers: Headers;
+  nextUrl: URL;
+
+  constructor(url: string, init?: { method?: string; headers?: HeadersInit }) {
+    this.url = url;
+    this.method = init?.method || 'GET';
+    this.headers = new Headers(init?.headers);
+    this.nextUrl = new URL(url);
+  }
+}
+
+const MockNextResponse = {
+  json: (data: any, init?: { status?: number }) => {
+    return {
+      json: async () => data,
+      status: init?.status || 200,
+    };
+  },
+};
+
+jest.mock('next/server', () => ({
+  NextRequest: MockNextRequest,
+  NextResponse: MockNextResponse,
 }))

@@ -1,4 +1,4 @@
-import { createTestData as createTestDataUtil, sleep } from './util';
+import { sleep } from './util';
 import { updateCategorizer, retrainCategorizer, guessCategory } from './ml';
 import { type AppThunk } from './types/redux';
 import chunk from 'lodash/chunk';
@@ -21,16 +21,9 @@ export const toggleLocalStorage = (enabled: boolean) => ({
   enabled
 });
 
-export const createTestData = (): AppThunk<Promise<void>> => (dispatch) => {
-  const testData = createTestDataUtil();
-  
-  dispatch({
-    type: CREATE_TEST_DATA,
-    payload: testData
-  });
-  
-  return Promise.resolve();
-};
+export const createTestData = () => ({
+  type: CREATE_TEST_DATA
+});
 
 // Re-export other action constants that might be needed
 export const IMPORT_PARSE_TRANSACTIONS_START = 'IMPORT_PARSE_TRANSACTIONS_START';
@@ -125,6 +118,17 @@ export const updateCategory = (categoryId: string, name: string, parentId?: stri
   parentId
 });
 
+export const deleteCategoryStart = (categoryId: string) => ({
+  type: DELETE_CATEGORY_START,
+  categoryId
+});
+
+export const deleteCategoryEnd = (categoryId: string, categorizerConfig: any) => ({
+  type: DELETE_CATEGORY_END,
+  categoryId,
+  categorizerConfig
+});
+
 export const deleteCategory = (categoryId: string): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
     dispatch({
@@ -171,10 +175,18 @@ export const SET_CURRENCY_RATES = 'SET_CURRENCY_RATES';
 export const FETCH_CURRENCY_RATES = 'FETCH_CURRENCY_RATES';
 export const SET_EMPTY_TRANSACTIONS_ACCOUNT = 'SET_EMPTY_TRANSACTIONS_ACCOUNT';
 
+// Simple action creators for fetch state
+export const startFetchCurrencies = () => ({ type: START_FETCH_CURRENCIES });
+export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
+export const startFetchCurrencyRates = () => ({ type: START_FETCH_CURRENCY_RATES });
+export const endFetchCurrencyRates = () => ({ type: END_FETCH_CURRENCY_RATES });
+export const setCurrencies = (currencies: string[]) => ({ type: SET_CURRENCIES, currencies });
+export const setCurrencyRates = (currencyRates: any) => ({ type: SET_CURRENCY_RATES, currencyRates });
+
 // Restore data action creator
-export const restoreStateFromFile = (state: any) => ({
+export const restoreStateFromFile = (newState: any) => ({
   type: RESTORE_STATE_FROM_FILE,
-  state
+  newState
 });
 
 // Currency action creator
@@ -200,6 +212,12 @@ export const fetchCurrencies = (): AppThunk<Promise<void>> => {
 };
 
 // Transaction action creators
+export const categorizeRowEnd = (transactionCategoryMapping: any, categorizerConfig: any) => ({
+  type: CATEGORIZE_ROW_END,
+  transactionCategoryMapping,
+  categorizerConfig
+});
+
 export const categorizeRow = (rowId: string, categoryId: string) => {
   const rowCategoryMapping = { [rowId]: categoryId };
   return categorizeRows(rowCategoryMapping);
@@ -453,9 +471,9 @@ export const ignoreTransaction = (rowId: string, ignore: boolean) => ({
   ignore
 });
 
-export const groupTransactions = (rowIds: string[]) => ({
+export const groupTransactions = (transactionIds: string[]) => ({
   type: 'GROUP_TRANSACTIONS',
-  rowIds
+  transactionIds
 });
 
 export const deleteTransactionGroup = (transactionGroupId: string) => ({

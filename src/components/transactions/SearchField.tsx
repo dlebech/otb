@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useDeferredValue, useCallback, useEffect } from 'react';
-import { debounce } from 'lodash';
+import React, { useState, useDeferredValue, useEffect } from 'react';
 
 interface Props {
   searchText?: string;

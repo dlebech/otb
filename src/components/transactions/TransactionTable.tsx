@@ -27,7 +27,7 @@ interface Props {
   pageSize: number;
   sortKey: string;
   sortAscending: boolean;
-  filterCategories: string[];
+  filterCategories: Set<string>;
   showCreateCategoryModal: (name: string, transactionId: string) => void;
   handleIgnoreRow: (transactionId: string, ignored: boolean) => void;
   handleDeleteRow: (transactionId: string) => void;
@@ -38,7 +38,7 @@ interface Props {
   handlePageChange: (page: number) => void;
   handlePageSizeChange: (pageSize: number, totalRows: number) => void;
   handleSortChange: (sortKey: string, ascending: boolean) => void;
-  handleFilterCategories: (categories: string[], totalRows: number) => void;
+  handleFilterCategories: (categories: Set<string>, totalRows: number) => void;
   searchText?: string;
   handleRoundAmount: (round: boolean) => void;
   handleDeleteTransactionGroup: (groupId: string) => void;
@@ -46,14 +46,14 @@ interface Props {
   transactionGroups?: Record<string, any>;
 }
 
-const filterData = (data: Transaction[], categories: string[], dateSelect: DateSelect): Transaction[] => {
+const filterData = (data: Transaction[], categories: Set<string>, dateSelect: DateSelect): Transaction[] => {
   let categoryFilter = (t: Transaction) => true;
   let dateFilter = (t: Transaction) => true;
-  
-  if (categories && categories.length > 0) {
+
+  if (categories && categories.size > 0) {
     categoryFilter = t => {
-      return (!t.categoryConfirmed && categories.includes(uncategorized.id)) ||
-        (!!t.categoryConfirmed && categories.includes(t.categoryConfirmed.id));
+      return (!t.categoryConfirmed && categories.has(uncategorized.id)) ||
+        (!!t.categoryConfirmed && categories.has(t.categoryConfirmed.id));
     };
   }
 
@@ -139,9 +139,9 @@ export default function TransactionTable({
   };
 
   const handleCategorySelect = (option: any) => {
-    // Convert to array format that we expect
+    // Convert to Set format that we expect
     const options = Array.isArray(option) ? option : (option ? [option] : []);
-    const newFilterCategories = options.map((o: any) => o.value);
+    const newFilterCategories = new Set(options.map((o: any) => o.value));
 
     // Since the category filter might reduce the number of transactions, we
     // need to know the new number of transactions here.
