@@ -212,7 +212,8 @@ describe('import', () => {
             { type: 'amount' },
             { type: 'total' }
           ],
-          account: 'abcd'
+          account: 'abcd',
+          dateFormat: ''
         }
       }
     }, actions.importSaveTransactions());

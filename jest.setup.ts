@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
 
+// Polyfill setImmediate for jsdom (used by yauzl zip library)
+if (typeof globalThis.setImmediate === 'undefined') {
+  (globalThis as any).setImmediate = (fn: Function, ...args: any[]) => setTimeout(fn, 0, ...args);
+}
+
 // Mock Next.js App Router navigation
 jest.mock('next/navigation', () => ({
   useRouter() {
