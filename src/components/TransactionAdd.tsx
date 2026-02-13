@@ -48,7 +48,7 @@ export default function TransactionAdd() {
   const validateForm = useCallback(() => {
     const newErrors: TransactionAddError[] = [];
 
-    const specTypes = new Set(columnSpec.map((s: any) => s.type));
+    const specTypes = new Set(columnSpec.map((s: { type: string }) => s.type));
     let checkDates = false;
     let checkAmounts = false;
 
@@ -81,7 +81,7 @@ export default function TransactionAdd() {
       const amountIndex = columnSpec.findIndex((c) => c.type === 'amount');
       const dateIndex = columnSpec.findIndex((c) => c.type === 'date');
 
-      for (let t of transactions) {
+      for (const t of transactions) {
         if (checkDates && !momentParse(t[dateIndex], dateFormat).isValid()) {
           newErrors.push({
             type: 'date',
@@ -135,17 +135,17 @@ export default function TransactionAdd() {
       Papa.parse(fileOrString, {
         encoding: encodingResult.encoding,
         skipEmptyLines: true,
-        error: (err: any) => {
+        error: (err: Error) => {
           reject(err);
         },
-        complete: (result: any) => {
+        complete: (result: { errors: { type: string; message: string }[]; data: (string | number)[][] }) => {
           if (result.errors && result.errors.length > 0) {
             return reject(result.errors);
           }
           // Papaparse seems to be quite forgiving around the input format So
           // as an early sanity test, check that the parsed number of columns
           // is the same for all rows.
-          if (!result.data.every((d: any[]) => d.length === result.data[0].length)) {
+          if (!result.data.every((d: (string | number)[]) => d.length === result.data[0].length)) {
             return reject([{
               type: 'upload',
               message: 'Cannot parse the file. The number of columns varies between rows'

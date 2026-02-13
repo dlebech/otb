@@ -41,8 +41,9 @@ export default function ManageData() {
     ]);
 
     // Include only whitelisted store items.
-    const stateToDownload: any = {};
-    whitelist.forEach(w => stateToDownload[w] = (state as any)[w]);
+    const stateToDownload: Record<string, unknown> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    whitelist.forEach(w => stateToDownload[w] = (state as Record<string, any>)[w]);
 
     // Create a data blog and download it.
     const blob = new Blob([JSON.stringify(stateToDownload)], {
@@ -60,7 +61,7 @@ export default function ManageData() {
     const accounts = arrayToObjectLookup(state.accounts.data);
     const categories = arrayToObjectLookup(state.categories.data);
     const lines = state.transactions.data.map((t: Transaction) => {
-      const line: any[] = [
+      const line: (string | number)[] = [
         t.id,
         t.date,
         t.description,
@@ -106,7 +107,7 @@ export default function ManageData() {
     });
 
     // Sort by date
-    lines.sort((a: any[], b: any[]) => a[1].localeCompare(b[1]));
+    lines.sort((a: (string | number)[], b: (string | number)[]) => (a[1] as string).localeCompare(b[1] as string));
 
     const csvString = Papa.unparse({
       fields: [

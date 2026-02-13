@@ -6,15 +6,15 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const currencyParams = url.searchParams.getAll('currencies');
     
-    const options: any = { historical: true };
+    const options: { historical: boolean; currencies?: string[] } = { historical: true };
     if (currencyParams.length > 0) {
       options.currencies = currencyParams;
     }
 
-    let rates = await fetchRates(options);
+    const rates = await fetchRates(options);
 
     // Convert the array into an object with date -> currencies mapping
-    const ratesObject = rates.reduce((prev: any, cur: any) => {
+    const ratesObject = rates.reduce((prev: Record<string, Record<string, string | number>>, cur: Record<string, string | number>) => {
       prev[cur['Date']] = cur;
       delete prev[cur['Date']].Date;
       return prev;

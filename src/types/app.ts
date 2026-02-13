@@ -36,7 +36,7 @@ export interface ColumnSpec {
 }
 
 export interface TransactionImport {
-  data: any[][];
+  data: (string | number)[][];
   skipRows: number;
   skipDuplicates: boolean;
   columnSpec: ColumnSpec[];
@@ -98,9 +98,9 @@ export interface EditState {
   isParsing: boolean;
   isFetchingCurrencies: boolean;
   isFetchingCurrencyRates: boolean;
-  dateSelect: Record<string, any>;
+  dateSelect: Record<string, { startDate: string | null; endDate: string | null }>;
   transactionList: TransactionListState;
   charts: ChartsState;
   currencies?: string[];
-  currencyRates?: any;
+  currencyRates?: Record<string, Record<string, number>>;
 }

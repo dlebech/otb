@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useRef } from 'react';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
-import { type AppDispatch } from '../types/redux';
+import { type AppDispatch, type Transaction, type Category } from '../types/redux';
+import type { TransactionGroup } from '../types/app';
 import Link from 'next/link';
 import { createSearchAction } from 'redux-search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,13 +32,13 @@ export default function Transactions() {
     hasTransactions,
     transactionListSettings
   } = useSelector((state: RootState) => {
-    const categoriesObj = state.categories.data.reduce((obj: any, category: any) => {
+    const categoriesObj = state.categories.data.reduce((obj: Record<string, Category>, category: Category) => {
       obj[category.id] = category;
       return obj;
     }, {});
 
     let transactionsData = state.transactions.data
-      .map((t: any) => {
+      .map((t: Transaction) => {
         return {
           categoryGuess: categoriesObj[t.category.guess] || null,
           categoryConfirmed: categoriesObj[t.category.confirmed] || null,
@@ -46,14 +47,14 @@ export default function Transactions() {
         };
       });
 
-    const reverseTransactionLookup = transactionsData.reduce((obj: any, t: any, i: number) => {
+    const reverseTransactionLookup = transactionsData.reduce((obj: Record<string, number>, t: { id: string }, i: number) => {
       obj[t.id] = i;
       return obj;
     }, {});
 
     // Create an ID -> transactions mapping for easier tooltip'ing.
     const transactionGroupsObj = Object.entries(state.transactions.groups || {})
-      .reduce((obj: any, [groupId, group]: [string, any]) => {
+      .reduce((obj: Record<string, { groupId: string; linkedTransactions: Transaction[] }>, [groupId, group]: [string, TransactionGroup]) => {
         obj[group.primaryId] = {
           groupId,
           linkedTransactions: group.linkedIds.map((id: string) => transactionsData[reverseTransactionLookup[id]])
@@ -74,7 +75,7 @@ export default function Transactions() {
 
     if (state.search.transactions.result.length !== transactionsData.length) {
       const ids = new Set(state.search.transactions.result);
-      transactionsData = transactionsData.filter((t: any) => ids.has(t.id));
+      transactionsData = transactionsData.filter((t: { id: string }) => ids.has(t.id));
     }
 
     const accountsObj = arrayToObjectLookup(state.accounts.data);
@@ -92,7 +93,7 @@ export default function Transactions() {
     };
 
     // Get parent categories for the modal
-    const parentCategories = state.categories.data.filter((c: any) => !c.parent);
+    const parentCategories = state.categories.data.filter((c: Category) => !c.parent);
 
     return {
       transactions: transactionsData,
@@ -113,16 +114,16 @@ export default function Transactions() {
   const handleNewRowCategory = useCallback(async (rowId: string, name: string, parentId: string) => {
     if (rowId) {
       // Create a thunk that handles the category creation and transaction categorization
-      const createCategoryAndCategorizeTransaction = (): any => {
-        return (dispatch: any, getState: any) => {
+      const createCategoryAndCategorizeTransaction = (): (dispatch: AppDispatch, getState: () => RootState) => void => {
+        return (dispatch: AppDispatch, getState: () => RootState) => {
           // First add the category
           dispatch(actions.addCategory(name, parentId));
           
           // Get the newly created category from the updated state
           const state = getState();
           const newCategory = state.categories.data
-            .filter((c: any) => c.name === name && c.parent === parentId)
-            .sort((a: any, b: any) => b.id.localeCompare(a.id))[0]; // Get the most recent one
+            .filter((c: Category) => c.name === name && c.parent === parentId)
+            .sort((a: Category, b: Category) => b.id.localeCompare(a.id))[0]; // Get the most recent one
           
           if (newCategory) {
             // Then categorize the transaction with the new category
@@ -144,7 +145,7 @@ export default function Transactions() {
     // A mapping of rows to categories.
     if (typeof rowIdOrMapping === 'object') {
       await dispatch(actions.categorizeRows(rowIdOrMapping));
-      if (Object.values(rowIdOrMapping).filter((c: any) => !!c).length > 0) {
+      if (Object.values(rowIdOrMapping).filter((c: unknown) => !!c).length > 0) {
         dispatch(actions.guessAllCategories());
       }
       return;
@@ -200,7 +201,7 @@ export default function Transactions() {
     debouncedSearchRef.current(text, currentPage);
   }, []);
 
-  const handleDatesChange = useCallback((_id: string, startDate: any, endDate: any) => {
+  const handleDatesChange = useCallback((_id: string, startDate: Moment | null, endDate: Moment | null) => {
     dispatch(actions.editDates('transaction-dates',
       startDate ? startDate.toISOString() : null,
       endDate ? endDate.toISOString() : null
@@ -219,7 +220,7 @@ export default function Transactions() {
     dispatch(actions.setTransactionListSort(sortKey, sortAscending));
   }, [dispatch]);
 
-  const handleFilterCategories = useCallback((filterCategories: any, numTransactions: number) => {
+  const handleFilterCategories = useCallback((filterCategories: Set<string> | string[], numTransactions: number) => {
     dispatch(actions.setTransactionListFilterCategories(
       filterCategories instanceof Set ? Array.from(filterCategories) : filterCategories,
       numTransactions

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from '@jest/globals'
 import { configureStore } from '@reduxjs/toolkit'
 import * as actions from './actions'
 import rootReducer from './reducers'
+import { type Transaction } from './types/app'
 
 // Create a proper test store using Redux Toolkit
 const createTestStore = (initialState = {}) => {
@@ -61,8 +62,8 @@ describe('categorizeRows', () => {
     
     // Transaction categories should have been updated in the state
     const updatedTransactions = finalState.transactions.data
-    const abcdTransaction = updatedTransactions.find((t: any) => t.id === 'abcd')
-    const efghTransaction = updatedTransactions.find((t: any) => t.id === 'efgh')
+    const abcdTransaction = updatedTransactions.find((t: Transaction) => t.id === 'abcd')
+    const efghTransaction = updatedTransactions.find((t: Transaction) => t.id === 'efgh')
     
     expect(abcdTransaction?.category.confirmed).toEqual('hobby')
     expect(efghTransaction?.category.confirmed).toEqual('travel')
@@ -183,8 +184,8 @@ describe('guessAllCategories', () => {
     const finalState = store.getState()
     
     // Categories should have been guessed for uncategorized transactions
-    const transactionA = finalState.transactions.data.find((t: any) => t.id === 'a')
-    const transactionC = finalState.transactions.data.find((t: any) => t.id === 'c')
+    const transactionA = finalState.transactions.data.find((t: Transaction) => t.id === 'a')
+    const transactionC = finalState.transactions.data.find((t: Transaction) => t.id === 'c')
     
     // These should have category guesses now (likely 'hobby' for origami, 'food' for apple)
     expect(transactionA?.category.guess).not.toEqual('')

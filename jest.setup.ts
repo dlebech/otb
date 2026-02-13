@@ -2,7 +2,8 @@ import '@testing-library/jest-dom'
 
 // Polyfill setImmediate for jsdom (used by yauzl zip library)
 if (typeof globalThis.setImmediate === 'undefined') {
-  (globalThis as any).setImmediate = (fn: Function, ...args: any[]) => setTimeout(fn, 0, ...args);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).setImmediate = (fn: (...args: unknown[]) => void, ...args: unknown[]) => setTimeout(fn, 0, ...args);
 }
 
 // Mock Next.js App Router navigation
@@ -56,7 +57,7 @@ class MockNextRequest {
 }
 
 const MockNextResponse = {
-  json: (data: any, init?: { status?: number }) => {
+  json: (data: unknown, init?: { status?: number }) => {
     return {
       json: async () => data,
       status: init?.status || 200,

@@ -275,6 +275,7 @@ const transactionsReducer = (state = initialTransactions, action: AnyAction): Tr
                   $unset: unset
                 }
               }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any
           });
         }

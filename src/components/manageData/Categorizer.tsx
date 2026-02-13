@@ -40,7 +40,7 @@ export default function Categorizer() {
 
   const wordsWithMultipleCategories = Object
     .entries(categoryCounts)
-    .filter(([_, categories]) => categories.size >= 2)
+    .filter(([, categories]) => categories.size >= 2)
     .length;
 
   return (

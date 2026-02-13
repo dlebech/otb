@@ -9,7 +9,9 @@ export default function SearchField({ searchText = '', handleSearch }: Props) {
   const [internalSearchText, setInternalSearchText] = useState(searchText);
   const searchValue = useDeferredValue(internalSearchText);
   const handleSearchRef = useRef(handleSearch);
-  handleSearchRef.current = handleSearch;
+  useEffect(() => {
+    handleSearchRef.current = handleSearch;
+  });
 
   useEffect(() => {
     handleSearchRef.current(searchValue);

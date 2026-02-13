@@ -26,6 +26,7 @@ interface SummaryProps {
 }
 
 const groupAmounts = (transactions: TransactionWithAmount[], accounts: { [key: string]: Account }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (nest<TransactionWithAmount>() as any)
     .key((t: TransactionWithAmount) => t.account || '')
     .rollup((t: TransactionWithAmount[]) => ({
@@ -33,7 +34,7 @@ const groupAmounts = (transactions: TransactionWithAmount[], accounts: { [key: s
       originalAmount: sum(t, d => d.originalAmount)
     }))
     .entries(transactions)
-    .map((e: any) => ({ account: accounts[e.key], amounts: e.value }));
+    .map((e: { key: string; value: { amount: number; originalAmount: number } }) => ({ account: accounts[e.key], amounts: e.value }));
 };
 
 export default function Summary({ expenses, income, sortedCategoryExpenses, accounts }: SummaryProps) {

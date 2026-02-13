@@ -23,6 +23,7 @@ export default function AmountSumBar({ transactions }: Props) {
   const data = nest<Transaction>()
     .key((d: Transaction) => d.date.substring(0, 7))
     .sortKeys(ascending)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .rollup((a: Transaction[]) => sum(a, (d: Transaction) => d.amount) as any)
     .entries(transactions);
 

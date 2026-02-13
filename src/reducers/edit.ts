@@ -1,4 +1,5 @@
 import update from 'immutability-helper';
+import { AnyAction } from 'redux';
 import * as actions from '../actions';
 import {
   type EditState
@@ -30,7 +31,7 @@ const determinePage = (page: number, pageSize: number, numTransactions: number):
   return page;
 };
 
-const editReducer = (state: EditState = initialEditor, action: any): EditState => {
+const editReducer = (state: EditState = initialEditor, action: AnyAction): EditState => {
   switch (action.type) {
     case actions.EDIT_DATES:
       return update(state, {

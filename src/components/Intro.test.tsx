@@ -8,7 +8,7 @@ import rootReducer from '../reducers';
 
 // Mock Next.js Link component - following Next.js testing guide
 jest.mock('next/link', () => {
-  return function MockLink({ children, href, className, ...props }: any) {
+  return function MockLink({ children, href, className, ...props }: { children: React.ReactNode; href: string; className?: string; [key: string]: unknown }) {
     return (
       <a href={href} className={className} {...props}>
         {children}
@@ -19,21 +19,21 @@ jest.mock('next/link', () => {
 
 // Mock FontAwesome to prevent icon loading issues in tests
 jest.mock('@fortawesome/react-fontawesome', () => ({
-  FontAwesomeIcon: ({ icon, className, ...props }: any) => (
+  FontAwesomeIcon: ({ icon, className, ...props }: { icon: string; className?: string; [key: string]: unknown }) => (
     <span className={className} data-icon={icon} {...props} />
   )
 }));
 
 // Mock react-tooltip
 jest.mock('react-tooltip', () => ({
-  Tooltip: ({ id, className, ...props }: any) => (
+  Tooltip: ({ id, className, ...props }: { id?: string; className?: string; [key: string]: unknown }) => (
     <div data-testid={id} className={className} {...props} />
   )
 }));
 
 // Mock the RestoreData component to isolate the Intro component
 jest.mock('./manageData/RestoreData', () => {
-  return function MockRestoreData({ children, className, ...props }: any) {
+  return function MockRestoreData({ children, className, ...props }: { children: React.ReactNode; className?: string; [key: string]: unknown }) {
     return (
       <div className={className} data-testid="restore-data" {...props}>
         {children}
@@ -86,7 +86,7 @@ describe('Intro Component', () => {
       ...overrides,
       transactions: {
         ...defaultState.transactions,
-        ...(overrides as any).transactions
+        ...(overrides as Record<string, unknown>).transactions as Record<string, unknown>
       }
     };
 

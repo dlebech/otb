@@ -119,7 +119,7 @@ export default function Menu() {
       >
         <div>
           <p>
-            If enabled, the data will be saved in the browser's local storage.
+            If enabled, the data will be saved in the browser&apos;s local storage.
             The data will be available if you close and re-open the
             browser, but it will <em>not</em> be accessible by other
             websites.

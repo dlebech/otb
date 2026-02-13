@@ -3,6 +3,7 @@
 import React, { createContext, useContext } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { type Persistor } from 'redux-persist';
 import dynamic from 'next/dynamic';
 import configureStore from '../configureStore';
 import configureFa from '../configureFa';
@@ -17,7 +18,7 @@ configureFa();
 const { store, persistor } = configureStore({});
 
 // Create persistor context
-const PersistorContext = createContext<any>(null);
+const PersistorContext = createContext<Persistor | null>(null);
 
 export const usePersistor = () => {
   const context = useContext(PersistorContext);

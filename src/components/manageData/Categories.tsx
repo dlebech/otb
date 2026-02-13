@@ -107,7 +107,6 @@ export default function Categories() {
                 <li key={`cat-${c.id}`}>
                   <Category
                     category={c}
-                    transactions={transactions}
                     parentCategories={parentCategories}
                     handleUpdateCategory={handleUpdateCategory}
                     onDeleteRequest={handleDeleteRequest}
@@ -164,11 +163,11 @@ export default function Categories() {
             <>
               {categoryToDelete.transactionCount > 0 && (
                 <div className="rounded border border-red-300 bg-red-50 p-6 text-red-800">
-                  Deleting "{categoryToDelete.name}" will affect {categoryToDelete.transactionCount} transactions.
-                  These transactions will be reset for "{categoryToDelete.name}".
+                  Deleting &quot;{categoryToDelete.name}&quot; will affect {categoryToDelete.transactionCount} transactions.
+                  These transactions will be reset for &quot;{categoryToDelete.name}&quot;.
                 </div>
               )}
-              Are you sure you want to delete "{categoryToDelete.name}"?
+              Are you sure you want to delete &quot;{categoryToDelete.name}&quot;?
             </>
           ) : null
         }

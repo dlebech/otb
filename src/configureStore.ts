@@ -18,7 +18,7 @@ export const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export default function configureStore(preloadedState: any = {}) {
+export default function configureStore(preloadedState: Record<string, unknown> = {}) {
   const store = createStore({
     reducer: persistedReducer,
     preloadedState,
@@ -38,7 +38,7 @@ export default function configureStore(preloadedState: any = {}) {
           resourceIndexes: {
             transactions: ['description', 'descriptionCleand']
           },
-          resourceSelector: (resourceName: string, state: any) => {
+          resourceSelector: (resourceName: string, state: Record<string, unknown>) => {
             if (resourceName === 'transactions') {
               return state.transactions.data;
             }

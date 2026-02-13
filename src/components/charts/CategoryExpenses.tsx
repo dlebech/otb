@@ -2,6 +2,7 @@ import React from 'react';
 import CategorySelect from '../shared/CategorySelect';
 import CategoryTreeMap from './CategoryTreeMap';
 import CategoryLine from './CategoryLine';
+import { Moment } from 'moment';
 import { Transaction, Category } from '../../types/redux';
 
 interface CategoryOption {
@@ -21,8 +22,8 @@ interface Props {
   handleCategoryChange: (categoryIds: string[]) => void;
   filterCategories: Set<string>;
   categories: Record<string, Category>;
-  startDate: any; // moment object
-  endDate: any; // moment object
+  startDate: Moment;
+  endDate: Moment;
   sortedCategoryExpenses: CategoryExpense[];
 }
 

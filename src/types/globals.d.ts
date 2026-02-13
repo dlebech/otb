@@ -1,5 +1,5 @@
 declare module "*.json" {
-  const value: any;
+  const value: unknown;
   export default value;
 }
 
@@ -20,7 +20,7 @@ declare module 'react-select' {
   import { Component } from 'react';
   
   export interface Option {
-    value: any;
+    value: string;
     label: string;
   }
 

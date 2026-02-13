@@ -1,10 +1,12 @@
 import moment, { type Moment } from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import * as categories from './data/categories';
+import { type Category } from './data/categories';
 import { defaultAccount } from './data/accounts';
 import { Transaction } from './types/redux';
+import { type Persistor } from 'redux-persist';
 
-export const toggleLocalStorage = async (persistor: any, enabled: boolean): Promise<void> => {
+export const toggleLocalStorage = async (persistor: Persistor, enabled: boolean): Promise<void> => {
   // Pause/purge/resume the persistor, depending on the value.
   if (enabled) {
     await persistor.persist();
@@ -77,7 +79,7 @@ export const sleep = (timeToSleep: number): Promise<void> => {
 /**
  * Clean a number from various formatting
  */
-export const cleanNumber = (number: any): number => {
+export const cleanNumber = (number: string | number): number => {
   // Note. I am aware of the numeral package... but it didn't work perfectly for
   // this use case. So for now, just just going with something super super
   // simple.
@@ -138,7 +140,7 @@ export const cleanTransactionDescription = (description: string): string => {
  * correspond to date, descriptions, etc.
  * @param transactions - A list of transactions
  */
-export const guessColumnSpec = (transactions: any[][]): [Array<{ type: string }>, string] => {
+export const guessColumnSpec = (transactions: (string | number)[][]): [Array<{ type: string }>, string] => {
   // Take the last transaction for now since there might be headers at the top.
   const transaction = transactions[transactions.length - 1];
   const columnSpec = transaction.map(() => ({ type: '' }));
@@ -245,7 +247,7 @@ export const createTestData = (): Transaction[] => {
 /**
  * Detect file encoding for a file or string
  */
-export const detectFileEncoding = async (fileOrString: File | string): Promise<any> => {
+export const detectFileEncoding = async (fileOrString: File | string): Promise<{ encoding: string; confidence: number }> => {
   const jschardet = await import('jschardet').then(m => m.default);
 
   return new Promise(resolve => {
@@ -261,7 +263,7 @@ export const detectFileEncoding = async (fileOrString: File | string): Promise<a
 /**
  * Convert an amount from one currency to another
  */
-export const convertCurrency = (amount: number, from: string, to: string, date: string, rates: any, base = 'EUR'): number => {
+export const convertCurrency = (amount: number, from: string, to: string, date: string, rates: Record<string, Record<string, number>>, base = 'EUR'): number => {
   if (from === to) return amount;
   if (amount === 0) return 0;
   const rate = rates[date];
@@ -278,8 +280,8 @@ export const convertCurrency = (amount: number, from: string, to: string, date: 
  * @param {Array} arr - The array to search through
  * @returns {Object} - The mapping of ID to array index
  */
-export const reverseIndexLookup = (arr: any[]): Record<string, number> => {
-  return arr.reduce((finalObj: Record<string, number>, obj: any, i: number) => {
+export const reverseIndexLookup = <T extends { id: string }>(arr: T[]): Record<string, number> => {
+  return arr.reduce((finalObj: Record<string, number>, obj: T, i: number) => {
     finalObj[obj.id] = i;
     return finalObj;
   }, {});
@@ -292,17 +294,17 @@ export const reverseIndexLookup = (arr: any[]): Record<string, number> => {
  * @param {Array} arr - The array to create an object from
  * @returns {Object} - The mapping of ID to object
  */
-export const arrayToObjectLookup = (arr: any[]): Record<string, any> => {
-  return arr.reduce((finalObj: Record<string, any>, obj: any) => {
+export const arrayToObjectLookup = <T extends { id: string }>(arr: T[]): Record<string, T> => {
+  return arr.reduce((finalObj: Record<string, T>, obj: T) => {
     finalObj[obj.id] = obj;
     return finalObj;
   }, {});
 };
 
 // Re-export other functions for now
-export const findCategory = (categoryList: any[] | Record<string, any>, categoryId: string, returnFallback = true, returnParent = false): any => {
-  // Handle special uncategorized case - import here to avoid circular dependency
-  const { uncategorized } = require('./data/categories');
+export const findCategory = (categoryList: Category[] | Record<string, Category>, categoryId: string, returnFallback = true, returnParent = false): Category | null => {
+  // Handle special uncategorized case
+  const { uncategorized } = categories;
   if (categoryId === uncategorized.id) {
     return uncategorized;
   }
@@ -338,12 +340,12 @@ export const findCategory = (categoryList: any[] | Record<string, any>, category
  * rate.
  * @param {Object} rates - The un-filled currency rates.
  */
-export const fillDates = (rates: any) => {
+export const fillDates = (rates: Record<string, Record<string, number | string>>) => {
   // Fill between min and max date.
   // Sequentially run through all possible dates and check if they exist.
   const dates = Object.keys(rates).sort();
   const maxDate = moment.utc(dates[dates.length - 1]);
-  let latestRates = [dates[0], rates[dates[0]]];
+  let latestRates: [string, Record<string, number | string>] = [dates[0], rates[dates[0]]];
   let curDate = moment.utc(dates[0]);
 
   while (curDate.isBefore(maxDate)) {

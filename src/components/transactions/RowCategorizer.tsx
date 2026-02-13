@@ -25,7 +25,7 @@ export default function RowCategorizer({
   // Update editing state when transaction category changes
   useEffect(() => {
     const hasNoCategory = !transaction.categoryGuess && !transaction.categoryConfirmed;
-    setEditing(hasNoCategory);
+    setEditing(hasNoCategory); // eslint-disable-line react-hooks/set-state-in-effect
   }, [transaction.categoryGuess, transaction.categoryConfirmed]);
 
   const handleEditCategory = () => {

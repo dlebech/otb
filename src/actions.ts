@@ -1,6 +1,7 @@
 import { sleep } from './util';
 import { updateCategorizer, retrainCategorizer, guessCategory } from './ml';
 import { type AppThunk } from './types/redux';
+import { type Transaction } from './types/app';
 import chunk from 'lodash/chunk';
 
 // Action type constants
@@ -46,7 +47,7 @@ export const importParseTransactionsStart = () => ({
   type: IMPORT_PARSE_TRANSACTIONS_START
 });
 
-export const importParseTransactionsEnd = (data: any[][]) => ({
+export const importParseTransactionsEnd = (data: (string | number)[][]) => ({
   type: IMPORT_PARSE_TRANSACTIONS_END,
   data
 });
@@ -128,7 +129,7 @@ export const deleteCategoryStart = (categoryId: string) => ({
   categoryId
 });
 
-export const deleteCategoryEnd = (categoryId: string, categorizerConfig: any) => ({
+export const deleteCategoryEnd = (categoryId: string, categorizerConfig: { bayes: string }) => ({
   type: DELETE_CATEGORY_END,
   categoryId,
   categorizerConfig
@@ -145,7 +146,7 @@ export const deleteCategory = (categoryId: string): AppThunk<Promise<void>> => {
     
     // Retrain the categorizer without the deleted category
     const filteredTransactions = state.transactions.data.filter(
-      (t: any) => t.category.confirmed !== categoryId
+      (t: Transaction) => t.category.confirmed !== categoryId
     );
     const categorizerConfig = await retrainCategorizer(filteredTransactions);
 
@@ -186,10 +187,10 @@ export const endFetchCurrencies = () => ({ type: END_FETCH_CURRENCIES });
 export const startFetchCurrencyRates = () => ({ type: START_FETCH_CURRENCY_RATES });
 export const endFetchCurrencyRates = () => ({ type: END_FETCH_CURRENCY_RATES });
 export const setCurrencies = (currencies: string[]) => ({ type: SET_CURRENCIES, currencies });
-export const setCurrencyRates = (currencyRates: any) => ({ type: SET_CURRENCY_RATES, currencyRates });
+export const setCurrencyRates = (currencyRates: Record<string, Record<string, number>>) => ({ type: SET_CURRENCY_RATES, currencyRates });
 
 // Restore data action creator
-export const restoreStateFromFile = (newState: any) => ({
+export const restoreStateFromFile = (newState: Record<string, unknown>) => ({
   type: RESTORE_STATE_FROM_FILE,
   newState
 });
@@ -217,7 +218,7 @@ export const fetchCurrencies = (): AppThunk<Promise<void>> => {
 };
 
 // Transaction action creators
-export const categorizeRowEnd = (transactionCategoryMapping: any, categorizerConfig: any) => ({
+export const categorizeRowEnd = (transactionCategoryMapping: Record<string, string>, categorizerConfig: { bayes: string } | null) => ({
   type: CATEGORIZE_ROW_END,
   transactionCategoryMapping,
   categorizerConfig
@@ -228,7 +229,7 @@ export const categorizeRow = (rowId: string, categoryId: string) => {
   return categorizeRows(rowCategoryMapping);
 };
 
-export const categorizeRows = (rowCategoryMapping: any): AppThunk<Promise<any>> => {
+export const categorizeRows = (rowCategoryMapping: Record<string, string>): AppThunk<Promise<Record<string, string>>> => {
   return async (dispatch, getState) => {
     dispatch({
       type: CATEGORIZE_ROWS_START,
@@ -257,7 +258,7 @@ export const guessAllCategoriesStart = () => ({
   type: GUESS_ALL_CATEGORIES_START
 });
 
-export const guessAllCategoriesEnd = (transactionCategoryMapping: any, categorizerConfig: any) => ({
+export const guessAllCategoriesEnd = (transactionCategoryMapping: Record<string, string>, categorizerConfig: { bayes: string } | null) => ({
   type: GUESS_ALL_CATEGORIES_END,
   transactionCategoryMapping,
   categorizerConfig
@@ -279,8 +280,8 @@ export const guessAllCategories = (requireConfirmed = true): AppThunk<Promise<vo
       // Do not start guessing if we have less than 3 confirmed categories.
       const confirmedCategories = new Set(
         state.transactions.data
-          .filter((t: any) => !!t.category.confirmed)
-          .map((t: any) => t.category.confirmed)
+          .filter((t: Transaction) => !!t.category.confirmed)
+          .map((t: Transaction) => t.category.confirmed)
       );
       if (confirmedCategories.size < 3) return;
     }
@@ -300,11 +301,11 @@ export const guessAllCategories = (requireConfirmed = true): AppThunk<Promise<vo
     // Guess 100 transactions at a time with a bit of sleeping in between to
     // avoid locking the UI completely.
     const transactionsToGuess = chunk(
-      state.transactions.data.filter((t: any) => !t.category.confirmed),
+      state.transactions.data.filter((t: Transaction) => !t.category.confirmed),
       100
     );
 
-    const transactionCategoryMapping: any = {};
+    const transactionCategoryMapping: Record<string, string> = {};
 
     for (let i = 0; i < transactionsToGuess.length; i++) {
       const guessMapping = await guessCategory(
@@ -338,7 +339,7 @@ export const addCategoryWithRow = (name: string, parentId: string = '', rowId: s
 });
 
 // More action creators
-export const editDates = (dateSelectId: string, startDate: any, endDate: any) => ({
+export const editDates = (dateSelectId: string, startDate: string | null, endDate: string | null) => ({
   type: EDIT_DATES,
   dateSelectId,
   startDate,
@@ -355,12 +356,12 @@ export const setChartsGroupByParentCategory = (enabled: boolean) => ({
   enabled
 });
 
-export const setChartsFilterCategories = (categoryIds: any) => ({
+export const setChartsFilterCategories = (categoryIds: string[]) => ({
   type: SET_CHARTS_FILTER_CATEGORIES,
   categoryIds
 });
 
-export const setChartsCategorySorting = (sorting: any) => ({
+export const setChartsCategorySorting = (sorting: string) => ({
   type: SET_CHARTS_CATEGORY_SORTING,
   sorting
 });
@@ -396,7 +397,7 @@ export const fetchCurrencyRates = (currencies?: string[]): AppThunk<void> => {
 };
 
 // Helper function to fill missing dates
-const fillMissingDates = (rates: any) => {
+const fillMissingDates = (rates: Record<string, Record<string, number | string>>) => {
   const dateKeys = Object.keys(rates).sort();
   if (dateKeys.length < 2) return rates;
 
@@ -452,7 +453,7 @@ export const setTransactionListSort = (sortKey: string, sortAscending: boolean) 
   sortAscending
 });
 
-export const setTransactionListFilterCategories = (filterCategories: any, numTransactions: number) => ({
+export const setTransactionListFilterCategories = (filterCategories: string[] | Set<string>, numTransactions: number) => ({
   type: 'SET_TRANSACTION_LIST_FILTER_CATEGORIES',
   filterCategories,
   numTransactions

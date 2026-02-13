@@ -3,12 +3,13 @@ import { nest } from 'd3-collection';
 import { sum, ascending } from 'd3-array';
 import color from '../../data/color';
 import CustomLineChart from '../shared/CustomLineChart';
+import { Moment } from 'moment';
 import { Transaction } from '../../types/redux';
 
 interface Props {
   transactions: Transaction[];
-  startDate: any; // moment object
-  endDate: any; // moment object
+  startDate: Moment;
+  endDate: Moment;
 }
 
 interface ProcessedData {
@@ -22,6 +23,7 @@ export default function IncomeExpensesLine({ transactions, startDate, endDate }:
     (d: Transaction) => d.date :
     (d: Transaction) => d.date.substring(0, 7)
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data = (nest() as any)
     .key(keySelector)
     .sortKeys(ascending)
@@ -33,7 +35,7 @@ export default function IncomeExpensesLine({ transactions, startDate, endDate }:
     })
     .entries(transactions);
 
-  const processedData: ProcessedData[] = data.map((d: any) => ({
+  const processedData: ProcessedData[] = data.map((d: { key: string; value: { expenses: number; income: number } }) => ({
     key: d.key,
     expenses: d.value.expenses,
     income: d.value.income

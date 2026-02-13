@@ -16,11 +16,6 @@ interface AccountType {
   currency?: string;
 }
 
-interface Transaction {
-  id: string;
-  account?: string;
-}
-
 interface AccountEditProps {
   textRef: React.RefObject<HTMLInputElement | null>;
   accountName: string;
@@ -78,14 +73,12 @@ function AccountEdit({
 
 interface AccountProps {
   account: AccountType;
-  transactions: Transaction[];
   handleUpdateAccount: (accountId: string, name: string, currency?: string) => void;
   onDeleteRequest: (account: AccountType) => void;
 }
 
 function Account({
   account,
-  transactions,
   handleUpdateAccount,
   onDeleteRequest
 }: AccountProps) {
@@ -104,7 +97,7 @@ function Account({
   useEffect(() => {
     // This is the easy way to make sure a new account is in edit mode.
     if (account.name === NEW_ACCOUNT_NAME) {
-      handleEditAccount();
+      handleEditAccount(); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [account.name, handleEditAccount]);
 
@@ -205,7 +198,6 @@ export default function Accounts() {
                 <li key={`account-${a.id}`}>
                   <Account
                     account={a}
-                    transactions={transactions}
                     handleUpdateAccount={handleUpdateAccount}
                     onDeleteRequest={handleDeleteRequest}
                   />

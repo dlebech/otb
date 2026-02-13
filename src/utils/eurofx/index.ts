@@ -9,15 +9,16 @@ const rateHistoricalUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-h
 // Simple global cache for storing the unzipped versions of the rates. This is
 // of course not going to work a lot of the time, since this is Lambda, but it
 // should help a little bit, especially during testing.
-const cache = new LRUCache<string, any>({
+const cache = new LRUCache<string, Papa.ParseResult<Record<string, string>>>({
   max: 10,
   ttl: 1000 * 60 * 60 // 1 hour cache
 });
 
-const fetchRatesCsv = async (url: string) => {
-  if (cache.has(url)) {
+const fetchRatesCsv = async (url: string): Promise<Papa.ParseResult<Record<string, string>>> => {
+  const cached = cache.get(url);
+  if (cached) {
     console.log('Using cached CSV file');
-    return cache.get(url);
+    return cached;
   }
 
   console.log(`Fetching CSV from ${url}`)
@@ -28,7 +29,7 @@ const fetchRatesCsv = async (url: string) => {
   const files = await unzip(resp.data);
 
   // There's only one CSV in the zip for now.
-  const csvFile = Papa.parse(Object.values(files)[0], {
+  const csvFile = Papa.parse<Record<string, string>>(Object.values(files)[0], {
     header: true,
     skipEmptyLines: true
   });
@@ -48,7 +49,7 @@ interface FetchRatesOptions {
  * @param {Object} options - request options.
  * @returns {Array} A list of exchange rates (one per day)
  */
-export const fetchRates = async (options: FetchRatesOptions = {}): Promise<any[]> => {
+export const fetchRates = async (options: FetchRatesOptions = {}): Promise<Record<string, string | number>[]> => {
   console.log('Got options', options);
 
   const url = options.historical ? rateHistoricalUrl : rateDailyUrl;
@@ -61,11 +62,11 @@ export const fetchRates = async (options: FetchRatesOptions = {}): Promise<any[]
   }
 
   // Trim currency values
-  const csvData = (csvFile as any).data.map((entry: any) => {
-    const newEntry: any = {};
+  const csvData = csvFile.data.map((entry) => {
+    const newEntry: Record<string, string | number> = {};
     for (let [k, v] of Object.entries(entry)) {
-      k = (k as string).trim();
-      v = (v as string).trim();
+      k = k.trim();
+      v = v.trim();
       if (validColumns && !validColumns.has(k)) continue;
       if (!k) continue; // The currency file contains empty columns :(
 

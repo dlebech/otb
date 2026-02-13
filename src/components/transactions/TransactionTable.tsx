@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { uncategorized } from '../../data/categories';
 import Pagination from '../shared/Pagination';
 import CategorySelect from '../shared/CategorySelect';
@@ -10,18 +10,19 @@ import SortHeader from './SortHeader';
 import SearchField from './SearchField';
 import BulkActions from './BulkActions';
 import { Transaction } from '../../types/redux';
+import type { Category, Account } from '../../types/redux';
 
 
 interface DateSelect {
   id: string;
-  startDate?: any; // moment object
-  endDate?: any; // moment object
+  startDate?: Moment | null;
+  endDate?: Moment | null;
 }
 
 interface Props {
   transactions: Transaction[];
-  categories: Record<string, any>;
-  accounts: Record<string, any>;
+  categories: Record<string, Category>;
+  accounts: Record<string, Account>;
   dateSelect: DateSelect;
   page: number;
   pageSize: number;
@@ -34,7 +35,7 @@ interface Props {
   handleGroupRows: (transactionIds: string[]) => void;
   handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
   handleSearch: (text: string, page: number) => void;
-  handleDatesChange: (id: string, startDate: any, endDate: any) => void;
+  handleDatesChange: (id: string, startDate: Moment | null, endDate: Moment | null) => void;
   handlePageChange: (page: number) => void;
   handlePageSizeChange: (pageSize: number, totalRows: number) => void;
   handleSortChange: (sortKey: string, ascending: boolean) => void;
@@ -43,12 +44,12 @@ interface Props {
   handleRoundAmount: (round: boolean) => void;
   handleDeleteTransactionGroup: (groupId: string) => void;
   roundAmount?: boolean;
-  transactionGroups?: Record<string, any>;
+  transactionGroups?: Record<string, { groupId: string; linkedTransactions: Transaction[] }>;
 }
 
 const filterData = (data: Transaction[], categories: Set<string>, dateSelect: DateSelect): Transaction[] => {
-  let categoryFilter = (t: Transaction) => true;
-  let dateFilter = (t: Transaction) => true;
+  let categoryFilter: (t: Transaction) => boolean = () => true;
+  let dateFilter: (t: Transaction) => boolean = () => true;
 
   if (categories && categories.size > 0) {
     categoryFilter = t => {
@@ -70,16 +71,18 @@ const filterData = (data: Transaction[], categories: Set<string>, dateSelect: Da
 const sortData = (data: Transaction[], sortKey: string, sortAscending: boolean): Transaction[] => {
   return [...data] // Create new array to avoid inplace sort of original array.
     .sort((a, b) => {
-      const [val1, val2] = [(a as any)[sortKey], (b as any)[sortKey]];
-      if (typeof val1 === 'string') {
+      const val1 = (a as Record<string, unknown>)[sortKey];
+      const val2 = (b as Record<string, unknown>)[sortKey];
+      if (typeof val1 === 'string' && typeof val2 === 'string') {
         return sortAscending ? val1.localeCompare(val2) : val2.localeCompare(val1);
       }
-      return sortAscending ? val1 - val2 : val2 - val1;
+      return sortAscending ? (val1 as number) - (val2 as number) : (val2 as number) - (val1 as number);
     });
 }
 
 export default function TransactionTable({
   transactions,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   categories,
   accounts,
   dateSelect,
@@ -121,7 +124,7 @@ export default function TransactionTable({
       sortKey,
       sortAscending
     );
-    setData(newData);
+    setData(newData); // eslint-disable-line react-hooks/set-state-in-effect
     setDataView(newDataView);
     setSelectedRows(new Set());
   }, [transactions, filterCategories, dateSelect, sortKey, sortAscending]);
@@ -130,10 +133,10 @@ export default function TransactionTable({
     handlePageSizeChange(newPageSize, dataView.length);
   };
 
-  const handleCategorySelect = (option: any) => {
+  const handleCategorySelect = (option: { value: string; label: string } | { value: string; label: string }[] | null) => {
     // Convert to Set format that we expect
     const options = Array.isArray(option) ? option : (option ? [option] : []);
-    const newFilterCategories = new Set(options.map((o: any) => o.value));
+    const newFilterCategories = new Set(options.map((o: { value: string }) => o.value));
 
     // Since the category filter might reduce the number of transactions, we
     // need to know the new number of transactions here.

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
-// @ts-ignore - No types available for creatable
+// @ts-expect-error - No types available for creatable
 import CreatableSelect from 'react-select/creatable';
 import { uncategorized } from '../../data/categories';
 import { arrayToObjectLookup } from '../../util';
@@ -15,26 +15,27 @@ interface CategoryOption {
 interface Props {
   onChange: (option: CategoryOption[] | CategoryOption | null) => void;
   onCreate?: (name: string) => void;
-  selectedCategory?: any; // Could be Set, array, or object
+  selectedCategory?: Set<string> | string[] | string | CategoryOption[] | null;
   placeholder?: string;
   isMulti?: boolean;
   focus?: boolean;
   includeUncategorized?: boolean;
-  selectOptions?: Record<string, any>;
+  selectOptions?: Record<string, unknown>;
 }
 
-const findValue = (value: any, options: CategoryOption[]) => {
-  if (value instanceof Set) value = Array.from(value);
+const findValue = (value: Set<string> | string[] | string | CategoryOption[] | null | undefined, options: CategoryOption[]) => {
+  const normalizedValue = value instanceof Set ? Array.from(value) : value;
 
   // If we are given an array of strings, select the options with the value of
   // those strings.
-  if (Array.isArray(value) && value.length && typeof value[0] === 'string') {
-    return options.filter(o => !!value.find((c: string) => c === o.value));
+  if (Array.isArray(normalizedValue) && normalizedValue.length && typeof normalizedValue[0] === 'string') {
+    const stringValues = normalizedValue as string[];
+    return options.filter(o => !!stringValues.find((c: string) => c === o.value));
   }
-  if (typeof value === 'string') {
-    return options.find(o => o.value === value);
+  if (typeof normalizedValue === 'string') {
+    return options.find(o => o.value === normalizedValue);
   }
-  return value;
+  return normalizedValue;
 };
 
 export default function CategorySelect({
@@ -44,6 +45,7 @@ export default function CategorySelect({
   placeholder = 'Select category...',
   isMulti = true,
   focus = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   includeUncategorized = true,
   selectOptions = {}
 }: Props) {
@@ -69,7 +71,7 @@ export default function CategorySelect({
     ].concat(categoryOptions);
   }, [categories]);
 
-  const onChangeInternal = (option: any) => {
+  const onChangeInternal = (option: CategoryOption | CategoryOption[] | null) => {
     onChange(option);
   };
 

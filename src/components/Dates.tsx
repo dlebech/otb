@@ -71,7 +71,7 @@ interface DatesProps {
   endDate?: Moment | null;
   handleDatesChange: (id: string, startDate: Moment | null, endDate: Moment | null) => void;
   showPresets?: boolean;
-  dateProps?: any;
+  dateProps?: Record<string, unknown>;
 }
 
 export default function Dates({

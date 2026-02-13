@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { formatNumber } from '../../util';
@@ -24,9 +24,8 @@ interface AmountTipProps {
 }
 
 function AmountTip({ amounts, baseCurrency }: AmountTipProps) {
+  const id = `amount-tip-${useId()}`;
   if (amounts.length <= 1) return null;
-
-  const id = `amount-tip-${Math.random()}`;
   return (
     <>
       <FontAwesomeIcon

@@ -1,5 +1,6 @@
 import React from 'react';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { Moment } from 'moment';
 import CustomLineChart from '../shared/CustomLineChart';
 import { Transaction, Category } from '../../types/redux';
 
@@ -13,8 +14,8 @@ interface CategoryExpense {
 
 interface Props {
   sortedCategoryExpenses: CategoryExpense[];
-  startDate: any; // moment object
-  endDate: any; // moment object
+  startDate: Moment;
+  endDate: Moment;
 }
 
 export default function CategoryLine({ sortedCategoryExpenses, startDate, endDate }: Props) {

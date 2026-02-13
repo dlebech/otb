@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'redux-search' {
   export function reducer(state: any, action: any): any;
   export function connectSearchBox(reducer: any, stateKey: string): any;

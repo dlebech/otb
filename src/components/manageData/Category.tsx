@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Category as CategoryType, Transaction } from '../../types/redux';
+import { Category as CategoryType } from '../../types/redux';
 import CategoryEdit from './CategoryEdit';
 
 export const NEW_CATEGORY_NAME = 'New Category';
@@ -11,7 +11,6 @@ interface CategoryWithTransactionCount extends CategoryType {
 
 interface CategoryProps {
   category: CategoryWithTransactionCount;
-  transactions: Transaction[];
   parentCategories: CategoryWithTransactionCount[];
   handleUpdateCategory: (categoryId: string, name: string, parent?: string) => void;
   onDeleteRequest: (category: CategoryWithTransactionCount) => void;
@@ -20,7 +19,6 @@ interface CategoryProps {
 
 export default function Category({
   category,
-  transactions,
   parentCategories,
   handleUpdateCategory,
   onDeleteRequest,
@@ -45,7 +43,7 @@ export default function Category({
     // This is the easy way to make sure a new category is in edit mode.
     // However, it might not be best practice.
     if (category.name === NEW_CATEGORY_NAME) {
-      handleEditCategory();
+      handleEditCategory(); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [category.name, handleEditCategory]);
 

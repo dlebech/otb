@@ -1,9 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { type AppDispatch, Transaction, Category } from '../types/redux';
+import { type AppDispatch, Transaction, Account, Category } from '../types/redux';
 import dynamic from 'next/dynamic';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { nest } from 'd3-collection';
+import { TransactionGroup } from '../types/app';
 import { sum } from 'd3-array';
 import { createSelector } from 'reselect';
 import { uncategorized } from '../data/categories';
@@ -45,7 +46,7 @@ const _getTransactionGroups = (state: RootState) => state.transactions.groups;
 const _getCurrencyRates = (state: RootState) => state.edit.currencyRates;
 const getGroupByParentCategory = (state: RootState) => state.edit.charts.groupByParentCategory;
 
-const getDateSelect = createSelector([_getDateSelects], (dateSelects: any) => {
+const getDateSelect = createSelector([_getDateSelects], (dateSelects: Record<string, { startDate: string | null; endDate: string | null }>) => {
   const dateSelect = dateSelects[dateSelectId];
   if (dateSelect) {
     return {
@@ -61,25 +62,25 @@ const getDateSelect = createSelector([_getDateSelects], (dateSelects: any) => {
 
 const getBaseCurrency = createSelector(
   [_getAccounts, _getBaseCurrency],
-  (accounts: any[], baseCurrency: string | undefined) => {
+  (accounts: Account[], baseCurrency: string | undefined) => {
     // If not explicitly set, the base currency is just the currency of the first
     // account (usually the default)
-    return baseCurrency || (accounts.find((a: any) => !!a.currency) || {}).currency || null;
+    return baseCurrency || (accounts.find((a: Account) => !!a.currency) || {} as Account).currency || null;
   }
 );
 
-const getCurrencies = createSelector([_getAccounts], (accounts: any[]) => {
+const getCurrencies = createSelector([_getAccounts], (accounts: Account[]) => {
   return Array.from(
-    new Set(accounts.filter((a: any) => !!a.currency).map((a: any) => a.currency))
+    new Set(accounts.filter((a: Account) => !!a.currency).map((a: Account) => a.currency))
   ).sort();
 });
 
-const getAccounts = createSelector([_getAccounts], (accounts: any[]) => arrayToObjectLookup(accounts));
-const getCategories = createSelector([_getCategories], (categories: any[]) => arrayToObjectLookup(categories));
+const getAccounts = createSelector([_getAccounts], (accounts: Account[]) => arrayToObjectLookup(accounts));
+const getCategories = createSelector([_getCategories], (categories: Category[]) => arrayToObjectLookup(categories));
 
 const _getTransactionsWithGrouping = createSelector(
   [_getTransactions, _getTransactionGroups],
-  (transactions: any[], transactionGroups: any) => {
+  (transactions: Transaction[], transactionGroups: { [key: string]: TransactionGroup } | undefined) => {
     if (!transactionGroups) return transactions;
 
     // Copy the array because we will manipulate it below...
@@ -98,7 +99,7 @@ const _getTransactionsWithGrouping = createSelector(
     // parameter. This is just the default behavior for now and it should work
     // well for e.g. refunds
     Object.entries(transactionGroups)
-      .forEach(([_, group]: [string, any]) => {
+      .forEach(([, group]: [string, TransactionGroup]) => {
         const primaryTransactionIndex = reverseLookup[group.primaryId];
         const primaryTransaction = transactionsData[primaryTransactionIndex];
 
@@ -115,7 +116,7 @@ const _getTransactionsWithGrouping = createSelector(
         transactionsData.splice(primaryTransactionIndex, 1, newTransaction);
       });
 
-    transactionsData = transactionsData.filter((t: any) => !transactionsToRemove.has(t.id));
+    transactionsData = transactionsData.filter((t: Transaction) => !transactionsToRemove.has(t.id));
     return transactionsData;
   }
 );
@@ -132,21 +133,21 @@ const getTransactions = createSelector(
     getGroupByParentCategory
   ],
   (
-    transactions: any[],
-    dateSelect: any,
-    accounts: any,
-    categories: any,
+    transactions: Transaction[],
+    dateSelect: { startDate: Moment | null; endDate: Moment | null },
+    accounts: Record<string, Account>,
+    categories: Record<string, Category>,
     currencies: string[],
-    currencyRates: any,
+    currencyRates: Record<string, Record<string, number>> | undefined,
     baseCurrency: string,
     groupByParentCategory: boolean | undefined
   ) => {
-    let filteredTransactions = transactions.filter((t: any) => {
+    let filteredTransactions = transactions.filter((t: Transaction) => {
       return !t.ignore &&
         moment(t.date).isBetween(dateSelect.startDate, dateSelect.endDate, 'day', '[]');
     });
 
-    filteredTransactions = filteredTransactions.map((t: any) => {
+    filteredTransactions = filteredTransactions.map((t: Transaction) => {
       let newTransaction = Object.assign({}, t, {
         category: findCategory(
           categories,
@@ -178,10 +179,10 @@ const getTransactions = createSelector(
   }
 );
 
-const getIncomeAndExpenses = createSelector([getTransactions], (transactions: any[]) => {
-  const income: any[] = [];
-  const expenses: any[] = [];
-  transactions.forEach((t: any) => {
+const getIncomeAndExpenses = createSelector([getTransactions], (transactions: TransactionWithAmount[]) => {
+  const income: TransactionWithAmount[] = [];
+  const expenses: TransactionWithAmount[] = [];
+  transactions.forEach((t: TransactionWithAmount) => {
     if (t.amount < 0) expenses.push(t);
     else income.push(t);
   });
@@ -189,18 +190,19 @@ const getIncomeAndExpenses = createSelector([getTransactions], (transactions: an
 });
 
 const getSortedCategoryExpenses = createSelector(
-  [getIncomeAndExpenses], 
-  (incomeAndExpenses: any): CategoryExpense[] => {
+  [getIncomeAndExpenses],
+  (incomeAndExpenses: TransactionWithAmount[][]): CategoryExpense[] => {
     const expenses = incomeAndExpenses[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (nest() as any)
-      .key((d: any) => d.category.id)
-      .rollup((transactions: any[]) => ({
+      .key((d: TransactionWithAmount) => d.category.id)
+      .rollup((transactions: TransactionWithAmount[]) => ({
         transactions,
         category: transactions[0].category,
-        amount: Math.abs(sum(transactions, (d: any) => d.amount))
+        amount: Math.abs(sum(transactions, (d: TransactionWithAmount) => d.amount))
       }))
       .entries(expenses)
-      .sort((a: any, b: any) => b.value.amount - a.value.amount);
+      .sort((a: CategoryExpense, b: CategoryExpense) => b.value.amount - a.value.amount);
   }
 );
 
@@ -255,7 +257,7 @@ export default function Charts() {
     };
   });
 
-  const handleDatesChange = (dateSelectId: string, startDate: any, endDate: any) => {
+  const handleDatesChange = (dateSelectId: string, startDate: Moment | null, endDate: Moment | null) => {
     dispatch(actions.editDates(
       dateSelectId, 
       startDate ? startDate.format('YYYY-MM-DD') : null,
@@ -275,7 +277,7 @@ export default function Charts() {
     dispatch(actions.fetchCurrencyRates(currencies));
   };
 
-  const handleCategoryChange = (categoryIds: any) => {
+  const handleCategoryChange = (categoryIds: string[]) => {
     dispatch(actions.setChartsFilterCategories(categoryIds));
   };
 

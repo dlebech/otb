@@ -43,7 +43,7 @@ function IntroWithoutData({
       <p>
         Catchy headline eh? But seriously, if you have some bank transactions
         in a file, go ahead and add the file here to see a few graphs &mdash;
-        or try the "demo". The data stays in your browser and is not shared
+        or try the &quot;demo&quot;. The data stays in your browser and is not shared
         or stored anywhere else.
       </p>
       <Link className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg m-1" href="/transactions/add">Add Transactions</Link>
