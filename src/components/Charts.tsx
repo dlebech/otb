@@ -323,7 +323,7 @@ export default function Charts() {
                 type="checkbox"
                 id="group-by-parent-categories"
                 className="mr-2"
-                checked={groupByParentCategory}
+                checked={groupByParentCategory ?? false}
                 onChange={e => handleGroupByParentCategoryChange(e.target.checked)}
               />
               <label className="text-sm" htmlFor="group-by-parent-categories">

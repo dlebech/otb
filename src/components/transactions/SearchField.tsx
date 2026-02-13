@@ -1,4 +1,4 @@
-import React, { useState, useDeferredValue, useEffect } from 'react';
+import React, { useState, useDeferredValue, useEffect, useRef } from 'react';
 
 interface Props {
   searchText?: string;
@@ -8,10 +8,12 @@ interface Props {
 export default function SearchField({ searchText = '', handleSearch }: Props) {
   const [internalSearchText, setInternalSearchText] = useState(searchText);
   const searchValue = useDeferredValue(internalSearchText);
+  const handleSearchRef = useRef(handleSearch);
+  handleSearchRef.current = handleSearch;
 
   useEffect(() => {
-    handleSearch(searchValue);
-  }, [handleSearch, searchValue]);
+    handleSearchRef.current(searchValue);
+  }, [searchValue]);
 
   const handleSearchInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInternalSearchText(e.target.value);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface ModalProps {
@@ -47,7 +48,7 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
     lg: 'max-w-2xl'
   }[size];
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {show && (
         <>
@@ -107,6 +108,7 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

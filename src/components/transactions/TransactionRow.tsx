@@ -115,8 +115,8 @@ export default function TransactionRow({
   const handleRowSelectClick = () => handleRowSelect(transaction.id);
 
   let className = '';
-  if (isSelected) className = 'table-primary';
-  else if (transaction.ignore) className = 'table-warning';
+  if (isSelected) className = '!bg-blue-100';
+  else if (transaction.ignore) className = '!bg-yellow-50';
 
   const account = accounts[transaction.account || ''] || { name: 'N/A', currency: '' };
   const hasMultipleAccounts = Object.keys(accounts).length >= 2;

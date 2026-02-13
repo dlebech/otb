@@ -33,6 +33,7 @@ export default function CategoryGuessConfirm({
         className="text-green-600 mx-1 cursor-pointer"
         onClick={confirm}
         aria-label={`Confirm Guess (${categoryGuess.name})`}
+        data-tooltip-id="transaction-tooltip"
         data-tooltip-content={`Confirm Guess (${categoryGuess.name})`}
         fixedWidth
       />
@@ -41,6 +42,7 @@ export default function CategoryGuessConfirm({
         className="text-red-600 mx-1 cursor-pointer"
         onClick={reject}
         aria-label={`Reject Guess (${categoryGuess.name})`}
+        data-tooltip-id="transaction-tooltip"
         data-tooltip-content={`Reject Guess (${categoryGuess.name})`}
         fixedWidth
       />
@@ -48,6 +50,7 @@ export default function CategoryGuessConfirm({
       <FontAwesomeIcon
         icon="question-circle"
         className="text-blue-500"
+        data-tooltip-id="transaction-tooltip"
         data-tooltip-content="This is a guess, confirm or reject with the thumbs up or down on the left."
         fixedWidth
       />

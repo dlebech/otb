@@ -108,18 +108,10 @@ export default function TransactionTable({
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [data, setData] = useState<Transaction[]>([]);
   const [dataView, setDataView] = useState<Transaction[]>([]);
-  const [isSelectedRowsUpdate, setIsSelectedRowsUpdate] = useState(false);
 
   // Note: react-tooltip v5 doesn't need manual rebuild
 
   useEffect(() => {
-    // Hack: This is to ensure that when a row is selected, it will not sort and
-    // filter the data below. But yeah, it's a hack.
-    if (isSelectedRowsUpdate) {
-      setIsSelectedRowsUpdate(false);
-      return;
-    }
-
     // Only called when receiving new props or on the first render. So
     // this is where we should just set all the raw transactions into local
     // state so we can easier sort, filter, etc. later
@@ -132,7 +124,7 @@ export default function TransactionTable({
     setData(newData);
     setDataView(newDataView);
     setSelectedRows(new Set());
-  }, [transactions, filterCategories, dateSelect, sortKey, sortAscending, isSelectedRowsUpdate]);
+  }, [transactions, filterCategories, dateSelect, sortKey, sortAscending]);
 
   const handlePageSizeChangeInternal = (newPageSize: number) => {
     handlePageSizeChange(newPageSize, dataView.length);
@@ -167,7 +159,6 @@ export default function TransactionTable({
         }
       });
       
-      setIsSelectedRowsUpdate(true);
       return newSelectedRows;
     });
   };
@@ -178,7 +169,6 @@ export default function TransactionTable({
 
   const handleSelectNone = () => {
     setSelectedRows(new Set());
-    setIsSelectedRowsUpdate(true);
   };
 
   const dataPage = dataView
