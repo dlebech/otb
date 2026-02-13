@@ -8,6 +8,7 @@ interface FormProps {
   skipRows: number;
   skipDuplicates: boolean;
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFile: (file: File) => void;
   handleSkipRowsChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSkipDuplicatesChange: (checked: boolean) => void;
   handleSave: () => void;
@@ -22,6 +23,7 @@ export default function Form({
   skipRows,
   skipDuplicates,
   handleFileChange,
+  handleFile,
   handleSkipRowsChange,
   handleSkipDuplicatesChange,
   handleSave,
@@ -32,7 +34,7 @@ export default function Form({
 }: FormProps) {
   return (
     <form>
-      {!hasTransactions && <FileInput handleFileChange={handleFileChange} />}
+      {!hasTransactions && <FileInput handleFileChange={handleFileChange} handleFile={handleFile} />}
       {hasTransactions && <ImportControls
         skipRows={skipRows}
         skipDuplicates={skipDuplicates}

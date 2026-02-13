@@ -23,7 +23,6 @@ export const guessDateFormat = (s: string): string => {
   s = s.trim();
   if (/^\d{4}[.\-/]\d{2}[.\-/]\d{2}$/.test(s)) return 'YYYY-MM-DD';
   if (/^\d{2}[.\-/]\d{2}[.\-/]\d{4}$/.test(s)) return 'DD-MM-YYYY';
-  if (/^\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2}$/.test(s)) return 'DD-MM-YY';
   return '';
 };
 
@@ -42,6 +41,24 @@ export const momentParse = (val: string, dateFormat: string): Moment => {
     if (parts[0].length === 1) parts[0] = '0' + parts[0];
     if (parts[1].length === 1) parts[1] = '0' + parts[1];
   }
+
+  // Expand 2-digit years to 4 digits, picking the century closest to now.
+  if (dateFormat.includes('YY') && !dateFormat.includes('YYYY')) {
+    const yearIndex = dateFormat.split('-').indexOf('YY');
+    if (yearIndex !== -1 && parts[yearIndex]?.length === 2) {
+      const yy = parseInt(parts[yearIndex], 10);
+      const currentYear = moment().year();
+      const candidate20 = 2000 + yy;
+      const candidate19 = 1900 + yy;
+      parts[yearIndex] = String(
+        Math.abs(candidate20 - currentYear) <= Math.abs(candidate19 - currentYear)
+          ? candidate20
+          : candidate19
+      );
+      dateFormat = dateFormat.replace('YY', 'YYYY');
+    }
+  }
+
   const formattedVal = parts.join('-');
   return moment(formattedVal, dateFormat, true);
 };
@@ -283,30 +300,37 @@ export const arrayToObjectLookup = (arr: any[]): Record<string, any> => {
 };
 
 // Re-export other functions for now
-export const findCategory = (categoryList: any[] | Record<string, any>, categoryId: string, returnFallback = true, _returnParent = false): any => {
+export const findCategory = (categoryList: any[] | Record<string, any>, categoryId: string, returnFallback = true, returnParent = false): any => {
   // Handle special uncategorized case - import here to avoid circular dependency
   const { uncategorized } = require('./data/categories');
   if (categoryId === uncategorized.id) {
     return uncategorized;
   }
 
+  let category;
   // Handle both array and object formats
   if (Array.isArray(categoryList)) {
-    return categoryList.find(cat => cat.id === categoryId) || (returnFallback ? categoryList[0] : null);
+    category = categoryList.find(cat => cat.id === categoryId);
   } else if (categoryList && typeof categoryList === 'object') {
-    // Object format - direct lookup
-    const category = categoryList[categoryId];
-    if (category) return category;
-    
-    // If not found and fallback requested, return first category
+    category = categoryList[categoryId];
+  }
+
+  if (!category) {
     if (returnFallback) {
+      if (Array.isArray(categoryList)) {
+        return categoryList[0] || null;
+      }
       const firstKey = Object.keys(categoryList)[0];
       return firstKey ? categoryList[firstKey] : null;
     }
     return null;
   }
-  
-  return null;
+
+  if (returnParent && category.parent) {
+    return findCategory(categoryList, category.parent, returnFallback, returnParent);
+  }
+
+  return category;
 };
 
 /**

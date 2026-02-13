@@ -20,6 +20,8 @@ function DateFormat({ dateFormat, handleDateFormatChange }: DateFormatProps) {
       <option value="YYYY-MM-DD">Year - Month - Date</option>
       <option value="DD-MM-YYYY">Date - Month - Year</option>
       <option value="MM-DD-YYYY">Month - Date - Year</option>
+      <option value="DD-MM-YY">Date - Month - Year (2-digit)</option>
+      <option value="MM-DD-YY">Month - Date - Year (2-digit)</option>
     </select>
   );
 }

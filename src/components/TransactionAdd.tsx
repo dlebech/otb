@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch } from '../types/redux';
 import { useRouter } from 'next/navigation';
@@ -112,6 +112,13 @@ export default function TransactionAdd() {
     return newErrors.length === 0;
   }, [columnSpec, transactions, dateFormat, account]);
 
+  // Re-validate whenever relevant state changes, but only after data is loaded.
+  useEffect(() => {
+    if (transactions.length > 0) {
+      validateForm();
+    }
+  }, [validateForm, transactions, columnSpec, dateFormat, account]);
+
   const handleSave = useCallback(() => {
     if (!validateForm()) return;
     dispatch(actions.importSaveTransactions());
@@ -152,7 +159,7 @@ export default function TransactionAdd() {
   }, [dispatch]);
 
   const sheetToCsv = useCallback(async (file: File): Promise<string> => {
-    const XLSX = await import('xlsx').then(m => m.default);
+    const XLSX = await import('xlsx');
     return new Promise(resolve => {
       const reader = new FileReader();
       reader.onload = e => {
@@ -165,11 +172,8 @@ export default function TransactionAdd() {
     });
   }, []);
 
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = useCallback(async (fileInput: File) => {
     try {
-      const fileInput = e.target.files?.[0];
-      if (!fileInput) return;
-
       dispatch(actions.importParseTransactionsStart());
 
       // Full mimetype for Excel sheets is
@@ -177,7 +181,7 @@ export default function TransactionAdd() {
       // but to keep things simple, just search for the word sheet in the type
       // Convert Excel sheets to CSV before parsing.
       let file: File | string = fileInput;
-      if (fileInput.type.includes('sheet')) {
+      if (fileInput.type.includes('sheet') || fileInput.name.endsWith('.xlsx') || fileInput.name.endsWith('.xls')) {
         file = await sheetToCsv(fileInput);
       }
 
@@ -193,15 +197,19 @@ export default function TransactionAdd() {
     }
   }, [dispatch, sheetToCsv, handleCsv]);
 
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target.files?.[0];
+    if (!fileInput) return;
+    handleFile(fileInput);
+  }, [handleFile]);
+
   const handleSkipRowsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(actions.importUpdateSkipRows(Number(e.target.value)));
-    validateForm();
-  }, [dispatch, validateForm]);
+  }, [dispatch]);
 
   const handleColumnTypeChange = useCallback((columnIndex: number, columnType: string) => {
     dispatch(actions.importUpdateColumnType(columnIndex, columnType));
-    validateForm();
-  }, [dispatch, validateForm]);
+  }, [dispatch]);
 
   const handleCancel = useCallback(() => {
     return dispatch(actions.importCancelTransactions());
@@ -209,18 +217,15 @@ export default function TransactionAdd() {
 
   const handleAccountChange = useCallback((accountId: string) => {
     dispatch(actions.importUpdateAccount(accountId));
-    validateForm();
-  }, [dispatch, validateForm]);
+  }, [dispatch]);
 
   const handleDateFormatChange = useCallback((dateFormat: string) => {
     dispatch(actions.importSetDateFormat(dateFormat));
-    validateForm();
-  }, [dispatch, validateForm]);
+  }, [dispatch]);
 
   const handleSkipDuplicatesChange = useCallback((checked: boolean) => {
     dispatch(actions.importSetSkipDuplicates(checked));
-    validateForm();
-  }, [dispatch, validateForm]);
+  }, [dispatch]);
 
   return (
     <>
@@ -235,6 +240,7 @@ export default function TransactionAdd() {
       <Errors errors={errors} />
       <Form
         handleFileChange={handleFileChange}
+        handleFile={handleFile}
         handleSkipRowsChange={handleSkipRowsChange}
         handleSkipDuplicatesChange={handleSkipDuplicatesChange}
         handleSave={handleSave}
