@@ -288,8 +288,8 @@ export default function Charts() {
 
   return (
     <>
-      <div className="row align-items-center">
-        <div className="col">
+      <div className="flex flex-wrap gap-6 items-center">
+        <div className="flex-1">
           <Dates
             id={dateSelectId}
             startDate={startDate}
@@ -297,15 +297,15 @@ export default function Charts() {
             handleDatesChange={handleDatesChange}
           />
         </div>
-        <div className="col-md-auto">
-          {currencies.length > 1 && <div className="form-row align-items-center">
-            <div className="col-auto">
+        <div className="md:w-auto">
+          {currencies.length > 1 && <div className="flex flex-wrap gap-6 items-center">
+            <div className="w-auto">
               <label className="my-0" htmlFor="base-currency">Base currency</label>
             </div>
-            <div className="col">
+            <div className="flex-1">
               <select
                 id="base-currency"
-                className="form-control"
+                className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={baseCurrency}
                 onChange={e => handleBaseCurrencyChange(e.target.value)}
               >
@@ -316,17 +316,17 @@ export default function Charts() {
             </div>
           </div>}
         </div>
-        <div className="col-md-auto">
-          <div className="form-row align-items-center">
-            <div className="form-check">
+        <div className="md:w-auto">
+          <div className="flex flex-wrap gap-6 items-center">
+            <div className="flex items-center">
               <input
                 type="checkbox"
                 id="group-by-parent-categories"
-                className="form-check-input"
+                className="mr-2"
                 checked={groupByParentCategory}
                 onChange={e => handleGroupByParentCategoryChange(e.target.checked)}
               />
-              <label className="form-check-label" htmlFor="group-by-parent-categories">
+              <label className="text-sm" htmlFor="group-by-parent-categories">
                 Show only parent categories
               </label>
             </div>
@@ -341,9 +341,9 @@ export default function Charts() {
           accounts={accounts}
         />
       </section>
-      <section className="mt-5">
-        <div className="row justify-content-center">
-          <div className="col-lg-6">
+      <section className="mt-12">
+        <div className="flex flex-wrap gap-6 justify-center">
+          <div className="w-full lg:flex-1">
             <h4 className="text-center">Income and expenses over time</h4>
             <IncomeExpensesLine
               transactions={transactions}
@@ -351,7 +351,7 @@ export default function Charts() {
               endDate={endDate}
             />
           </div>
-          <div className="col-lg-6">
+          <div className="w-full lg:flex-1">
             <h4 className="text-center">Sum of income and expenses over time</h4>
             <AmountSumBar
               transactions={transactions}
@@ -359,7 +359,7 @@ export default function Charts() {
           </div>
         </div>
       </section>
-      <section className="mt-5">
+      <section className="mt-12">
         <CategoryExpenses
           filterCategories={filterCategories}
           categories={categories}

@@ -38,7 +38,7 @@ export default function ReduxProvider({ children }: ReduxProviderProps) {
         <PersistorContext.Provider value={persistor}>
           <div>
             <Menu persistor={persistor} />
-            <div className="container mt-4">
+            <div className="container mx-auto px-4 mt-4">
               {children}
             </div>
             <Footer />

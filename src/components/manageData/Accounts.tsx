@@ -45,29 +45,29 @@ function AccountEdit({
       e.preventDefault();
       handleSave();
     }}>
-      <div className="form-group">
+      <div className="mb-6">
         <input
           ref={textRef}
           type="text"
-          className="form-control form-control-sm"
+          className="block w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           placeholder="Name of account"
           value={accountName}
           onChange={handleNameChange}
           onKeyDown={e => e.keyCode === 27 && handleCancel()}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-6">
         <CurrencySelect
           onChange={handleCurrencyChange}
           selectedCurrency={accountCurrency}
         />
       </div>
-      <button type="submit" className="btn btn-success btn-sm mx-2">
+      <button type="submit" className="inline-flex items-center justify-center rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700 px-3 py-1 text-sm mx-2">
         Save
       </button>
       <button
         type="button"
-        className="btn btn-danger btn-sm"
+        className="inline-flex items-center justify-center rounded font-medium transition-colors bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm"
         onClick={handleCancel}
       >
         Cancel
@@ -151,12 +151,12 @@ function Account({
         {account.name} ({account.currency || 'No currency specified'})
         <FontAwesomeIcon
           icon="edit"
-          className="ms-2"
+          className="ml-2"
         />
       </span>
       <FontAwesomeIcon
         icon="trash-alt"
-        className="ms-2 cursor-pointer"
+        className="ml-2 cursor-pointer"
         onClick={handleDeleteConfirm}
       />
     </section>
@@ -197,8 +197,8 @@ export default function Accounts() {
 
   return (
     <>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <ul>
             {accounts.map(a => {
               return (
@@ -215,16 +215,16 @@ export default function Accounts() {
           </ul>
         </div>
       </div>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <button
             type="button"
-            className="btn btn-primary btn-sm"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 text-sm"
             onClick={() => handleAddAccount(NEW_ACCOUNT_NAME, undefined)}
           >
             <FontAwesomeIcon
               icon="plus"
-              className="me-1"
+              className="mr-1"
               fixedWidth
             />
             Add New Account
@@ -245,7 +245,7 @@ export default function Accounts() {
           ) : null
         }
         confirmText="Delete"
-        confirmButtonClass="btn-danger"
+        confirmButtonClass="bg-red-600 text-white hover:bg-red-700"
       />
     </>
   );

@@ -55,14 +55,14 @@ export default function Summary({ expenses, income, sortedCategoryExpenses, acco
   }
 
   return (
-    <div className="row my-3">
-      <div className="col">
+    <div className="flex flex-wrap gap-6 my-4">
+      <div className="flex-1">
         <AmountCard title="Expenses" amount={expenseTotal} amounts={expenseAmounts} />
       </div>
-      <div className="col">
+      <div className="flex-1">
         <AmountCard title="Income" amount={incomeTotal} amounts={incomeAmounts} />
       </div>
-      {categorySpend && <div className="col">
+      {categorySpend && <div className="flex-1">
         <AmountCard {...categorySpend} />
       </div>}
     </div>

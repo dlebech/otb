@@ -4,7 +4,7 @@ import { type AppDispatch } from '../types/redux';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toggleLocalStorage } from '../actions';
+import { toggleLocalStorage, exitTestMode } from '../actions';
 import { RootState } from '../reducers';
 import Modal from './shared/Modal';
 import { toggleLocalStorage as utilToggleLocalStorage } from '../util';
@@ -37,8 +37,9 @@ export default function Menu({ persistor }: MenuProps) {
     if (localStorageEnabled) {
       await handleToggleStorage({ target: { checked: false } } as React.ChangeEvent<HTMLInputElement>);
     }
+    dispatch(exitTestMode());
     router.push('/');
-  }, [localStorageEnabled, handleToggleStorage, router]);
+  }, [localStorageEnabled, handleToggleStorage, dispatch, router]);
 
   useEffect(() => {
     // Initialize storage state only once on mount (emulating componentDidMount)
@@ -57,26 +58,26 @@ export default function Menu({ persistor }: MenuProps) {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div className="container">
-          <Link className="navbar-brand" href="/">OTB</Link>
-          <div className="navbar-collapse">
-            <ul className="navbar-nav me-auto">
-              <li className={`nav-item${active('/transactions')}`}>
-                <Link className="nav-link" href="/transactions">
-                  <FontAwesomeIcon icon="table" className="me-1" fixedWidth />
+      <nav className="bg-gray-800 text-white">
+        <div className="container mx-auto px-4 flex items-center py-3">
+          <Link className="text-xl font-bold text-white no-underline" href="/">OTB</Link>
+          <div className="flex items-center ml-6 flex-1">
+            <ul className="flex items-center gap-6 mr-auto">
+              <li className={`${active('/transactions')}`}>
+                <Link className="text-gray-300 hover:text-white transition-colors no-underline" href="/transactions">
+                  <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
                   Transactions
                 </Link>
               </li>
-              <li className={`nav-item${active('/charts')}`}>
-                <Link className="nav-link" href="/charts">
-                  <FontAwesomeIcon icon="chart-bar" className="me-1" fixedWidth />
+              <li className={`${active('/charts')}`}>
+                <Link className="text-gray-300 hover:text-white transition-colors no-underline" href="/charts">
+                  <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
                   Charts
                 </Link>
               </li>
-              <li className={`nav-item${active('/data')}`}>
-                <Link className="nav-link" href="/data">
-                  <FontAwesomeIcon icon="database" className="me-1" fixedWidth />
+              <li className={`${active('/data')}`}>
+                <Link className="text-gray-300 hover:text-white transition-colors no-underline" href="/data">
+                  <FontAwesomeIcon icon="database" className="mr-1" fixedWidth />
                   Manage Data
                 </Link>
               </li>
@@ -84,26 +85,26 @@ export default function Menu({ persistor }: MenuProps) {
             {isTestMode && (
               <button
                 onClick={handleExitDemo}
-                className="btn btn-outline-warning btn-sm mx-3"
+                className="inline-flex items-center justify-center rounded font-medium transition-colors border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white px-3 py-1 text-sm mx-4"
               >
                 Exit Demo
               </button>
             )}
-            <div className="d-flex align-items-center">
-              <div className="form-check">
+            <div className="flex items-center">
+              <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="local-storage-check"
-                  className="form-check-input"
+                  className="mr-2"
                   checked={localStorageEnabled}
                   onChange={handleToggleStorage}
                 />
-                <label className="form-check-label navbar-text" htmlFor="local-storage-check">
+                <label className="text-sm text-gray-300" htmlFor="local-storage-check">
                   Save Data in Browser
                 </label>
                 <FontAwesomeIcon
                   icon="question-circle"
-                  className="ms-1 cursor-pointer text-info"
+                  className="ml-1 cursor-pointer text-blue-400"
                   fixedWidth
                   onClick={handleShowSaveDataModal}
                 />
@@ -129,10 +130,10 @@ export default function Menu({ persistor }: MenuProps) {
             On a shared machine, this feature is not recommended. Download
             the data instead, and restore it later with the restore function.
           </p>
-          <div className="d-flex justify-content-end">
+          <div className="flex justify-end">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="inline-flex items-center justify-center rounded font-medium transition-colors bg-gray-600 text-white hover:bg-gray-700 px-4 py-2"
               onClick={() => setShowSaveDataModal(false)}
             >
               Cool

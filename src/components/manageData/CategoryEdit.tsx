@@ -25,24 +25,24 @@ export default function CategoryEdit({
   handleParentChange
 }: CategoryEditProps) {
   return (
-    <form className="form-inline" onSubmit={e => {
+    <form className="flex items-center gap-2" onSubmit={e => {
       e.preventDefault();
       handleSave();
     }}>
-      <div className="form-group">
+      <div className="mb-6">
         <input
           ref={textRef}
           type="text"
-          className="form-control form-control-sm"
+          className="block w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           placeholder="Name of category"
           value={categoryName}
           onChange={handleNameChange}
           onKeyDown={e => e.keyCode === 27 && handleCancel()}
         />
       </div>
-      {!hasChildren && <div className="form-group ms-2">
+      {!hasChildren && <div className="mb-6 ml-2">
         <select
-          className="form-control form-control-sm"
+          className="block w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={categoryParent || ''}
           onChange={handleParentChange}
         >
@@ -52,12 +52,12 @@ export default function CategoryEdit({
           })}
         </select>
       </div>}
-      <button type="submit" className="btn btn-success btn-sm mx-2">
+      <button type="submit" className="inline-flex items-center justify-center rounded font-medium transition-colors bg-green-600 text-white hover:bg-green-700 px-3 py-1 text-sm mx-2">
         Save
       </button>
       <button
         type="button"
-        className="btn btn-danger btn-sm"
+        className="inline-flex items-center justify-center rounded font-medium transition-colors bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm"
         onClick={handleCancel}
       >
         Cancel

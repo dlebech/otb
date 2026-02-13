@@ -35,11 +35,11 @@ export default function CategoryTreeMap({ sortedCategoryExpenses }: Props) {
           data={data}
           nameKey="key"
           dataKey="value"
-          stroke={color.bootstrap.white}
-          fill={color.bootstrap.dark}
+          stroke={color.theme.white}
+          fill={color.theme.dark}
         >
           <Tooltip
-            formatter={(val: number) => formatNumber(val, {})}
+            formatter={(val: number | undefined) => formatNumber(val ?? 0, {})}
           />
         </Treemap>
       </ResponsiveContainer>

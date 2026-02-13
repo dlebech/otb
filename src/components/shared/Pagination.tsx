@@ -35,17 +35,16 @@ export default function Pagination({
     if (pages.length === 5) break;
     const paging = <li
       key={`page-item-${i}`}
-      className={`page-item${i === page ? ' active': ''}`}
     >
-      {i === page && 
-        <span className="page-link">
+      {i === page &&
+        <span className="px-3 py-1 rounded border border-blue-600 bg-blue-600 text-white transition-colors">
           {i}
           <span className="sr-only">(current)</span>
         </span>
       }
       {i !== page &&
         <button
-          className="page-link"
+          className="px-3 py-1 rounded border border-gray-300 text-blue-600 hover:bg-gray-100 transition-colors"
           onClick={() => handlePageChange(i)}
         >
           {i}
@@ -56,52 +55,56 @@ export default function Pagination({
   }
 
   return (
-    <nav className="d-inline-flex align-items-center">
-      <ul className="pagination me-3 mb-0">
-        <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
+    <nav className="inline-flex items-center">
+      <ul className="flex items-center gap-1 mr-4 mb-0">
+        <li>
           <button
-            className="page-link"
+            className={`px-3 py-1 rounded border border-gray-300 text-blue-600 hover:bg-gray-100 transition-colors${page === 1 ? ' opacity-50 cursor-not-allowed' : ''}`}
             onClick={() => handlePageChange(1)}
+            disabled={page === 1}
           >
             <span aria-hidden="true">&laquo;</span>
             <span className="sr-only">First Page</span>
           </button>
         </li>
-        <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
+        <li>
           <button
-            className="page-link"
+            className={`px-3 py-1 rounded border border-gray-300 text-blue-600 hover:bg-gray-100 transition-colors${page === 1 ? ' opacity-50 cursor-not-allowed' : ''}`}
             onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
           >
             <span aria-hidden="true">&lsaquo;</span>
             <span className="sr-only">Previous Page</span>
           </button>
         </li>
         {pages}
-        <li className={`page-item${page === lastPage ? ' disabled' : ''}`}>
+        <li>
           <button
-            className="page-link"
+            className={`px-3 py-1 rounded border border-gray-300 text-blue-600 hover:bg-gray-100 transition-colors${page === lastPage ? ' opacity-50 cursor-not-allowed' : ''}`}
             onClick={() => handlePageChange(page + 1)}
+            disabled={page === lastPage}
           >
             <span aria-hidden="true">&rsaquo;</span>
             <span className="sr-only">Next Page</span>
           </button>
         </li>
-        <li className={`page-item${page === lastPage ? ' disabled' : ''}`}>
+        <li>
           <button
-            className="page-link"
+            className={`px-3 py-1 rounded border border-gray-300 text-blue-600 hover:bg-gray-100 transition-colors${page === lastPage ? ' opacity-50 cursor-not-allowed' : ''}`}
             onClick={() => handlePageChange(lastPage)}
+            disabled={page === lastPage}
           >
             <span aria-hidden="true">&raquo;</span>
-            <span className="sr-only">First Page</span>
+            <span className="sr-only">Last Page</span>
           </button>
         </li>
       </ul>
-      <span className="text-nowrap px-2">
+      <span className="whitespace-nowrap px-2">
         Per Page:
       </span>
       <select
         id="page-size"
-        className="form-control"
+        className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         value={pageSize}
         onChange={e => handlePageSizeChange(Number(e.target.value))}
       >

@@ -29,10 +29,11 @@ export default function CustomLineChart({ data, series, showLegend = true }: Pro
   series.forEach(s => initialEnabledLines[s.name] = true);
   const [enabledLines, setEnabledLines] = useState(initialEnabledLines);
 
-  const handleLegendClick = (o: { value: string }) => {
+  const handleLegendClick = (o: { value?: string }) => {
+    if (!o.value) return;
     setEnabledLines(prevState => ({
       ...prevState,
-      [o.value]: !prevState[o.value]
+      [o.value!]: !prevState[o.value!]
     }));
   };
 
@@ -48,8 +49,8 @@ export default function CustomLineChart({ data, series, showLegend = true }: Pro
           />}
           <Tooltip formatter={(v: any) => formatNumber(v, { maximumFractionDigits: 0 })} />
           {series.map(s => {
-            const fill = s.fill || color.bootstrap.dark;
-            const stroke = s.stroke || color.bootstrap.dark;
+            const fill = s.fill || color.theme.dark;
+            const stroke = s.stroke || color.theme.dark;
             return (
               <Line
                 type="monotone"

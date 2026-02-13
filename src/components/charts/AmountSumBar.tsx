@@ -32,14 +32,14 @@ export default function AmountSumBar({ transactions }: Props) {
         <BarChart data={data}>
           <XAxis dataKey="key" />
           <YAxis />
-          <Tooltip formatter={(v: number) => formatNumber(v, {})} />
+          <Tooltip formatter={(v: number | undefined) => formatNumber(v ?? 0, {})} />
           <Bar
             type="monotone"
             dataKey="value"
             name="Sum"
           >
             {data.map(d => {
-              const chosenColor = (d.value || 0) < 0 ? color.bootstrap.danger : color.bootstrap.success;
+              const chosenColor = (d.value || 0) < 0 ? color.theme.danger : color.theme.success;
               return <Cell
                 key={`amount-sum-bar-cell-${d.key}`}
                 fill={chosenColor}
@@ -49,7 +49,7 @@ export default function AmountSumBar({ transactions }: Props) {
           </Bar>
           <ReferenceLine
             y={0}
-            stroke={color.bootstrap.light}
+            stroke={color.theme.light}
           />
         </BarChart>
       </ResponsiveContainer>

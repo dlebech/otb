@@ -64,10 +64,10 @@ interface AmountCardProps {
 
 export default function AmountCard({ title, amount, amounts = [], baseCurrency }: AmountCardProps) {
   return (
-    <div className="card">
-      <div className="card-body">
-        <p className="display-3">{amount}</p>
-        <h5 className="card-title">
+    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="p-6">
+        <p className="text-5xl md:text-6xl font-bold">{amount}</p>
+        <h5 className="text-lg font-medium mt-2">
           {title}
           <AmountTip amounts={amounts} baseCurrency={baseCurrency} />
         </h5>

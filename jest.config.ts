@@ -1,5 +1,8 @@
 import type { Config } from 'jest'
 import nextJest from 'next/jest.js'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 const createJestConfig = nextJest({
   dir: './',

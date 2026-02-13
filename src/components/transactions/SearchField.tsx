@@ -21,7 +21,7 @@ export default function SearchField({ searchText = '', handleSearch }: Props) {
     <input
       type="text"
       placeholder="Search for a transaction"
-      className="form-control form-col-auto"
+      className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
       value={internalSearchText}
       onChange={handleSearchInternal}
     />

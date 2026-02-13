@@ -96,12 +96,12 @@ export default function Category({
         {category.name} ({category.transactionCount})
         <FontAwesomeIcon
           icon="edit"
-          className="ms-2"
+          className="ml-2"
         />
       </span>
       <FontAwesomeIcon
         icon="trash-alt"
-        className="ms-2 cursor-pointer"
+        className="ml-2 cursor-pointer"
         onClick={handleDeleteConfirm}
       />
     </section>

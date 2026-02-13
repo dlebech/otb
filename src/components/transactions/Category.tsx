@@ -40,7 +40,7 @@ export default function Category({
         onClick={() => handleEditCategoryForRow(transactionId)}
       >
         {categoryConfirmed.name}
-        <FontAwesomeIcon icon="edit" className="ms-1" fixedWidth />
+        <FontAwesomeIcon icon="edit" className="ml-1" fixedWidth />
       </span>
     );
   }

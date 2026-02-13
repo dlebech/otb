@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import '../css/index.css'
-import 'bootstrap/dist/css/bootstrap.css'
 import ReduxProvider from '../components/ReduxProvider'
 
 export const metadata: Metadata = {

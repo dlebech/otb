@@ -1,4 +1,4 @@
-interface BootstrapColors {
+interface ThemeColors {
   success: string;
   danger: string;
   warning: string;
@@ -9,10 +9,10 @@ interface BootstrapColors {
 }
 
 interface Colors {
-  bootstrap: BootstrapColors;
+  theme: ThemeColors;
 }
 
-const bootstrapColors: BootstrapColors = {
+const themeColors: ThemeColors = {
   success: '#28a745',
   danger: '#dc3545',
   warning: '#ffc107',
@@ -22,6 +22,6 @@ const bootstrapColors: BootstrapColors = {
   white: '#ffffff'
 };
 
-const colors: Colors = { bootstrap: bootstrapColors };
+const colors: Colors = { theme: themeColors };
 
 export default colors;

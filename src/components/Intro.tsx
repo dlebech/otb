@@ -14,22 +14,22 @@ interface IntroProps {
 
 function IntroWithData({ numTransactions }: { numTransactions: number }) {
   return (
-    <div className="jumbotron">
-      <h1 className="display-4">Welcome back!</h1>
-      <p className="lead">
+    <div className="bg-gray-100 rounded-lg p-8 mb-6">
+      <h1 className="text-5xl font-light">Welcome back!</h1>
+      <p className="text-xl text-gray-600">
         You have {numTransactions} transactions so far.
       </p>
       <hr />
-      <Link className="btn btn-primary m-1" href="/transactions/add">
-        <FontAwesomeIcon icon="upload" className="me-1" fixedWidth />
+      <Link className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium m-1" href="/transactions/add">
+        <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
         Add more transactions
       </Link>
-      <Link className="btn btn-secondary m-1" href="/transactions">
-        <FontAwesomeIcon icon="table" className="me-1" fixedWidth />
+      <Link className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-medium m-1" href="/transactions">
+        <FontAwesomeIcon icon="table" className="mr-1" fixedWidth />
         Existing transactions
       </Link>
-      <Link className="btn btn-secondary m-1" href="/charts">
-        <FontAwesomeIcon icon="chart-bar" className="me-1" fixedWidth />
+      <Link className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 font-medium m-1" href="/charts">
+        <FontAwesomeIcon icon="chart-bar" className="mr-1" fixedWidth />
         Charts
       </Link>
     </div>
@@ -41,9 +41,9 @@ function IntroWithoutData({
   handleCreateData 
 }: { persistor?: any; handleCreateData: () => void }) {
   return (
-    <div className="jumbotron">
-      <h1 className="display-4">OTB</h1>
-      <p className="lead">Privacy-First Bank Transaction Analysis</p>
+    <div className="bg-gray-100 rounded-lg p-8 mb-6">
+      <h1 className="text-5xl font-light">OTB</h1>
+      <p className="text-xl text-gray-600">Privacy-First Bank Transaction Analysis</p>
       <hr />
       <p>
         Catchy headline eh? But seriously, if you have some bank transactions
@@ -51,12 +51,12 @@ function IntroWithoutData({
         or try the "demo". The data stays in your browser and is not shared
         or stored anywhere else.
       </p>
-      <Link className="btn btn-primary btn-lg m-1" href="/transactions/add">Add Transactions</Link>
-      <RestoreData className="btn btn-secondary btn-lg m-1" persistor={persistor}>
+      <Link className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg m-1" href="/transactions/add">Add Transactions</Link>
+      <RestoreData className="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium text-lg m-1" persistor={persistor}>
         Restore Data
         <FontAwesomeIcon
           icon="question-circle"
-          className="ms-1"
+          className="ml-1"
           fixedWidth
           data-tooltip-id="restore-tip"
           data-tooltip-content="If you have been here before, you can restore a previously downloaded data file and continue your work."
@@ -67,13 +67,13 @@ function IntroWithoutData({
         />
       </RestoreData>
       <div
-        className="btn btn-secondary btn-lg m-1"
+        className="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium text-lg m-1 cursor-pointer"
         onClick={handleCreateData}
       >
         Demo
         <FontAwesomeIcon
           icon="question-circle"
-          className="ms-1"
+          className="ml-1"
           fixedWidth
           data-tooltip-id="demo-tip"
           data-tooltip-content="If you just want to see how things work, you can create some test data and browse around."

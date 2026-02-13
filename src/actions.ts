@@ -6,6 +6,7 @@ import chunk from 'lodash/chunk';
 // Action type constants
 export const TOGGLE_LOCAL_STORAGE = 'TOGGLE_LOCAL_STORAGE';
 export const CREATE_TEST_DATA = 'CREATE_TEST_DATA';
+export const EXIT_TEST_MODE = 'EXIT_TEST_MODE';
 
 // Additional action constants
 export const RESTORE_STATE_FROM_FILE = 'RESTORE_STATE_FROM_FILE';
@@ -23,6 +24,10 @@ export const toggleLocalStorage = (enabled: boolean) => ({
 
 export const createTestData = () => ({
   type: CREATE_TEST_DATA
+});
+
+export const exitTestMode = () => ({
+  type: EXIT_TEST_MODE
 });
 
 // Re-export other action constants that might be needed

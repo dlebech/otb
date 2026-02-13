@@ -43,14 +43,14 @@ export default function IncomeExpensesLine({ transactions, startDate, endDate }:
     {
       name: 'Expenses',
       dataKey: 'expenses',
-      fill: color.bootstrap.danger,
-      stroke: color.bootstrap.danger
+      fill: color.theme.danger,
+      stroke: color.theme.danger
     },
     {
       name: 'Income',
       dataKey: 'income',
-      fill: color.bootstrap.success,
-      stroke: color.bootstrap.success
+      fill: color.theme.success,
+      stroke: color.theme.success
     }
   ];
 

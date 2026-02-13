@@ -124,7 +124,7 @@ export default function TransactionRow({
   return (
     <>
       <tr className={className}>
-      <td className="text-nowrap" onClick={handleRowSelectClick}>
+      <td className="whitespace-nowrap" onClick={handleRowSelectClick}>
         {moment(transaction.date).format('L')}
       </td>
       <td onClick={handleRowSelectClick}>
@@ -153,15 +153,15 @@ export default function TransactionRow({
           roundAmount={roundAmount}
         />
       </td>
-      <td className="text-nowrap">
+      <td className="whitespace-nowrap">
         <RowCategorizer
           transaction={transaction}
           handleRowCategoryChange={handleRowCategoryChange}
           showCreateCategoryModal={showCreateCategoryModal}
         />
       </td>
-      <td className="text-nowrap">
-        <div className="d-inline-flex">
+      <td className="whitespace-nowrap">
+        <div className="inline-flex">
           <IgnoreTransaction
             transactionId={transaction.id}
             handleIgnoreRow={handleIgnoreRow}
@@ -169,7 +169,7 @@ export default function TransactionRow({
           />
           <FontAwesomeIcon
             icon="trash-alt"
-            className="cursor-pointer text-danger"
+            className="cursor-pointer text-red-600"
             data-tooltip-id="delete-tooltip"
             data-tooltip-content="Delete row"
             onClick={handleDeleteConfirm}
@@ -185,7 +185,7 @@ export default function TransactionRow({
         onConfirm={handleDelete}
         title="Delete Transaction"
         confirmText="Yes, delete it"
-        confirmButtonClass="btn-danger"
+        confirmButtonClass="bg-red-600 text-white hover:bg-red-700"
         body={
           <ConfirmDelete
             transactionDate={moment(transaction.date).format('L')}

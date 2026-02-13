@@ -96,8 +96,8 @@ export default function BulkActionSelection({
   ];
 
   return (
-    <div className="form-row align-items-center">
-      <div className="col-lg-3 col-md-4">
+    <div className="flex flex-wrap gap-4 items-center">
+      <div className="lg:w-1/4 md:w-1/3">
         <Select
           options={options}
           name="bulk-action"
@@ -110,7 +110,7 @@ export default function BulkActionSelection({
         />
       </div>
       {selectedAction && selectedAction.value === SET_CATEGORIES &&
-        <div className="col-lg-3 col-md-4">
+        <div className="lg:w-1/4 md:w-1/3">
           <CategorySelect
             onChange={handleCategorySelect}
             onCreate={showCreateCategoryModal}
@@ -120,10 +120,10 @@ export default function BulkActionSelection({
         </div>
       }
       {selectedAction && 
-        <div className="col-auto">
+        <div className="w-auto">
           <button
             type="button"
-            className="btn btn-primary"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-4 py-2"
             onClick={performAction}
           >
             Perform Bulk Action

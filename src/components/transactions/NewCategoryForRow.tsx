@@ -42,24 +42,24 @@ export default function NewCategoryForRow({
 
   return (
     <Modal show={show} onHide={onHide} title="Create New Category">
-      <div className="form-group mb-3">
-        <label className="form-label">
+      <div className="mb-4">
+        <label className="block mb-1 text-sm font-medium">
           Category name:
         </label>
         <input
           type="text"
-          className="form-control form-control-sm"
+          className="block w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           placeholder="Name of category"
           value={name}
           onChange={handleNameChange}
         />
       </div>
-      <div className="form-group mb-3">
-        <label className="form-label">
+      <div className="mb-4">
+        <label className="block mb-1 text-sm font-medium">
           Parent category:
         </label>
         <select
-          className="form-control form-control-sm"
+          className="block w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={parent}
           onChange={handleParentChange}
         >
@@ -69,17 +69,17 @@ export default function NewCategoryForRow({
           })}
         </select>
       </div>
-      <div className="d-flex justify-content-end gap-2">
+      <div className="flex justify-end gap-2">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="inline-flex items-center justify-center rounded font-medium transition-colors bg-gray-600 text-white hover:bg-gray-700 px-4 py-2"
           onClick={onHide}
         >
           Cancel
         </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-4 py-2"
           onClick={handleConfirm}
         >
           Create category

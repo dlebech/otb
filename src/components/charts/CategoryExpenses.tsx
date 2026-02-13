@@ -81,13 +81,13 @@ export default function CategoryExpenses({
 
   return (
     <>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <h4 className="text-center">Categories where money is spent</h4>
         </div>
-      </div> 
-      <div className="row justify-content-center">
-        <div className="col-md-4">
+      </div>
+      <div className="flex flex-wrap gap-6 justify-center">
+        <div className="w-full md:flex-1">
           <CategorySelect
             selectedCategory={filterCategories}
             onChange={handleCategoryChangeInternal}
@@ -98,13 +98,13 @@ export default function CategoryExpenses({
               }
             }
           />
-          <small className="form-text text-muted">
+          <small className="block mt-1 text-sm text-gray-500">
             When selecting a parent category, all child categories are automatically included as well.
           </small>
         </div>
       </div>
-      {filteredExpenses.length > 0 && <div className="row justify-content-center mt-3">
-        <div className="col-lg-6">
+      {filteredExpenses.length > 0 && <div className="flex flex-wrap gap-6 justify-center mt-4">
+        <div className="w-full lg:flex-1">
           <h5 className="text-center">Most common categories</h5>
           <CategoryLine
             sortedCategoryExpenses={largestCategoriesByVolume}
@@ -112,7 +112,7 @@ export default function CategoryExpenses({
             endDate={endDate}
           />
         </div>
-        <div className="col-lg-6">
+        <div className="w-full lg:flex-1">
           <h5 className="text-center">Most expensive categories</h5>
           <CategoryLine
             sortedCategoryExpenses={largestCategoriesByAmount}
@@ -121,8 +121,8 @@ export default function CategoryExpenses({
           />
         </div>
       </div>}
-      <div className="row mt-3">
-        <div className="col">
+      <div className="flex flex-wrap gap-6 mt-4">
+        <div className="flex-1">
           <CategoryTreeMap sortedCategoryExpenses={sortedCategoryExpenses} />
         </div>
       </div>

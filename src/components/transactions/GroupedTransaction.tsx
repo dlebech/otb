@@ -37,7 +37,7 @@ export default function GroupedTransaction({
     <>
       <FontAwesomeIcon
         icon="link"
-        className="cursor-pointer text-info"
+        className="cursor-pointer text-blue-500"
         data-tooltip-id={id}
         fixedWidth
         onClick={deleteGroup}

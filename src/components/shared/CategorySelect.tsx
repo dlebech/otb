@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 // @ts-ignore - No types available for creatable
@@ -48,30 +48,35 @@ export default function CategorySelect({
   selectOptions = {}
 }: Props) {
   const categories = useSelector((state: RootState) => state.categories.data);
-  
-  const categoryLookup = arrayToObjectLookup(categories);
 
-  const categoryOptions = Object.values(categoryLookup)
-    .map(category => ({
-      label: category.parent ?
-        `${categoryLookup[category.parent].name} - ${category.name}` :
-        category.name,
-      value: category.id
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const categoryOptionsWithUncategorized = useMemo(() => {
+    const categoryLookup = arrayToObjectLookup(categories);
 
-  const categoryOptionsWithUncategorized = [
-    {
-      label: uncategorized.name,
-      value: uncategorized.id
-    }
-  ].concat(categoryOptions);
+    const categoryOptions = Object.values(categoryLookup)
+      .map(category => ({
+        label: category.parent ?
+          `${categoryLookup[category.parent].name} - ${category.name}` :
+          category.name,
+        value: category.id
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    return [
+      {
+        label: uncategorized.name,
+        value: uncategorized.id
+      }
+    ].concat(categoryOptions);
+  }, [categories]);
 
   const onChangeInternal = (option: any) => {
     onChange(option);
   };
 
-  const selectedCategoryValue = findValue(selectedCategory, categoryOptionsWithUncategorized);
+  const selectedCategoryValue = useMemo(
+    () => findValue(selectedCategory, categoryOptionsWithUncategorized),
+    [selectedCategory, categoryOptionsWithUncategorized]
+  );
 
   const commonProps = {
     options: categoryOptionsWithUncategorized,

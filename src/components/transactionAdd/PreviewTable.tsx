@@ -12,7 +12,7 @@ interface DateFormatProps {
 function DateFormat({ dateFormat, handleDateFormatChange }: DateFormatProps) {
   return (
     <select
-      className="form-control"
+      className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
       value={dateFormat}
       onChange={e => handleDateFormatChange(e.target.value)}
     >
@@ -42,7 +42,7 @@ function ColumnType({
   return (
     <React.Fragment>
       <select
-        className="form-control"
+        className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         value={selectedValue}
         onChange={e => handleColumnTypeChange(index, e.target.value)}
       >
@@ -120,9 +120,9 @@ export default function PreviewTable({
   }
 
   return (
-    <div className="row justify-content-center">
-      <div className="col">
-        <table className="table table-striped">
+    <div className="flex flex-wrap gap-6 justify-center">
+      <div className="flex-1">
+        <table className="w-full border-collapse [&_tbody_tr:nth-child(even)]:bg-gray-50">
           <thead>
             <tr>
               {headers}

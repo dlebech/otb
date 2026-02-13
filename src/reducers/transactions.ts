@@ -365,6 +365,10 @@ const transactionsReducer = (state = initialTransactions, action: AnyAction): Tr
           $set: testTransactions
         }
       });
+    case actions.EXIT_TEST_MODE:
+      return update(state, {
+        $set: initialTransactions
+      });
     case actions.SET_EMPTY_TRANSACTIONS_ACCOUNT:
       for (let i = 0; i < state.data.length; i++) {
         const t = state.data[i];

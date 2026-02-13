@@ -123,8 +123,8 @@ export default function Dates({
   const selectedOption = presets.find(preset => isActive(preset)) || null;
 
   return (
-    <div className="row align-items-center">
-      <div className="col-lg-auto">
+    <div className="flex flex-wrap gap-6 items-center">
+      <div className="lg:w-auto">
         <DateRangePicker
           startDate={startDate}
           startDateId={`${id}-start-date`}
@@ -137,7 +137,7 @@ export default function Dates({
           {...dateProps}
         />
       </div>
-      {showPresets && <div className="col-lg-6 mt-3 mt-lg-0">
+      {showPresets && <div className="w-full lg:flex-1 mt-4 lg:mt-0">
         <Select<DatePreset>
           name="date-preset"
           options={presets}

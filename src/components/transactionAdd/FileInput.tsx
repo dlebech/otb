@@ -6,16 +6,16 @@ interface FileInputProps {
 
 export default function FileInput({ handleFileChange }: FileInputProps) {
   return (
-    <div className="form-row">
-      <div className="col-auto">
+    <div className="flex flex-wrap gap-4">
+      <div className="w-auto">
         <label htmlFor="transactions-input">Transactions file (CSV or Excel sheet):</label>
         <input
           type="file"
           id="transactions-input"
-          className="form-control-file"
+          className=""
           onChange={handleFileChange}
         />
-        <small className="form-text text-muted">
+        <small className="text-sm text-gray-500">
           The file is not sent anywhere. It is processed in your browser only.
         </small>
       </div>

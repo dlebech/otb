@@ -225,11 +225,11 @@ export default function TransactionAdd() {
   return (
     <>
       <nav aria-label="breadcrumb">
-        <ol className="breadcrumb">
-          <li className="breadcrumb-item">
-            <Link href="/transactions">Transactions</Link>
+        <ol className="flex items-center gap-2 text-sm text-gray-500">
+          <li>
+            <Link href="/transactions" className="text-blue-600 hover:underline">Transactions</Link>
           </li>
-          <li className="breadcrumb-item active" aria-current="page">Add</li>
+          <li className="before:content-['/'] before:mx-2 text-gray-700" aria-current="page">Add</li>
         </ol>
       </nav>
       <Errors errors={errors} />

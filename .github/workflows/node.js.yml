@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [24.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -27,4 +27,3 @@ jobs:
         cache: npm
     - run: npm ci
     - run: npm test -- --silent --coverage --coverageReporters text lcov
-    - run: bash <(curl -s https://codecov.io/bash)

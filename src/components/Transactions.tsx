@@ -200,9 +200,11 @@ export default function Transactions() {
     debouncedSearchRef.current(text, currentPage);
   }, []);
 
-  // Modified to match TransactionTable expected prop type
-  const handleDatesChange = useCallback((startDate: any, endDate: any) => {
-    dispatch(actions.editDates('transaction-dates', startDate, endDate));
+  const handleDatesChange = useCallback((_id: string, startDate: any, endDate: any) => {
+    dispatch(actions.editDates('transaction-dates',
+      startDate ? startDate.toISOString() : null,
+      endDate ? endDate.toISOString() : null
+    ));
   }, [dispatch]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -218,7 +220,10 @@ export default function Transactions() {
   }, [dispatch]);
 
   const handleFilterCategories = useCallback((filterCategories: any, numTransactions: number) => {
-    dispatch(actions.setTransactionListFilterCategories(filterCategories, numTransactions));
+    dispatch(actions.setTransactionListFilterCategories(
+      filterCategories instanceof Set ? Array.from(filterCategories) : filterCategories,
+      numTransactions
+    ));
   }, [dispatch]);
 
   const handleRoundAmount = useCallback((enabled: boolean) => {
@@ -229,25 +234,25 @@ export default function Transactions() {
 
   return (
     <>
-      <div className="row align-items-center">
-        <div className="col-auto">
-          <Link href="/transactions/add" className="btn btn-outline-primary">
-            <FontAwesomeIcon icon="upload" className="me-1" fixedWidth />
+      <div className="flex flex-wrap gap-6 items-center">
+        <div className="w-auto">
+          <Link href="/transactions/add" className="inline-flex items-center justify-center rounded font-medium transition-colors border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2">
+            <FontAwesomeIcon icon="upload" className="mr-1" fixedWidth />
             Add More Transactions
           </Link>
           <button
-            className="btn btn-outline-secondary ms-2"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 ml-2"
             onClick={handleGuessCategories}
           >
-            <FontAwesomeIcon icon="lightbulb" className="me-1" fixedWidth />
+            <FontAwesomeIcon icon="lightbulb" className="mr-1" fixedWidth />
             Guess missing categories
           </button>
         </div>
-        <div className="col-auto status">
+        <div className="w-auto status">
           {isCategoryGuessing &&
             <span>
               Guessing categories...
-              <FontAwesomeIcon icon="spinner" className="ms-1" pulse />
+              <FontAwesomeIcon icon="spinner" className="ml-1" pulse />
             </span>
           }
         </div>

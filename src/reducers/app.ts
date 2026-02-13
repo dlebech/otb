@@ -30,6 +30,10 @@ const appReducer = (state = initialApp, action: AnyAction): AppState => {
           $set: true
         }
       });
+    case actions.EXIT_TEST_MODE:
+      return update(state, {
+        $set: initialApp
+      });
     default:
       return state;
   }

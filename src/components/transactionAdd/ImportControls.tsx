@@ -27,23 +27,23 @@ export default function ImportControls({
   selectedAccount
 }: ImportControlsProps) {
   return (
-    <div className="form-row my-2">
-      <label htmlFor="skip-rows" className="col-form-label">Rows To Skip:</label>
-      <div className="col-auto">
+    <div className="flex flex-wrap gap-4 my-2">
+      <label htmlFor="skip-rows" className="text-sm font-medium">Rows To Skip:</label>
+      <div className="w-auto">
         <input
           type="number"
           id="skip-rows"
-          className="form-control"
+          className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           onChange={handleSkipRowsChange}
           min="0"
           value={skipRows}
         />
       </div>
-      <label htmlFor="account" className="col-form-label">Account:</label>
-      <div className="col-auto">
+      <label htmlFor="account" className="text-sm font-medium">Account:</label>
+      <div className="w-auto">
         <select
           id="account"
-          className="form-control"
+          className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={selectedAccount}
           onChange={e => handleAccountChange(e.target.value)}
         >
@@ -53,20 +53,20 @@ export default function ImportControls({
           })}
         </select>
       </div>
-      <div className="col-auto">
-        <div className="form-check">
+      <div className="w-auto">
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="skip-duplicates-check"
-            className="form-check-input"
+            className="mr-2"
             checked={skipDuplicates}
             onChange={e => handleSkipDuplicatesChange(e.target.checked)}
           />
-          <label className="form-check-label" htmlFor="skip-duplicates-check">
+          <label className="text-sm" htmlFor="skip-duplicates-check">
             Skip duplicates
             <FontAwesomeIcon
               icon="question-circle"
-              className="ms-1 cursor-help"
+              className="ml-1 cursor-help"
               data-tooltip-id="skip-duplicates-tt" data-tooltip-content=""
               
             />
@@ -81,11 +81,11 @@ export default function ImportControls({
           </Tooltip>
         </div>
       </div>
-      <div className="col-auto">
-        <button type="button" className="btn btn-primary" onClick={handleSave}>
+      <div className="w-auto">
+        <button type="button" className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-4 py-2" onClick={handleSave}>
           Save
         </button>
-        <button type="button" className="btn btn-secondary ms-2" onClick={handleCancel}>
+        <button type="button" className="inline-flex items-center justify-center rounded font-medium transition-colors bg-gray-600 text-white hover:bg-gray-700 px-4 py-2 ml-2" onClick={handleCancel}>
           Cancel
         </button>
       </div>

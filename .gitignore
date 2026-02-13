@@ -32,3 +32,4 @@ test_examples/
 
 .next/
 *.tsbuildinfo
+next-env.d.ts

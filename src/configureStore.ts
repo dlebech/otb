@@ -53,14 +53,5 @@ export default function configureStore(preloadedState: any = {}) {
 
   const persistor = persistStore(store);
 
-  if ((module as any).hot) {
-    (module as any).hot.accept(() => {
-      const nextRootReducer = require('./reducers');
-      store.replaceReducer(
-        persistReducer(persistConfig, nextRootReducer)
-      );
-    });
-  }
-
   return { store, persistor };
 }

@@ -92,8 +92,8 @@ export default function Categories() {
 
   return (
     <>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <p className="small">
             The number in the parentheses indicates how many transactions
             have been tagged with the category.
@@ -138,16 +138,16 @@ export default function Categories() {
           </ul>
         </div>
       </div>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <button
             type="button"
-            className="btn btn-primary btn-sm"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 text-sm"
             onClick={() => handleAddCategory(NEW_CATEGORY_NAME)}
           >
             <FontAwesomeIcon
               icon="plus"
-              className="me-1"
+              className="mr-1"
               fixedWidth
             />
             Add New Category
@@ -163,7 +163,7 @@ export default function Categories() {
           categoryToDelete ? (
             <>
               {categoryToDelete.transactionCount > 0 && (
-                <div className="alert alert-danger">
+                <div className="rounded border border-red-300 bg-red-50 p-6 text-red-800">
                   Deleting "{categoryToDelete.name}" will affect {categoryToDelete.transactionCount} transactions.
                   These transactions will be reset for "{categoryToDelete.name}".
                 </div>
@@ -173,7 +173,7 @@ export default function Categories() {
           ) : null
         }
         confirmText="Delete"
-        confirmButtonClass="btn-danger"
+        confirmButtonClass="bg-red-600 text-white hover:bg-red-700"
       />
     </>
   );

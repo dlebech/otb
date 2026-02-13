@@ -34,7 +34,7 @@ interface Props {
   handleGroupRows: (transactionIds: string[]) => void;
   handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
   handleSearch: (text: string, page: number) => void;
-  handleDatesChange: (startDate: any, endDate: any) => void;
+  handleDatesChange: (id: string, startDate: any, endDate: any) => void;
   handlePageChange: (page: number) => void;
   handlePageSizeChange: (pageSize: number, totalRows: number) => void;
   handleSortChange: (sortKey: string, ascending: boolean) => void;
@@ -186,8 +186,8 @@ export default function TransactionTable({
 
   return (
     <>
-      <div className="row align-items-center">
-        <div className="col-12 col-md-auto">
+      <div className="flex flex-wrap gap-6 items-center">
+        <div className="w-full md:w-auto">
           <Dates
             id={dateSelect.id}
             startDate={dateSelect.startDate}
@@ -200,26 +200,26 @@ export default function TransactionTable({
             }}
           />
         </div>
-        <div className="col-12 col-md-auto">
-          <div className="form-check align-items-center">
+        <div className="w-full md:w-auto">
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="round-amounts"
-              className="form-check-input"
+              className="mr-2"
               checked={roundAmount}
               onChange={e => handleRoundAmount(e.target.checked)}
             />
-            <label className="form-check-label" htmlFor="round-amounts">Round Amounts</label>
+            <label className="text-sm" htmlFor="round-amounts">Round Amounts</label>
           </div>
         </div>
       </div>
-      <div className="mt-3 row align-items-center">
-        <div className="col-lg-6">
-          <div className="row align-items-center">
-            <div className="col-auto">
+      <div className="mt-4 flex flex-wrap gap-6 items-center">
+        <div className="w-full lg:flex-1">
+          <div className="flex flex-wrap gap-6 items-center">
+            <div className="w-auto">
               <SearchField handleSearch={handleSearchInternal} searchText={searchText} />
             </div>
-            <div className="col">
+            <div className="flex-1">
               <CategorySelect
                 placeholder="Filter by category..."
                 onChange={handleCategorySelect}
@@ -228,7 +228,7 @@ export default function TransactionTable({
             </div>
           </div>
         </div>
-        <div className="col-lg-6 mt-3 mt-lg-0">
+        <div className="w-full lg:flex-1 mt-4 lg:mt-0">
           <Pagination
             page={page}
             pageSize={pageSize}
@@ -238,8 +238,8 @@ export default function TransactionTable({
           />
         </div>
       </div>
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <BulkActions
             selectedTransactions={dataPage.filter(t => selectedRows.has(t.id))}
             handleRowCategoryChange={handleRowCategoryChange}
@@ -250,10 +250,11 @@ export default function TransactionTable({
           />
         </div>
       </div>
-      <div className="row">
-        <div className="col">
-          <table className="table table-striped table-hover table-responsive-md mt-1">
-            <thead className="thead-dark">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
+          <div className="overflow-x-auto">
+          <table className="w-full border-collapse [&_tbody_tr:nth-child(even)]:bg-gray-50 [&_tbody_tr:hover]:bg-gray-100 mt-1">
+            <thead className="bg-gray-800 text-white">
               <tr>
                 <SortHeader
                   label="Date"
@@ -308,6 +309,7 @@ export default function TransactionTable({
               })}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
       <Tooltip id="transaction-tooltip" />

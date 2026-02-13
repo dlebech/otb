@@ -49,6 +49,10 @@ const categoriesReducer = (state = initialCategories, action: AnyAction): Catego
       return update(state, {
         $set: action.newState.categories
       });
+    case actions.EXIT_TEST_MODE:
+      return update(state, {
+        $set: initialCategories
+      });
     default:
       return state;
   }

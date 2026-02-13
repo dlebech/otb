@@ -26,7 +26,7 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
       scale: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 25,
         stiffness: 300
       }
@@ -42,9 +42,9 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
   };
 
   const sizeClass = {
-    sm: 'modal-sm',
-    md: '',
-    lg: 'modal-lg'
+    sm: 'max-w-sm',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl'
   }[size];
 
   return (
@@ -72,8 +72,8 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
 
           {/* Modal */}
           <motion.div
-            className="modal"
-            style={{ display: 'block', zIndex: 1050, pointerEvents: 'none' }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ zIndex: 1050, pointerEvents: 'none' }}
             tabIndex={-1}
             role="dialog"
             aria-hidden="true"
@@ -83,23 +83,23 @@ export default function Modal({ show, onHide, title, children, size = 'md' }: Mo
             variants={modalVariants}
           >
             <div
-              className={`modal-dialog ${sizeClass}`}
+              className={`w-full mx-auto px-4 ${sizeClass}`}
               role="document"
               style={{ pointerEvents: 'auto' }}
             >
-              <div className="modal-content">
+              <div className="bg-white rounded-lg shadow-xl w-full">
                 {title && (
-                  <div className="modal-header">
-                    <h5 className="modal-title">{title}</h5>
+                  <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                    <h5 className="text-lg font-semibold">{title}</h5>
                     <button
                       type="button"
-                      className="btn-close"
+                      className="text-gray-400 hover:text-gray-600 text-xl leading-none"
                       aria-label="Close"
                       onClick={onHide}
-                    ></button>
+                    >&times;</button>
                   </div>
                 )}
-                <div className="modal-body">
+                <div className="px-6 py-4">
                   {children}
                 </div>
               </div>

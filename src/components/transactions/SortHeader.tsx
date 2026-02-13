@@ -36,7 +36,7 @@ export default function SortHeader({
   return (
     <th
       scope="col"
-      className={`text-nowrap cursor-pointer${className ? (' ' + className) : ''}`}
+      className={`whitespace-nowrap cursor-pointer${className ? (' ' + className) : ''}`}
       onClick={() => handleSortChange(sortKey, !sortAscending)}
     >
       {label}

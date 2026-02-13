@@ -48,6 +48,10 @@ const accountsReducer = (state = initialAccounts, action: AnyAction): AccountsSt
       return update(state, {
         $set: action.newState.accounts
       });
+    case actions.EXIT_TEST_MODE:
+      return update(state, {
+        $set: initialAccounts
+      });
     default:
       return state;
   }

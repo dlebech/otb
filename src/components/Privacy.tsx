@@ -4,7 +4,7 @@ export default function Privacy() {
   return (
     <>
       <h2>Privacy Policy</h2>
-      <p className="lead">
+      <p className="text-xl text-gray-600">
         <em>No information is stored by this website. That is the base principle.</em>
       </p>
       <h3>Who we are</h3>

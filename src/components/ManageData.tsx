@@ -139,49 +139,49 @@ export default function ManageData({ persistor }: ManageDataProps) {
 
   return (
     <>
-      <div className="row">
-        <div className="col">
-          <dl className="row">
-            <dt className="col-auto">Total transactions:</dt>
-            <dd className="col-auto">{numTransactions}</dd>
-            <dt className="col-auto">Categorized:</dt>
-            <dd className="col-auto">{numTransactionsCategorized}</dd>
-            <dt className="col-auto">Uncategorized:</dt>
-            <dd className="col-auto">{numTransactionsUncategorized}</dd>
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
+          <dl className="flex flex-wrap gap-x-2 gap-y-1">
+            <dt className="w-auto">Total transactions:</dt>
+            <dd className="w-auto">{numTransactions}</dd>
+            <dt className="w-auto">Categorized:</dt>
+            <dd className="w-auto">{numTransactionsCategorized}</dd>
+            <dt className="w-auto">Uncategorized:</dt>
+            <dd className="w-auto">{numTransactionsUncategorized}</dd>
           </dl>
         </div>
       </div>
-      {numTransactionsWithoutAccount > 0 && <div className="row">
-        <div className="col-auto alert alert-warning">
+      {numTransactionsWithoutAccount > 0 && <div className="flex flex-wrap gap-6">
+        <div className="w-auto rounded border border-yellow-300 bg-yellow-50 p-6 text-yellow-800">
           <p>
             <strong>Transactions without an account:</strong> {numTransactionsWithoutAccount}
           </p>
           <button
             type="button"
             id="set-account-on-transactions"
-            className="btn btn-primary"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 px-4 py-2"
             onClick={handleSetAccountOnTransactions}
           >
             Set an account on these transactions
           </button>
         </div>
       </div>}
-      <div className="row">
-        <div className="col">
+      <div className="flex flex-wrap gap-6">
+        <div className="flex-1">
           <button
             type="button"
-            className="btn btn-outline-primary m-1"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 m-1"
             onClick={handleDownload}
           >
-            <FontAwesomeIcon icon="download" className="me-1" fixedWidth />
+            <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
             Download All Data
           </button>
-          <RestoreData className="btn btn-outline-secondary m-1" persistor={persistor}>
+          <RestoreData className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1" persistor={persistor}>
             Restore Previous Download
           </RestoreData>
           <button
             type="button"
-            className="btn btn-outline-secondary m-1"
+            className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1"
             onClick={handleCsvDownload}
           >
             Download transactions as CSV
@@ -189,17 +189,17 @@ export default function ManageData({ persistor }: ManageDataProps) {
         </div>
       </div>
       <hr />
-      <div className="row">
-        <div className="col-md-6">
+      <div className="flex flex-wrap gap-6">
+        <div className="w-full md:flex-1">
           <h3>Categories</h3>
           <Categories />
         </div>
-        <div className="col-md-6">
+        <div className="w-full md:flex-1">
           <h3>Accounts</h3>
           <div>
             <Accounts />
           </div>
-          <div className="mt-md-3">
+          <div className="md:mt-4">
             <Categorizer />
           </div>
         </div>
