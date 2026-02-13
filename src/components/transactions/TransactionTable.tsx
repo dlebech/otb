@@ -44,7 +44,8 @@ interface Props {
   handleRoundAmount: (round: boolean) => void;
   handleDeleteTransactionGroup: (groupId: string) => void;
   roundAmount?: boolean;
-  transactionGroups?: Record<string, { groupId: string; linkedTransactions: Transaction[] }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transactionGroups?: Record<string, any>;
 }
 
 const filterData = (data: Transaction[], categories: Set<string>, dateSelect: DateSelect): Transaction[] => {
@@ -71,8 +72,8 @@ const filterData = (data: Transaction[], categories: Set<string>, dateSelect: Da
 const sortData = (data: Transaction[], sortKey: string, sortAscending: boolean): Transaction[] => {
   return [...data] // Create new array to avoid inplace sort of original array.
     .sort((a, b) => {
-      const val1 = (a as Record<string, unknown>)[sortKey];
-      const val2 = (b as Record<string, unknown>)[sortKey];
+      const val1 = (a as unknown as Record<string, unknown>)[sortKey];
+      const val2 = (b as unknown as Record<string, unknown>)[sortKey];
       if (typeof val1 === 'string' && typeof val2 === 'string') {
         return sortAscending ? val1.localeCompare(val2) : val2.localeCompare(val1);
       }

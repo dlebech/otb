@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch, Transaction, Account, Category } from '../types/redux';
 import dynamic from 'next/dynamic';
@@ -18,15 +18,11 @@ import AmountSumBar from './charts/AmountSumBar';
 import IncomeExpensesLine from './charts/IncomeExpensesLine';
 import Loading from './shared/Loading';
 
-interface TransactionWithAmount extends Transaction {
-  originalAmount: number;
-}
-
 interface CategoryExpense {
   key: string;
   value: {
     amount: number;
-    transactions: TransactionWithAmount[];
+    transactions: Transaction[];
     category: Category;
   };
 }
@@ -71,7 +67,7 @@ const getBaseCurrency = createSelector(
 
 const getCurrencies = createSelector([_getAccounts], (accounts: Account[]) => {
   return Array.from(
-    new Set(accounts.filter((a: Account) => !!a.currency).map((a: Account) => a.currency))
+    new Set(accounts.filter((a: Account) => !!a.currency).map((a: Account) => a.currency as string))
   ).sort();
 });
 
@@ -139,7 +135,7 @@ const getTransactions = createSelector(
     categories: Record<string, Category>,
     currencies: string[],
     currencyRates: Record<string, Record<string, number>> | undefined,
-    baseCurrency: string,
+    baseCurrency: string | null,
     groupByParentCategory: boolean | undefined
   ) => {
     let filteredTransactions = transactions.filter((t: Transaction) => {
@@ -157,18 +153,19 @@ const getTransactions = createSelector(
         )
       });
 
-      if (currencies.length > 1 && currencyRates) {
+      const accountCurrency = t.account ? accounts[t.account]?.currency : undefined;
+      if (currencies.length > 1 && currencyRates && baseCurrency && accountCurrency) {
         newTransaction = Object.assign({}, newTransaction, {
           amount: convertCurrency(
             t.amount,
-            accounts[t.account].currency,
+            accountCurrency,
             baseCurrency,
             t.date,
             currencyRates
           ),
           currency: baseCurrency,
           originalAmount: t.amount,
-          originalCurrency: accounts[t.account].currency
+          originalCurrency: accountCurrency
         });
       }
 
@@ -179,10 +176,10 @@ const getTransactions = createSelector(
   }
 );
 
-const getIncomeAndExpenses = createSelector([getTransactions], (transactions: TransactionWithAmount[]) => {
-  const income: TransactionWithAmount[] = [];
-  const expenses: TransactionWithAmount[] = [];
-  transactions.forEach((t: TransactionWithAmount) => {
+const getIncomeAndExpenses = createSelector([getTransactions], (transactions: Transaction[]) => {
+  const income: Transaction[] = [];
+  const expenses: Transaction[] = [];
+  transactions.forEach((t: Transaction) => {
     if (t.amount < 0) expenses.push(t);
     else income.push(t);
   });
@@ -191,15 +188,15 @@ const getIncomeAndExpenses = createSelector([getTransactions], (transactions: Tr
 
 const getSortedCategoryExpenses = createSelector(
   [getIncomeAndExpenses],
-  (incomeAndExpenses: TransactionWithAmount[][]): CategoryExpense[] => {
+  (incomeAndExpenses: Transaction[][]): CategoryExpense[] => {
     const expenses = incomeAndExpenses[1];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (nest() as any)
-      .key((d: TransactionWithAmount) => d.category.id)
-      .rollup((transactions: TransactionWithAmount[]) => ({
+      .key((d: Transaction) => (d.category as unknown as Category).id)
+      .rollup((transactions: Transaction[]) => ({
         transactions,
-        category: transactions[0].category,
-        amount: Math.abs(sum(transactions, (d: TransactionWithAmount) => d.amount))
+        category: transactions[0].category as unknown as Category,
+        amount: Math.abs(sum(transactions, (d: Transaction) => d.amount))
       }))
       .entries(expenses)
       .sort((a: CategoryExpense, b: CategoryExpense) => b.value.amount - a.value.amount);
@@ -287,7 +284,7 @@ export default function Charts() {
 
   if (noData) return <NoData />;
 
-  if (needsCurrencyRates) {
+  if (needsCurrencyRates || !startDate || !endDate) {
     return <Loading />;
   }
 
@@ -311,7 +308,7 @@ export default function Charts() {
               <select
                 id="base-currency"
                 className="block w-full rounded border border-gray-300 px-3 py-1.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={baseCurrency}
+                value={baseCurrency ?? ''}
                 onChange={e => handleBaseCurrencyChange(e.target.value)}
               >
                 {currencies.map((c: string) => {

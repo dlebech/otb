@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
-// @ts-expect-error - No types available for creatable
 import CreatableSelect from 'react-select/creatable';
 import { uncategorized } from '../../data/categories';
 import { arrayToObjectLookup } from '../../util';
@@ -15,7 +14,7 @@ interface CategoryOption {
 interface Props {
   onChange: (option: CategoryOption[] | CategoryOption | null) => void;
   onCreate?: (name: string) => void;
-  selectedCategory?: Set<string> | string[] | string | CategoryOption[] | null;
+  selectedCategory?: Set<string> | string[] | string | CategoryOption | CategoryOption[] | null;
   placeholder?: string;
   isMulti?: boolean;
   focus?: boolean;
@@ -23,7 +22,7 @@ interface Props {
   selectOptions?: Record<string, unknown>;
 }
 
-const findValue = (value: Set<string> | string[] | string | CategoryOption[] | null | undefined, options: CategoryOption[]) => {
+const findValue = (value: Set<string> | string[] | string | CategoryOption | CategoryOption[] | null | undefined, options: CategoryOption[]) => {
   const normalizedValue = value instanceof Set ? Array.from(value) : value;
 
   // If we are given an array of strings, select the options with the value of
@@ -80,7 +79,8 @@ export default function CategorySelect({
     [selectedCategory, categoryOptionsWithUncategorized]
   );
 
-  const commonProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const commonProps: any = {
     options: categoryOptionsWithUncategorized,
     placeholder: placeholder,
     onChange: onChangeInternal,
@@ -97,7 +97,7 @@ export default function CategorySelect({
     };
 
     return (
-      <CreatableSelect
+      <CreatableSelect<CategoryOption, boolean>
         className="category-select creatable"
         onCreateOption={onCreateOption}
         {...commonProps}

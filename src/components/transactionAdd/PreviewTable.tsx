@@ -91,7 +91,7 @@ function ColumnHeader({
 }
 
 interface PreviewTableProps {
-  transactions: string[][];
+  transactions: (string | number)[][];
   columnSpec: ColumnSpecItem[];
   dateFormat: string;
   handleColumnTypeChange: (index: number, value: string) => void;

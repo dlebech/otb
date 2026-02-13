@@ -55,10 +55,10 @@ const mapImportToTransactions = (transactionsImport: TransactionImport, existing
         id: uuidv4(),
         // Normalize dates to ISO format
         date: util
-          .momentParse(transaction[dateIndex], transactionsImport.dateFormat)
+          .momentParse(String(transaction[dateIndex]), transactionsImport.dateFormat)
           .format('YYYY-MM-DD'),
-        description: transaction[descIndex],
-        descriptionCleaned: util.cleanTransactionDescription(transaction[descIndex]),
+        description: String(transaction[descIndex]),
+        descriptionCleaned: util.cleanTransactionDescription(String(transaction[descIndex])),
         amount: util.cleanNumber(transaction[amountIndex]),
         total: util.cleanNumber(transaction[totalIndex]),
         account: transactionsImport.account,

@@ -18,7 +18,8 @@ export const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export default function configureStore(preloadedState: Record<string, unknown> = {}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function configureStore(preloadedState: any = {}) {
   const store = createStore({
     reducer: persistedReducer,
     preloadedState,
@@ -38,7 +39,8 @@ export default function configureStore(preloadedState: Record<string, unknown> =
           resourceIndexes: {
             transactions: ['description', 'descriptionCleand']
           },
-          resourceSelector: (resourceName: string, state: Record<string, unknown>) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          resourceSelector: (resourceName: string, state: any) => {
             if (resourceName === 'transactions') {
               return state.transactions.data;
             }

@@ -47,7 +47,7 @@ export default function CustomLineChart({ data, series, showLegend = true }: Pro
             verticalAlign="top"
             onClick={handleLegendClick}
           />}
-          <Tooltip formatter={(v: string | number) => formatNumber(v, { maximumFractionDigits: 0 })} />
+          <Tooltip formatter={(v) => formatNumber(v as number, { maximumFractionDigits: 0 })} />
           {series.map(s => {
             const fill = s.fill || color.theme.dark;
             const stroke = s.stroke || color.theme.dark;

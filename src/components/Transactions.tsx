@@ -37,11 +37,12 @@ export default function Transactions() {
       return obj;
     }, {});
 
-    let transactionsData = state.transactions.data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let transactionsData: any[] = state.transactions.data
       .map((t: Transaction) => {
         return {
-          categoryGuess: categoriesObj[t.category.guess] || null,
-          categoryConfirmed: categoriesObj[t.category.confirmed] || null,
+          categoryGuess: (t.category.guess && categoriesObj[t.category.guess]) || null,
+          categoryConfirmed: (t.category.confirmed && categoriesObj[t.category.confirmed]) || null,
           ...t,
           date: moment(t.date)
         };
@@ -54,7 +55,8 @@ export default function Transactions() {
 
     // Create an ID -> transactions mapping for easier tooltip'ing.
     const transactionGroupsObj = Object.entries(state.transactions.groups || {})
-      .reduce((obj: Record<string, { groupId: string; linkedTransactions: Transaction[] }>, [groupId, group]: [string, TransactionGroup]) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .reduce((obj: Record<string, { groupId: string; linkedTransactions: any[] }>, [groupId, group]: [string, TransactionGroup]) => {
         obj[group.primaryId] = {
           groupId,
           linkedTransactions: group.linkedIds.map((id: string) => transactionsData[reverseTransactionLookup[id]])
@@ -141,10 +143,10 @@ export default function Transactions() {
     setNewCategoryTransactionId('');
   }, [dispatch]);
 
-  const handleRowCategoryChange = useCallback(async (rowIdOrMapping: string | object, categoryId?: string) => {
+  const handleRowCategoryChange = useCallback(async (rowIdOrMapping: string | Record<string, string>, categoryId?: string) => {
     // A mapping of rows to categories.
     if (typeof rowIdOrMapping === 'object') {
-      await dispatch(actions.categorizeRows(rowIdOrMapping));
+      await dispatch(actions.categorizeRows(rowIdOrMapping as Record<string, string>));
       if (Object.values(rowIdOrMapping).filter((c: unknown) => !!c).length > 0) {
         dispatch(actions.guessAllCategories());
       }

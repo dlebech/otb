@@ -126,9 +126,9 @@ export default function Dates({
     <div className="flex flex-wrap gap-6 items-center">
       <div className="lg:w-auto">
         <DateRangePicker
-          startDate={startDate}
+          startDate={startDate ?? null}
           startDateId={`${id}-start-date`}
-          endDate={endDate}
+          endDate={endDate ?? null}
           endDateId={`${id}-end-date`}
           focusedInput={focusedInput}
           onFocusChange={handleFocusChange}

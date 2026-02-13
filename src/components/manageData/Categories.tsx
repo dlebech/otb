@@ -121,7 +121,6 @@ export default function Categories() {
                           <li key={`child-cat-${childC.id}`}>
                             <Category
                               category={childC}
-                              transactions={transactions}
                               parentCategories={parentCategories}
                               handleUpdateCategory={handleUpdateCategory}
                               onDeleteRequest={handleDeleteRequest}

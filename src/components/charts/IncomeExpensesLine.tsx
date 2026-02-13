@@ -16,6 +16,7 @@ interface ProcessedData {
   key: string;
   expenses: number;
   income: number;
+  [key: string]: string | number;
 }
 
 export default function IncomeExpensesLine({ transactions, startDate, endDate }: Props) {

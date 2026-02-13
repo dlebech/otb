@@ -82,7 +82,7 @@ export default function TransactionAdd() {
       const dateIndex = columnSpec.findIndex((c) => c.type === 'date');
 
       for (const t of transactions) {
-        if (checkDates && !momentParse(t[dateIndex], dateFormat).isValid()) {
+        if (checkDates && !momentParse(String(t[dateIndex]), dateFormat).isValid()) {
           newErrors.push({
             type: 'date',
             message: `Cannot parse all dates correctly (example: ${t[dateIndex]}), ` +

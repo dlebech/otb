@@ -5,33 +5,29 @@ import { formatNumber } from '../../util';
 import AmountCard from './AmountCard';
 import { Transaction, Account, Category } from '../../types/redux';
 
-interface TransactionWithAmount extends Transaction {
-  originalAmount: number;
-}
-
 interface CategoryExpense {
   key: string;
   value: {
     amount: number;
-    transactions: TransactionWithAmount[];
+    transactions: Transaction[];
     category: Category;
   };
 }
 
 interface SummaryProps {
-  expenses: TransactionWithAmount[];
-  income: TransactionWithAmount[];
+  expenses: Transaction[];
+  income: Transaction[];
   sortedCategoryExpenses: CategoryExpense[];
   accounts: { [key: string]: Account };
 }
 
-const groupAmounts = (transactions: TransactionWithAmount[], accounts: { [key: string]: Account }) => {
+const groupAmounts = (transactions: Transaction[], accounts: { [key: string]: Account }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (nest<TransactionWithAmount>() as any)
-    .key((t: TransactionWithAmount) => t.account || '')
-    .rollup((t: TransactionWithAmount[]) => ({
+  return (nest<Transaction>() as any)
+    .key((t: Transaction) => t.account || '')
+    .rollup((t: Transaction[]) => ({
       amount: sum(t, d => d.amount),
-      originalAmount: sum(t, d => d.originalAmount)
+      originalAmount: sum(t, d => (d as unknown as Record<string, number>).originalAmount || 0)
     }))
     .entries(transactions)
     .map((e: { key: string; value: { amount: number; originalAmount: number } }) => ({ account: accounts[e.key], amounts: e.value }));
