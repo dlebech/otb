@@ -8,10 +8,6 @@ import { createTestData } from '../actions';
 import { RootState } from '../reducers';
 import RestoreData from './manageData/RestoreData';
 
-interface IntroProps {
-  persistor?: any;
-}
-
 function IntroWithData({ numTransactions }: { numTransactions: number }) {
   return (
     <div className="bg-gray-100 rounded-lg p-8 mb-6">
@@ -36,10 +32,9 @@ function IntroWithData({ numTransactions }: { numTransactions: number }) {
   );
 };
 
-function IntroWithoutData({ 
-  persistor, 
-  handleCreateData 
-}: { persistor?: any; handleCreateData: () => void }) {
+function IntroWithoutData({
+  handleCreateData
+}: { handleCreateData: () => void }) {
   return (
     <div className="bg-gray-100 rounded-lg p-8 mb-6">
       <h1 className="text-5xl font-light">OTB</h1>
@@ -52,7 +47,7 @@ function IntroWithoutData({
         or stored anywhere else.
       </p>
       <Link className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg m-1" href="/transactions/add">Add Transactions</Link>
-      <RestoreData className="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium text-lg m-1" persistor={persistor}>
+      <RestoreData className="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium text-lg m-1">
         Restore Data
         <FontAwesomeIcon
           icon="question-circle"
@@ -89,7 +84,7 @@ function IntroWithoutData({
   );
 };
 
-export default function Intro({ persistor }: IntroProps) {
+export default function Intro() {
   const dispatch = useDispatch<AppDispatch>();
   const numTransactions = useSelector((state: RootState) => state.transactions.data.length);
 
@@ -102,6 +97,6 @@ export default function Intro({ persistor }: IntroProps) {
     return <IntroWithData numTransactions={numTransactions} />;
   }
   
-  return <IntroWithoutData persistor={persistor} handleCreateData={handleCreateData} />;
+  return <IntroWithoutData handleCreateData={handleCreateData} />;
 };
 

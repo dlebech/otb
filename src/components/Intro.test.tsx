@@ -33,7 +33,7 @@ jest.mock('react-tooltip', () => ({
 
 // Mock the RestoreData component to isolate the Intro component
 jest.mock('./manageData/RestoreData', () => {
-  return function MockRestoreData({ children, className, persistor, ...props }: any) {
+  return function MockRestoreData({ children, className, ...props }: any) {
     return (
       <div className={className} data-testid="restore-data" {...props}>
         {children}
@@ -214,11 +214,10 @@ describe('Intro Component', () => {
   });
 
   describe('component props', () => {
-    it('passes persistor prop to RestoreData component', () => {
+    it('renders RestoreData component', () => {
       const store = createMockStore();
-      const mockPersistor = { persist: jest.fn(), purge: jest.fn() };
-      
-      renderWithStore(store, { persistor: mockPersistor });
+
+      renderWithStore(store);
 
       expect(screen.getByTestId('restore-data')).toBeInTheDocument();
     });

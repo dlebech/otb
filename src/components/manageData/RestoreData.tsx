@@ -3,14 +3,15 @@ import { useDispatch } from 'react-redux';
 import { type AppDispatch } from '../../types/redux';
 import * as actions from '../../actions';
 import { toggleLocalStorage as utilToggleLocalStorage } from '../../util';
+import { usePersistor } from '../ReduxProvider';
 
 interface RestoreDataProps {
   children: React.ReactNode;
   className: string;
-  persistor: any;
 }
 
-export default function RestoreData({ children, className, persistor }: RestoreDataProps) {
+export default function RestoreData({ children, className }: RestoreDataProps) {
+  const persistor = usePersistor();
   const dispatch = useDispatch<AppDispatch>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,6 +35,7 @@ export default function RestoreData({ children, className, persistor }: RestoreD
 
     reader.readAsText(file, 'utf-8');
   }, [dispatch, persistor]);
+
 
   const handleRestoreClick = useCallback(() => {
     fileInputRef.current?.click();

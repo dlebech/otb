@@ -12,11 +12,7 @@ import { arrayToObjectLookup } from '../util';
 import { RootState } from '../reducers';
 import { Transaction } from '../types/redux';
 
-interface ManageDataProps {
-  persistor: any;
-}
-
-export default function ManageData({ persistor }: ManageDataProps) {
+export default function ManageData() {
   const dispatch = useDispatch<AppDispatch>();
   
   const state = useSelector((state: RootState) => state);
@@ -176,7 +172,7 @@ export default function ManageData({ persistor }: ManageDataProps) {
             <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
             Download All Data
           </button>
-          <RestoreData className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1" persistor={persistor}>
+          <RestoreData className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1">
             Restore Previous Download
           </RestoreData>
           <button

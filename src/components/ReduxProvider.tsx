@@ -37,7 +37,7 @@ export default function ReduxProvider({ children }: ReduxProviderProps) {
       <PersistGate loading={<Loading />} persistor={persistor}>
         <PersistorContext.Provider value={persistor}>
           <div>
-            <Menu persistor={persistor} />
+            <Menu />
             <div className="container mx-auto px-4 mt-4">
               {children}
             </div>

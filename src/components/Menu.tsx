@@ -8,12 +8,10 @@ import { toggleLocalStorage, exitTestMode } from '../actions';
 import { RootState } from '../reducers';
 import Modal from './shared/Modal';
 import { toggleLocalStorage as utilToggleLocalStorage } from '../util';
+import { usePersistor } from './ReduxProvider';
 
-interface MenuProps {
-  persistor?: any;
-}
-
-export default function Menu({ persistor }: MenuProps) {
+export default function Menu() {
+  const persistor = usePersistor();
   const dispatch = useDispatch<AppDispatch>();
   const pathname = usePathname();
   const router = useRouter();
