@@ -40,10 +40,16 @@
   th { text-align: inherit; }
 }
 
-.chart {
-  height: 250px;
-}
+@layer components {
+  .chart {
+    @apply h-64;
+  }
 
-.small-tip {
-  max-width: 200px;
+  .small-tip {
+    @apply max-w-48;
+  }
+
+  .link {
+    @apply text-blue-600 hover:underline;
+  }
 }

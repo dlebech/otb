@@ -212,6 +212,7 @@ export default function TransactionAdd() {
   }, [dispatch]);
 
   const handleCancel = useCallback(() => {
+    setErrors([]);
     return dispatch(actions.importCancelTransactions());
   }, [dispatch]);
 

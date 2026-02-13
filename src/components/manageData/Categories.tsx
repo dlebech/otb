@@ -137,7 +137,7 @@ export default function Categories() {
           </ul>
         </div>
       </div>
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6 mt-4">
         <div className="flex-1">
           <button
             type="button"

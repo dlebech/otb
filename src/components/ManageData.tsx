@@ -77,10 +77,10 @@ export default function ManageData() {
 
         const category = categories[t.category.confirmed];
 
-        // The category not found should never happen :-)
-        categoryName = category.name || 'CATEGORY NOT FOUND';
-        if (category.parent) {
-          categoryName = categories[category.parent].name + ' > ' + categoryName;
+        categoryName = category?.name || 'CATEGORY NOT FOUND';
+        if (category?.parent) {
+          const parent = categories[category.parent];
+          categoryName = (parent?.name || 'PARENT NOT FOUND') + ' > ' + categoryName;
         }
       }
 
@@ -94,9 +94,8 @@ export default function ManageData() {
         accountId = t.account;
         const account = accounts[t.account];
 
-        // The account not found should never happen :-)
-        accountName = account.name || 'ACCOUNT NOT FOUND';
-        accountCurrency = account.currency || '';
+        accountName = account?.name || 'ACCOUNT NOT FOUND';
+        accountCurrency = account?.currency || '';
       }
 
       line.push(accountId);
@@ -163,27 +162,25 @@ export default function ManageData() {
           </button>
         </div>
       </div>}
-      <div className="flex flex-wrap gap-6">
-        <div className="flex-1">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded font-medium transition-colors border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 m-1"
-            onClick={handleDownload}
-          >
-            <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
-            Download All Data
-          </button>
-          <RestoreData className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1">
-            Restore Previous Download
-          </RestoreData>
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2 m-1"
-            onClick={handleCsvDownload}
-          >
-            Download transactions as CSV
-          </button>
-        </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded font-medium transition-colors border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2"
+          onClick={handleDownload}
+        >
+          <FontAwesomeIcon icon="download" className="mr-1" fixedWidth />
+          Download All Data
+        </button>
+        <RestoreData className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2">
+          Restore Previous Download
+        </RestoreData>
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded font-medium transition-colors border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white px-4 py-2"
+          onClick={handleCsvDownload}
+        >
+          Download transactions as CSV
+        </button>
       </div>
       <hr />
       <div className="flex flex-wrap gap-6">

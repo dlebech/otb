@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch, Transaction, Account, Category } from '../types/redux';
 import dynamic from 'next/dynamic';
@@ -273,9 +273,13 @@ export default function Charts() {
     dispatch(actions.setChartsGroupByParentCategory(enabled));
   };
 
-  const ensureCurrencyRates = (currencies: string[]) => {
-    dispatch(actions.fetchCurrencyRates(currencies));
-  };
+  const needsCurrencyRates = !currencyRates && currencies.length > 1;
+
+  useEffect(() => {
+    if (needsCurrencyRates) {
+      dispatch(actions.fetchCurrencyRates(currencies));
+    }
+  }, [needsCurrencyRates, dispatch, currencies]);
 
   const handleCategoryChange = (categoryIds: string[]) => {
     dispatch(actions.setChartsFilterCategories(categoryIds));
@@ -283,8 +287,7 @@ export default function Charts() {
 
   if (noData) return <NoData />;
 
-  if (!currencyRates && currencies.length > 1) {
-    ensureCurrencyRates(currencies);
+  if (needsCurrencyRates) {
     return <Loading />;
   }
 

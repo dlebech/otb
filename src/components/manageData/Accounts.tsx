@@ -10,6 +10,10 @@ import type { RootState } from '../../reducers';
 
 const NEW_ACCOUNT_NAME = 'New Account';
 
+// Track account IDs created in this session so we only auto-open the edit
+// form for genuinely new accounts, not ones rehydrated from persisted state.
+const newAccountIds = new Set<string>();
+
 interface AccountType {
   id: string;
   name: string;
@@ -95,11 +99,11 @@ function Account({
   }, [account.name, account.currency]);
 
   useEffect(() => {
-    // This is the easy way to make sure a new account is in edit mode.
-    if (account.name === NEW_ACCOUNT_NAME) {
+    if (account.name === NEW_ACCOUNT_NAME && newAccountIds.has(account.id)) {
+      newAccountIds.delete(account.id);
       handleEditAccount(); // eslint-disable-line react-hooks/set-state-in-effect
     }
-  }, [account.name, handleEditAccount]);
+  }, [account.id, account.name, handleEditAccount]);
 
   const handleSave = () => {
     handleUpdateAccount(account.id, name, currency);
@@ -162,6 +166,18 @@ export default function Accounts() {
   const dispatch = useDispatch<AppDispatch>();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<AccountType | null>(null);
+  const prevAccountIds = useRef(new Set(accounts.map(a => a.id)));
+
+  useEffect(() => {
+    const prevIds = prevAccountIds.current;
+    const currentIds = new Set(accounts.map(a => a.id));
+    accounts.forEach(a => {
+      if (!prevIds.has(a.id)) {
+        newAccountIds.add(a.id);
+      }
+    });
+    prevAccountIds.current = currentIds;
+  }, [accounts]);
 
   const handleUpdateAccount = (accountId: string, name: string, currency?: string) => {
     dispatch(actions.updateAccount(accountId, name, currency));
@@ -207,7 +223,7 @@ export default function Accounts() {
           </ul>
         </div>
       </div>
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6 mt-4">
         <div className="flex-1">
           <button
             type="button"

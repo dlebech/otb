@@ -2,6 +2,7 @@ import update from 'immutability-helper';
 import { v4 as uuidv4 } from 'uuid';
 import * as actions from '../actions';
 import * as util from '../util';
+import { uncategorized } from '../data/categories';
 import { AnyAction } from 'redux';
 import {
   type Transaction,
@@ -222,7 +223,7 @@ const transactionsReducer = (state = initialTransactions, action: AnyAction): Tr
       Object.keys(action.rowCategoryMapping).forEach(transactionId => {
         const categoryId = action.rowCategoryMapping[transactionId];
         if (lookup3[transactionId] !== undefined) {
-          if (categoryId) {
+          if (categoryId && categoryId !== uncategorized.id) {
             // Set confirmed category and remove guess
             state = update(state, {
               data: {
