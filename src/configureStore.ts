@@ -37,7 +37,7 @@ export default function configureStore(preloadedState: any = {}) {
       getDefaultEnhancers().concat([
         reduxSearch({
           resourceIndexes: {
-            transactions: ['description', 'descriptionCleand']
+            transactions: ['description', 'descriptionCleaned']
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           resourceSelector: (resourceName: string, state: any) => {
