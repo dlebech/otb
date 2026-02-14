@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Transaction } from '../../types/redux';
+import { type CategoryOption, type DisplayTransaction } from '../../types/app';
 import Category from './Category';
 import CategorySelect from '../shared/CategorySelect';
-
-interface CategoryOption {
-  label: string;
-  value: string;
-}
 
 interface RowCategorizerProps {
   handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
   showCreateCategoryModal: (name: string, transactionId: string) => void;
-  transaction: Transaction;
+  transaction: DisplayTransaction;
 }
 
 export default function RowCategorizer({

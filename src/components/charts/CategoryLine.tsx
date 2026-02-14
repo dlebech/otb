@@ -2,15 +2,8 @@ import React from 'react';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { Moment } from 'moment';
 import CustomLineChart from '../shared/CustomLineChart';
-import { Transaction, Category } from '../../types/redux';
-
-interface CategoryExpense {
-  value: {
-    amount: number;
-    category: Category;
-    transactions: Transaction[];
-  };
-}
+import { Transaction } from '../../types/redux';
+import { type CategoryExpense } from '../../types/app';
 
 interface Props {
   sortedCategoryExpenses: CategoryExpense[];

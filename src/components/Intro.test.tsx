@@ -71,7 +71,21 @@ describe('Intro Component', () => {
       accounts: {
         data: []
       },
-      edit: {},
+      edit: {
+        isCategoryGuessing: false,
+        isParsing: false,
+        isFetchingCurrencies: false,
+        isFetchingCurrencyRates: false,
+        dateSelect: {},
+        transactionList: {
+          page: 1,
+          pageSize: 50,
+          sortKey: 'date',
+          sortAscending: false,
+          filterCategories: new Set<string>()
+        },
+        charts: {}
+      },
       search: {
         transactions: {
           text: '',

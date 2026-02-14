@@ -3,20 +3,8 @@ import CategorySelect from '../shared/CategorySelect';
 import CategoryTreeMap from './CategoryTreeMap';
 import CategoryLine from './CategoryLine';
 import { Moment } from 'moment';
-import { Transaction, Category } from '../../types/redux';
-
-interface CategoryOption {
-  label: string;
-  value: string;
-}
-
-interface CategoryExpense {
-  value: {
-    amount: number;
-    category: Category;
-    transactions: Transaction[];
-  };
-}
+import { Category } from '../../types/redux';
+import { type CategoryOption, type CategoryExpense } from '../../types/app';
 
 interface Props {
   handleCategoryChange: (categoryIds: string[]) => void;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchRates } from '../../../utils/eurofx';
+import logger from '../../../utils/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
@@ -9,7 +10,7 @@ export async function GET(_request: NextRequest) {
 
     return NextResponse.json(currencies);
   } catch (error) {
-    console.error('Error fetching currencies:', error);
+    logger.error('Error fetching currencies:', error);
     return NextResponse.json(
       { error: 'Failed to fetch currencies' },
       { status: 500 }

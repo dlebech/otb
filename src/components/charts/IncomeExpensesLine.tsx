@@ -5,6 +5,7 @@ import color from '../../data/color';
 import CustomLineChart from '../shared/CustomLineChart';
 import { Moment } from 'moment';
 import { Transaction } from '../../types/redux';
+import { type NestEntry } from '../../types/app';
 
 interface Props {
   transactions: Transaction[];
@@ -23,20 +24,20 @@ export default function IncomeExpensesLine({ transactions, startDate, endDate }:
   const keySelector = endDate.diff(startDate, 'month', true) < 2 ?
     (d: Transaction) => d.date :
     (d: Transaction) => d.date.substring(0, 7)
-  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = (nest() as any)
+
+  const data = nest<Transaction>()
     .key(keySelector)
     .sortKeys(ascending)
+    // @ts-expect-error d3-collection types: .key() this-return doesn't track .rollup() generic
     .rollup((a: Transaction[]) => {
       return {
         expenses: Math.abs(sum(a, d => (d.amount < 0 ? d.amount : 0))),
         income: sum(a, d => (d.amount >= 0 ? d.amount : 0))
       }
     })
-    .entries(transactions);
+    .entries(transactions) as unknown as NestEntry<{ expenses: number; income: number }>[];
 
-  const processedData: ProcessedData[] = data.map((d: { key: string; value: { expenses: number; income: number } }) => ({
+  const processedData: ProcessedData[] = data.map((d) => ({
     key: d.key,
     expenses: d.value.expenses,
     income: d.value.income

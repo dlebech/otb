@@ -4,7 +4,7 @@ import { type AppDispatch, Transaction, Account, Category } from '../types/redux
 import dynamic from 'next/dynamic';
 import moment, { Moment } from 'moment';
 import { nest } from 'd3-collection';
-import { TransactionGroup } from '../types/app';
+import { type TransactionGroup, type CategoryExpense } from '../types/app';
 import { sum } from 'd3-array';
 import { createSelector } from 'reselect';
 import { uncategorized } from '../data/categories';
@@ -17,15 +17,6 @@ import Summary from './charts/Summary';
 import AmountSumBar from './charts/AmountSumBar';
 import IncomeExpensesLine from './charts/IncomeExpensesLine';
 import Loading from './shared/Loading';
-
-interface CategoryExpense {
-  key: string;
-  value: {
-    amount: number;
-    transactions: Transaction[];
-    category: Category;
-  };
-}
 
 const CategoryExpenses = dynamic(() => import('./charts/CategoryExpenses'), {
   loading: () => <Loading />
@@ -190,15 +181,15 @@ const getSortedCategoryExpenses = createSelector(
   [getIncomeAndExpenses],
   (incomeAndExpenses: Transaction[][]): CategoryExpense[] => {
     const expenses = incomeAndExpenses[1];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (nest() as any)
+    return (nest<Transaction>()
       .key((d: Transaction) => (d.category as unknown as Category).id)
+      // @ts-expect-error d3-collection types: .key() this-return doesn't track .rollup() generic
       .rollup((transactions: Transaction[]) => ({
         transactions,
         category: transactions[0].category as unknown as Category,
         amount: Math.abs(sum(transactions, (d: Transaction) => d.amount))
       }))
-      .entries(expenses)
+      .entries(expenses) as unknown as CategoryExpense[])
       .sort((a: CategoryExpense, b: CategoryExpense) => b.value.amount - a.value.amount);
   }
 );

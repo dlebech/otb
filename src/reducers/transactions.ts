@@ -1,4 +1,4 @@
-import update from 'immutability-helper';
+import update, { type Spec } from 'immutability-helper';
 import { v4 as uuidv4 } from 'uuid';
 import * as actions from '../actions';
 import * as util from '../util';
@@ -276,8 +276,7 @@ const transactionsReducer = (state = initialTransactions, action: AnyAction): Tr
                   $unset: unset
                 }
               }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any
+            } as unknown as Spec<TransactionsState['data']>
           });
         }
       }

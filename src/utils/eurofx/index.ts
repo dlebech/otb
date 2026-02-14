@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as Papa from 'papaparse';
 import { LRUCache } from 'lru-cache';
 import { unzip } from './zip';
+import logger from '../logger';
 
 const rateDailyUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip';
 const rateHistoricalUrl = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip';
@@ -17,11 +18,11 @@ const cache = new LRUCache<string, Papa.ParseResult<Record<string, string>>>({
 const fetchRatesCsv = async (url: string): Promise<Papa.ParseResult<Record<string, string>>> => {
   const cached = cache.get(url);
   if (cached) {
-    console.log('Using cached CSV file');
+    logger.debug('Using cached CSV file');
     return cached;
   }
 
-  console.log(`Fetching CSV from ${url}`)
+  logger.debug(`Fetching CSV from ${url}`)
 
   const resp = await axios.get(url, {
     responseType: 'arraybuffer'
@@ -50,7 +51,7 @@ interface FetchRatesOptions {
  * @returns {Array} A list of exchange rates (one per day)
  */
 export const fetchRates = async (options: FetchRatesOptions = {}): Promise<Record<string, string | number>[]> => {
-  console.log('Got options', options);
+  logger.debug('Got options', options);
 
   const url = options.historical ? rateHistoricalUrl : rateDailyUrl;
 

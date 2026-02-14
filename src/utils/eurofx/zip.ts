@@ -1,19 +1,15 @@
 import * as yauzl from 'yauzl';
 import { type Readable } from 'stream';
+import logger from '../logger';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const promisify = (api: (...args: any[]) => void) => {
-  return (...args: unknown[]) => {
-    return new Promise((resolve, reject) => {
-      api(...args, (err: Error | null, response: unknown) => {
-        if (err) return reject(err);
-        resolve(response);
-      });
+const yauzlFromBuffer = (data: ArrayBuffer, options: yauzl.Options): Promise<yauzl.ZipFile> => {
+  return new Promise((resolve, reject) => {
+    yauzl.fromBuffer(Buffer.from(data), options, (err: Error | null, zipfile?: yauzl.ZipFile) => {
+      if (err) return reject(err);
+      resolve(zipfile!);
     });
-  };
+  });
 };
-
-const yauzlFromBuffer = promisify(yauzl.fromBuffer);
 
 /**
  * Unzip the data in the given buffer
@@ -22,11 +18,18 @@ const yauzlFromBuffer = promisify(yauzl.fromBuffer);
  */
 export const unzip = async (data: ArrayBuffer): Promise<Record<string, string>> => {
   // Prepare the zip file
-  const zipFile = await yauzlFromBuffer(data, { lazyEntries: true }) as yauzl.ZipFile;
-  console.log('Number of entries in zipfile:', zipFile.entryCount);
+  const zipFile = await yauzlFromBuffer(data, { lazyEntries: true });
+  logger.debug('Number of entries in zipfile:', zipFile.entryCount);
 
   // Open a read stream
-  const openReadStream = promisify(zipFile.openReadStream.bind(zipFile));
+  const openReadStream = (entry: yauzl.Entry): Promise<Readable> => {
+    return new Promise((resolve, reject) => {
+      zipFile.openReadStream(entry, (err: Error | null, stream?: Readable) => {
+        if (err) return reject(err);
+        resolve(stream!);
+      });
+    });
+  };
 
   // Read all entries and return each csv file.
   return new Promise((resolve, reject) => {
@@ -34,14 +37,14 @@ export const unzip = async (data: ArrayBuffer): Promise<Record<string, string>> 
 
     zipFile.readEntry();
     zipFile.on('entry', async (entry: yauzl.Entry) => {
-      console.log('Reading file:', entry.fileName);
+      logger.debug('Reading file:', entry.fileName);
 
       files[entry.fileName] = []; // Create an empty array to gather the chunks
 
-      const stream = await openReadStream(entry) as Readable;
+      const stream = await openReadStream(entry);
 
       stream.on('end', () => {
-        console.log('Done with:', entry.fileName);
+        logger.debug('Done with:', entry.fileName);
 
         // Gather all the chunks into a string
         files[entry.fileName] = Buffer.concat(files[entry.fileName] as Buffer[]).toString();

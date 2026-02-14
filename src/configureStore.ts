@@ -3,7 +3,7 @@ import { createLogger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
 import { reduxSearch, SearchApi } from 'redux-search';
 import storage from 'redux-persist/lib/storage';
-import rootReducer from './reducers'
+import rootReducer, { type RootState } from './reducers'
 
 export const persistConfig = {
   key: 'otb',
@@ -18,31 +18,35 @@ export const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function configureStore(preloadedState: any = {}) {
+type PersistedState = RootState & { _persist: { version: number; rehydrated: boolean } };
+
+export default function configureStore(preloadedState: Partial<RootState> = {}) {
   const store = createStore({
     reducer: persistedReducer,
-    preloadedState,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
+    preloadedState: preloadedState as PersistedState,
+    middleware: (getDefaultMiddleware) => {
+      const middleware = getDefaultMiddleware({
         serializableCheck: {
           ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/FLUSH', 'persist/PURGE'],
           // Ignore these field paths in the state - they are now arrays, not Sets
           ignoredPaths: ['edit.transactionList.filterCategories', 'edit.charts.filterCategories']
         }
-      }).concat(
-        process.env.NODE_ENV === 'development' ? [createLogger()] : []
-      ),
+      });
+      if (process.env.NODE_ENV === 'development') {
+        return middleware.concat(createLogger());
+      }
+      return middleware;
+    },
     enhancers: (getDefaultEnhancers) =>
       getDefaultEnhancers().concat([
         reduxSearch({
           resourceIndexes: {
             transactions: ['description', 'descriptionCleaned']
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          resourceSelector: (resourceName: string, state: any) => {
+          resourceSelector: (resourceName: string, state: unknown) => {
+            const typedState = state as RootState;
             if (resourceName === 'transactions') {
-              return state.transactions.data;
+              return typedState.transactions.data;
             }
             return [];
           },

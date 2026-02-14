@@ -9,9 +9,8 @@ import TransactionRow from './TransactionRow';
 import SortHeader from './SortHeader';
 import SearchField from './SearchField';
 import BulkActions from './BulkActions';
-import { Transaction } from '../../types/redux';
 import type { Category, Account } from '../../types/redux';
-
+import type { DisplayTransactionGroup, DisplayTransaction } from '../../types/app';
 
 interface DateSelect {
   id: string;
@@ -20,7 +19,7 @@ interface DateSelect {
 }
 
 interface Props {
-  transactions: Transaction[];
+  transactions: DisplayTransaction[];
   categories: Record<string, Category>;
   accounts: Record<string, Account>;
   dateSelect: DateSelect;
@@ -33,7 +32,7 @@ interface Props {
   handleIgnoreRow: (transactionId: string, ignored: boolean) => void;
   handleDeleteRow: (transactionId: string) => void;
   handleGroupRows: (transactionIds: string[]) => void;
-  handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
+  handleRowCategoryChange: (mapping: Record<string, string>) => void;
   handleSearch: (text: string, page: number) => void;
   handleDatesChange: (id: string, startDate: Moment | null, endDate: Moment | null) => void;
   handlePageChange: (page: number) => void;
@@ -44,13 +43,12 @@ interface Props {
   handleRoundAmount: (round: boolean) => void;
   handleDeleteTransactionGroup: (groupId: string) => void;
   roundAmount?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transactionGroups?: Record<string, any>;
+  transactionGroups?: Record<string, DisplayTransactionGroup>;
 }
 
-const filterData = (data: Transaction[], categories: Set<string>, dateSelect: DateSelect): Transaction[] => {
-  let categoryFilter: (t: Transaction) => boolean = () => true;
-  let dateFilter: (t: Transaction) => boolean = () => true;
+const filterData = (data: DisplayTransaction[], categories: Set<string>, dateSelect: DateSelect): DisplayTransaction[] => {
+  let categoryFilter: (t: DisplayTransaction) => boolean = () => true;
+  let dateFilter: (t: DisplayTransaction) => boolean = () => true;
 
   if (categories && categories.size > 0) {
     categoryFilter = t => {
@@ -69,7 +67,7 @@ const filterData = (data: Transaction[], categories: Set<string>, dateSelect: Da
   return data.filter(t => categoryFilter(t) && dateFilter(t));
 };
 
-const sortData = (data: Transaction[], sortKey: string, sortAscending: boolean): Transaction[] => {
+const sortData = (data: DisplayTransaction[], sortKey: string, sortAscending: boolean): DisplayTransaction[] => {
   return [...data] // Create new array to avoid inplace sort of original array.
     .sort((a, b) => {
       const val1 = (a as unknown as Record<string, unknown>)[sortKey];
@@ -110,8 +108,8 @@ export default function TransactionTable({
   transactionGroups = {}
 }: Props) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [data, setData] = useState<Transaction[]>([]);
-  const [dataView, setDataView] = useState<Transaction[]>([]);
+  const [data, setData] = useState<DisplayTransaction[]>([]);
+  const [dataView, setDataView] = useState<DisplayTransaction[]>([]);
 
   // Note: react-tooltip v5 doesn't need manual rebuild
 

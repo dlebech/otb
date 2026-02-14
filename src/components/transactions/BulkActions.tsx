@@ -1,9 +1,9 @@
 import React from 'react';
-import { Transaction } from '../../types/redux';
+import { type DisplayTransaction } from '../../types/app';
 import BulkActionSelection from './BulkActionSelection';
 
 interface SelectionIntroProps {
-  selectedTransactions: Transaction[];
+  selectedTransactions: DisplayTransaction[];
   handleSelectAll: () => void;
   handleSelectNone: () => void;
 }
@@ -31,7 +31,7 @@ function SelectionIntro({
 }
 
 interface BulkActionsProps {
-  selectedTransactions: Transaction[];
+  selectedTransactions: DisplayTransaction[];
   handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
   handleSelectAll: () => void;
   handleSelectNone: () => void;
