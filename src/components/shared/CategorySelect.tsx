@@ -5,11 +5,7 @@ import CreatableSelect from 'react-select/creatable';
 import { uncategorized } from '../../data/categories';
 import { arrayToObjectLookup } from '../../util';
 import type { RootState } from '../../reducers';
-
-interface CategoryOption {
-  label: string;
-  value: string;
-}
+import type { CategoryOption } from '../../types/app';
 
 interface Props {
   onChange: (option: CategoryOption[] | CategoryOption | null) => void;
@@ -22,14 +18,20 @@ interface Props {
   selectOptions?: Record<string, unknown>;
 }
 
-const findValue = (value: Set<string> | string[] | string | CategoryOption | CategoryOption[] | null | undefined, options: CategoryOption[]) => {
+const findValue = (
+  value: Set<string> | string[] | string | CategoryOption | CategoryOption[] | null | undefined,
+  options: CategoryOption[]
+): CategoryOption | CategoryOption[] | null | undefined => {
   const normalizedValue = value instanceof Set ? Array.from(value) : value;
 
   // If we are given an array of strings, select the options with the value of
   // those strings.
-  if (Array.isArray(normalizedValue) && normalizedValue.length && typeof normalizedValue[0] === 'string') {
-    const stringValues = normalizedValue as string[];
-    return options.filter(o => !!stringValues.find((c: string) => c === o.value));
+  if (Array.isArray(normalizedValue)) {
+    if (normalizedValue.length && typeof normalizedValue[0] === 'string') {
+      const stringValues = normalizedValue as string[];
+      return options.filter(o => !!stringValues.find((c: string) => c === o.value));
+    }
+    return normalizedValue as CategoryOption[];
   }
   if (typeof normalizedValue === 'string') {
     return options.find(o => o.value === normalizedValue);
@@ -70,8 +72,9 @@ export default function CategorySelect({
     ].concat(categoryOptions);
   }, [categories]);
 
-  const onChangeInternal = (option: CategoryOption | CategoryOption[] | null) => {
-    onChange(option);
+  const onChangeInternal = (option: CategoryOption | readonly CategoryOption[] | null) => {
+    // Convert readonly arrays from react-select to mutable arrays for our onChange prop
+    onChange(Array.isArray(option) ? [...option] : option as CategoryOption | null);
   };
 
   const selectedCategoryValue = useMemo(
@@ -79,15 +82,13 @@ export default function CategorySelect({
     [selectedCategory, categoryOptionsWithUncategorized]
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const commonProps: any = {
+  const baseProps = {
     options: categoryOptionsWithUncategorized,
     placeholder: placeholder,
     onChange: onChangeInternal,
     value: selectedCategoryValue,
     isMulti: isMulti,
     autoFocus: focus,
-    ...selectOptions
   };
 
   // Assume it's a creatable if the onCreate function is given
@@ -100,7 +101,8 @@ export default function CategorySelect({
       <CreatableSelect<CategoryOption, boolean>
         className="category-select creatable"
         onCreateOption={onCreateOption}
-        {...commonProps}
+        {...selectOptions}
+        {...baseProps}
       />
     );
   }
@@ -108,7 +110,8 @@ export default function CategorySelect({
   return (
     <Select
       className="category-select"
-      {...commonProps}
+      {...selectOptions}
+      {...baseProps}
     />
   );
 }

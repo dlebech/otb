@@ -1,23 +1,15 @@
 import React, { useState } from 'react';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip } from 'react-tooltip';
-import { Transaction, Account } from '../../types/redux';
+import { Account } from '../../types/redux';
+import { type DisplayTransactionGroup, type DisplayTransaction } from '../../types/app';
 import ConfirmModal from '../shared/ConfirmModal';
 import RowCategorizer from './RowCategorizer';
 import IgnoreTransaction from './IgnoreTransaction';
 import GroupedTransaction from './GroupedTransaction';
 import ConfirmDelete from './ConfirmDelete';
 import { formatNumber } from '../../util';
-
-interface TransactionGroup {
-  groupId: string;
-  linkedTransactions: Array<{
-    id: string;
-    date: Moment;
-    description: string;
-  }>;
-}
 
 interface AmountProps {
   amount: number | string;
@@ -76,7 +68,7 @@ function Amount({
 }
 
 interface TransactionRowProps {
-  transaction: Transaction;
+  transaction: DisplayTransaction;
   accounts: { [accountId: string]: Account };
   showCreateCategoryModal: (name: string, transactionId: string) => void;
   handleDeleteRow: (transactionId: string) => void;
@@ -85,7 +77,7 @@ interface TransactionRowProps {
   handleRowSelect: (transactionId: string) => void;
   roundAmount: boolean;
   handleDeleteTransactionGroup: (groupId: string) => void;
-  transactionGroup?: TransactionGroup;
+  transactionGroup?: DisplayTransactionGroup;
   isSelected?: boolean;
 }
 

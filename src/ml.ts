@@ -1,6 +1,7 @@
 import bayes from 'bayes';
 import { reverseIndexLookup } from './util';
 import { type Transaction } from './types/redux';
+import logger from './utils/logger';
 
 interface CategorizerConfig {
   bayes: string;
@@ -24,7 +25,7 @@ const retrainBayes = async (transactions: Transaction[]): Promise<ClassifierInst
       .trim()
       .split(/\s+/)
   });
-  console.log(classifier);
+  logger.debug(classifier);
   for (const t of transactions) {
     if (t.category.confirmed && t.descriptionCleaned) {
       await classifier.learn(t.descriptionCleaned, t.category.confirmed);

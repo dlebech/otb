@@ -1,20 +1,11 @@
 import React from 'react';
 import { Tooltip } from 'react-tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Moment } from 'moment';
-
-interface TransactionGroup {
-  groupId: string;
-  linkedTransactions: Array<{
-    id: string;
-    date: Moment;
-    description: string;
-  }>;
-}
+import { type DisplayTransactionGroup } from '../../types/app';
 
 interface GroupedTransactionProps {
   transactionId: string;
-  transactionGroup?: TransactionGroup;
+  transactionGroup?: DisplayTransactionGroup;
   handleDeleteTransactionGroup: (groupId: string) => void;
 }
 

@@ -14,6 +14,7 @@ import { sum, ascending } from 'd3-array';
 import color from '../../data/color';
 import { formatNumber } from '../../util';
 import { Transaction } from '../../types/redux';
+import { type NestEntry } from '../../types/app';
 
 interface Props {
   transactions: Transaction[];
@@ -23,9 +24,9 @@ export default function AmountSumBar({ transactions }: Props) {
   const data = nest<Transaction>()
     .key((d: Transaction) => d.date.substring(0, 7))
     .sortKeys(ascending)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .rollup((a: Transaction[]) => sum(a, (d: Transaction) => d.amount) as any)
-    .entries(transactions);
+    // @ts-expect-error d3-collection types: .key() this-return doesn't track .rollup() generic
+    .rollup((a: Transaction[]) => sum(a, (d: Transaction) => d.amount))
+    .entries(transactions) as unknown as NestEntry<number>[];
 
   return (
     <div className="chart">

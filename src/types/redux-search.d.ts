@@ -1,11 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'redux-search' {
-  export function reducer(state: any, action: any): any;
-  export function connectSearchBox(reducer: any, stateKey: string): any;
-  export function connectSearchBox(reducer: any, stateKey: string, searchStateSelector?: any): any;
-  export function createSearchAction(resourceName: string): (searchText: string) => any;
-  export function reduxSearch(config: any): any;
+  import { Action, StoreEnhancer } from 'redux';
+
+  export interface SearchState {
+    [resourceName: string]: {
+      text: string;
+      result: string[];
+    };
+  }
+
+  export function reducer(state: SearchState | undefined, action: Action): SearchState;
+
+  export function createSearchAction(resourceName: string): (searchText: string) => Action;
+
+  export interface ReduxSearchConfig {
+    resourceIndexes: Record<string, string[]>;
+    resourceSelector: (resourceName: string, state: unknown) => unknown[];
+    searchApi?: SearchApi;
+  }
+
+  export function reduxSearch(config: ReduxSearchConfig): StoreEnhancer;
+
+  export interface SearchApiOptions {
+    matchAnyToken?: boolean;
+    indexMode?: string;
+    tokenizeString?: (text: string) => string[];
+  }
+
   export class SearchApi {
-    constructor(options: any);
+    constructor(options?: SearchApiOptions);
   }
 }

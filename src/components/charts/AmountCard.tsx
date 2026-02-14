@@ -5,7 +5,7 @@ import { formatNumber } from '../../util';
 
 interface Account {
   name: string;
-  currency: string;
+  currency?: string;
 }
 
 interface Amounts {

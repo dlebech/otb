@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef } from 'react';
 import moment, { Moment } from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch, type Transaction, type Category } from '../types/redux';
-import type { TransactionGroup } from '../types/app';
+import type { TransactionGroup, DisplayTransaction, DisplayTransactionGroup } from '../types/app';
 import Link from 'next/link';
 import { createSearchAction } from 'redux-search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,9 +37,8 @@ export default function Transactions() {
       return obj;
     }, {});
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let transactionsData: any[] = state.transactions.data
-      .map((t: Transaction) => {
+    let transactionsData: DisplayTransaction[] = state.transactions.data
+      .map((t: Transaction): DisplayTransaction => {
         return {
           categoryGuess: (t.category.guess && categoriesObj[t.category.guess]) || null,
           categoryConfirmed: (t.category.confirmed && categoriesObj[t.category.confirmed]) || null,
@@ -55,8 +54,7 @@ export default function Transactions() {
 
     // Create an ID -> transactions mapping for easier tooltip'ing.
     const transactionGroupsObj = Object.entries(state.transactions.groups || {})
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .reduce((obj: Record<string, { groupId: string; linkedTransactions: any[] }>, [groupId, group]: [string, TransactionGroup]) => {
+      .reduce((obj: Record<string, DisplayTransactionGroup>, [groupId, group]: [string, TransactionGroup]) => {
         obj[group.primaryId] = {
           groupId,
           linkedTransactions: group.linkedIds.map((id: string) => transactionsData[reverseTransactionLookup[id]])

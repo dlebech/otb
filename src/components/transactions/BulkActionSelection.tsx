@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
-import { Transaction } from '../../types/redux';
+import { type CategoryOption, type DisplayTransaction } from '../../types/app';
 import CategorySelect from '../shared/CategorySelect';
 
 interface BulkAction {
-  value: string;
-  label: string;
-}
-
-interface CategoryOption {
   value: string;
   label: string;
 }
@@ -18,7 +13,7 @@ const SET_CATEGORIES = 'setCategories';
 const GROUP_TRANSACTIONS = 'groupRows';
 
 interface BulkActionSelectionProps {
-  selectedTransactions: Transaction[];
+  selectedTransactions: DisplayTransaction[];
   handleRowCategoryChange: (mapping: { [transactionId: string]: string }) => void;
   showCreateCategoryModal: () => void;
   handleGroupRows: (transactionIds: string[]) => void;

@@ -3,16 +3,8 @@ import { nest } from 'd3-collection';
 import { sum } from 'd3-array';
 import { formatNumber } from '../../util';
 import AmountCard from './AmountCard';
-import { Transaction, Account, Category } from '../../types/redux';
-
-interface CategoryExpense {
-  key: string;
-  value: {
-    amount: number;
-    transactions: Transaction[];
-    category: Category;
-  };
-}
+import { Transaction, Account } from '../../types/redux';
+import { type CategoryExpense, type NestEntry } from '../../types/app';
 
 interface SummaryProps {
   expenses: Transaction[];
@@ -22,15 +14,15 @@ interface SummaryProps {
 }
 
 const groupAmounts = (transactions: Transaction[], accounts: { [key: string]: Account }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (nest<Transaction>() as any)
+  return (nest<Transaction>()
     .key((t: Transaction) => t.account || '')
+    // @ts-expect-error d3-collection types: .key() this-return doesn't track .rollup() generic
     .rollup((t: Transaction[]) => ({
       amount: sum(t, d => d.amount),
       originalAmount: sum(t, d => (d as unknown as Record<string, number>).originalAmount || 0)
     }))
-    .entries(transactions)
-    .map((e: { key: string; value: { amount: number; originalAmount: number } }) => ({ account: accounts[e.key], amounts: e.value }));
+    .entries(transactions) as unknown as NestEntry<{ amount: number; originalAmount: number }>[])
+    .map((e) => ({ account: accounts[e.key], amounts: e.value }));
 };
 
 export default function Summary({ expenses, income, sortedCategoryExpenses, accounts }: SummaryProps) {

@@ -6,14 +6,7 @@ import {
 } from 'recharts';
 import color from '../../data/color';
 import { formatNumber } from '../../util';
-import { Category } from '../../types/redux';
-
-interface CategoryExpense {
-  value: {
-    amount: number;
-    category: Category;
-  };
-}
+import { type CategoryExpense } from '../../types/app';
 
 interface Props {
   sortedCategoryExpenses: CategoryExpense[];

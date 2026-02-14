@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchRates } from '../../../utils/eurofx';
+import logger from '../../../utils/logger';
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const currencyParams = url.searchParams.getAll('currencies');
-    
+
     const options: { historical: boolean; currencies?: string[] } = { historical: true };
     if (currencyParams.length > 0) {
       options.currencies = currencyParams;
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(ratesObject);
   } catch (error) {
-    console.error('Error fetching currency rates:', error);
+    logger.error('Error fetching currency rates:', error);
     return NextResponse.json(
       { error: 'Failed to fetch currency rates' },
       { status: 500 }
