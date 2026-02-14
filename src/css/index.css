@@ -1,15 +1,55 @@
-.chart {
-  height: 250px;
+@import "tailwindcss";
+
+/*
+ * Base element styles — restore defaults that Tailwind's preflight strips.
+ * Bootstrap's "reboot" preserved these; without them, headings have no size,
+ * paragraphs have no spacing, lists have no indentation, and table cells
+ * have no padding.
+ */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1rem; }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  hr {
+    margin: 1rem 0;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  ul { list-style: disc; padding-left: 2rem; }
+  ol { list-style: decimal; padding-left: 2rem; }
+  nav ul, nav ol { list-style: none; padding-left: 0; }
+
+  dt { font-weight: 700; }
+  dd { margin-bottom: 0.5rem; margin-left: 0; }
+
+  th, td { padding: 0.5rem; }
+  th { text-align: inherit; }
 }
 
-.small-tip {
-  max-width: 200px;
-}
+@layer components {
+  .chart {
+    @apply h-64;
+  }
 
-.cursor-pointer {
-  cursor: pointer;
-}
+  .small-tip {
+    @apply max-w-48;
+  }
 
-.cursor-help {
-  cursor: help;
+  .link {
+    @apply text-blue-600 hover:underline;
+  }
 }
