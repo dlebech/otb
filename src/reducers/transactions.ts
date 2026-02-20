@@ -32,7 +32,9 @@ const initialTransactions: TransactionsState = {
 
 const mapImportToTransactions = (transactionsImport: TransactionImport, existingTransactions: Transaction[]): Transaction[] => {
   const dateIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'date');
-  const descIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'description');
+  const descIndices = transactionsImport.columnSpec
+    .map((spec, i) => spec.type === 'description' ? i : -1)
+    .filter(i => i !== -1);
   const amountIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'amount');
   const totalIndex = transactionsImport.columnSpec.findIndex(spec => spec.type === 'total');
 
@@ -57,8 +59,8 @@ const mapImportToTransactions = (transactionsImport: TransactionImport, existing
         date: util
           .momentParse(String(transaction[dateIndex]), transactionsImport.dateFormat)
           .format('YYYY-MM-DD'),
-        description: String(transaction[descIndex]),
-        descriptionCleaned: util.cleanTransactionDescription(String(transaction[descIndex])),
+        description: descIndices.map(i => String(transaction[i])).join(' '),
+        descriptionCleaned: util.cleanTransactionDescription(descIndices.map(i => String(transaction[i])).join(' ')),
         amount: util.cleanNumber(transaction[amountIndex]),
         total: util.cleanNumber(transaction[totalIndex]),
         account: transactionsImport.account,

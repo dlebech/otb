@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type AppDispatch } from '../types/redux';
 import { useRouter } from 'next/navigation';
@@ -21,29 +21,27 @@ export default function TransactionAdd() {
   const [errors, setErrors] = useState<TransactionAddError[]>([]);
 
   const {
-    transactions,
+    rawTransactions,
     account,
     skipRows,
     skipDuplicates,
     columnSpec,
     dateFormat,
     accounts
-  } = useSelector((state: RootState) => {
-    let transactionsData = state.transactions.import.data;
-    if (state.transactions.import.skipRows) {
-      transactionsData = transactionsData.slice(state.transactions.import.skipRows);
-    }
+  } = useSelector((state: RootState) => ({
+    rawTransactions: state.transactions.import.data,
+    account: state.transactions.import.account,
+    skipRows: state.transactions.import.skipRows,
+    skipDuplicates: state.transactions.import.skipDuplicates,
+    columnSpec: state.transactions.import.columnSpec,
+    dateFormat: state.transactions.import.dateFormat,
+    accounts: state.accounts.data
+  }));
 
-    return {
-      transactions: transactionsData,
-      account: state.transactions.import.account,
-      skipRows: state.transactions.import.skipRows,
-      skipDuplicates: state.transactions.import.skipDuplicates,
-      columnSpec: state.transactions.import.columnSpec,
-      dateFormat: state.transactions.import.dateFormat,
-      accounts: state.accounts.data
-    };
-  });
+  const transactions = useMemo(
+    () => skipRows ? rawTransactions.slice(skipRows) : rawTransactions,
+    [rawTransactions, skipRows]
+  );
 
   const validateForm = useCallback(() => {
     const newErrors: TransactionAddError[] = [];
@@ -117,7 +115,7 @@ export default function TransactionAdd() {
     if (transactions.length > 0) {
       validateForm();
     }
-  }, [validateForm, transactions, columnSpec, dateFormat, account]);
+  }, [validateForm]);
 
   const handleSave = useCallback(() => {
     if (!validateForm()) return;
