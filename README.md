@@ -31,4 +31,4 @@ npm start
 
 If you go through the commit history, you will see that the app used to be called Off The Books.
 This was both a long name and a bit shady sounding, so I simply renamed it to OTB
-and put it on my `hirobo.dev` domain for now :-)
+and put it on my own domain :-)
