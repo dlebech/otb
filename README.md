@@ -14,7 +14,7 @@ OTB does all its analysis in the browser only. The advantage of this is that pri
 by design, since the data never leaves the browser. The app also does not track usage or actions in the app.
 
 In fact, if you decide to use the version of OTB that is hosted on
-[otb.hirobo.dev](https://otb.hirobo.dev) (The site is on Netlify), I have no idea
+[otb.davidlebech.com](https://otb.davidlebech.com) (The site is on Netlify), I have no idea
 if you are even using the service or not, since I do not track visits on the server.
 
 ## Development
